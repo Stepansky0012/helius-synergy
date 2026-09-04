@@ -36,7 +36,6 @@ a{color:var(--t1);text-decoration:none}
 header{position:fixed;left:40px;top:34px;z-index:60}
 .wm{display:flex;align-items:center;gap:13px}
 .wm .nm{font-size:16px;font-weight:300;letter-spacing:.30em;line-height:1}
-header .sub{margin:12px 0 0 37px;font-size:10.5px;letter-spacing:.04em;color:var(--t3)}
 
 /* ---------- переключатель вида ---------- */
 #modes{position:fixed;right:40px;top:34px;z-index:60;display:flex;gap:2px;
@@ -67,7 +66,7 @@ header .sub{margin:12px 0 0 37px;font-size:10.5px;letter-spacing:.04em;color:var
 
 /* ---------- сцена ---------- */
 #stage{position:fixed;inset:0;z-index:20;cursor:crosshair;transition:opacity .42s var(--ease),transform .52s var(--ease)}
-#stage.back{opacity:.10;transform:scale(.94);pointer-events:none}
+#stage.back{opacity:.07;transform:scale(.94);filter:blur(3px);pointer-events:none}
 #svg{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
 .ring{fill:none;stroke:rgba(242,240,237,.17);stroke-width:1;transition:stroke .2s,stroke-width .2s}
 .ring.nil{stroke:rgba(242,240,237,.11);stroke-dasharray:2 9}
@@ -114,34 +113,46 @@ body.nw .ag .ho{left:7px;top:7px}
    Ни рамки, ни плашки: поле размытия, у которого нет края — маска гасит
    и размытие, и подложку. Иерархия держится светом и интервалом; вертикальная
    граница возникает выравниванием колонок, а не линией. */
-#ctx{position:fixed;z-index:78;pointer-events:none;width:356px;
-  opacity:0;visibility:hidden;transition:opacity .16s var(--ease)}
+#ctx{position:fixed;z-index:78;pointer-events:none;width:322px;
+  opacity:0;visibility:hidden;transition:opacity .22s var(--ease)}
 #ctx.on{opacity:1;visibility:visible}
-#ctx::before{content:'';position:absolute;inset:-54px -82px -60px -82px;z-index:-1;
-  backdrop-filter:blur(24px) saturate(.82);-webkit-backdrop-filter:blur(24px) saturate(.82);
-  background:rgba(7,8,10,.80);
-  -webkit-mask-image:linear-gradient(to right, transparent 0, #000 15%, #000 85%, transparent 100%),
-    linear-gradient(to bottom, transparent 0, #000 16%, #000 84%, transparent 100%);
-  -webkit-mask-composite:source-in;
-  mask-image:linear-gradient(to right, transparent 0, #000 15%, #000 85%, transparent 100%),
-    linear-gradient(to bottom, transparent 0, #000 16%, #000 84%, transparent 100%);
-  mask-composite:intersect}
 
-#ctx .eye{display:flex;align-items:center;gap:10px}
-#ctx .eye .g{flex:0 0 auto;display:block;color:rgba(242,240,237,.55)}
-#ctx .eye .n{font-size:7.5px;letter-spacing:.26em;color:var(--t4)}
-#ctx .ttl{margin-top:13px;font-size:14.5px;font-weight:500;line-height:1.34}
-#ctx .ttl .lv{margin-left:11px;font-size:9px;letter-spacing:.2em;color:var(--t3);font-weight:400}
-#ctx .say{margin-top:13px;font-size:11px;line-height:1.7;color:var(--t2);text-wrap:pretty}
-#ctx .tbl{margin:22px 0 0;display:grid;grid-template-columns:76px 1fr;
-  column-gap:22px;row-gap:11px;align-items:baseline}
-#ctx .tbl dt{font-size:7.5px;letter-spacing:.18em;color:var(--t4);text-align:right;line-height:1.8}
-#ctx .tbl dd{margin:0;font-size:11px;line-height:1.6;color:var(--t2);
-  font-variant-numeric:tabular-nums}
-#ctx .foot{margin-top:24px;display:grid;grid-template-columns:76px 1fr;column-gap:22px}
-#ctx .foot .l{font-size:7.5px;letter-spacing:.18em;color:var(--t3);text-align:right}
-#ctx .foot .r{font-size:7.5px;letter-spacing:.18em;color:var(--t4)}
+#ctx .eye{display:flex;align-items:center;gap:11px}
+#ctx .eye .g{flex:0 0 auto;display:block;color:rgba(242,240,237,.5)}
+#ctx .eye .n{font-size:8px;letter-spacing:.28em;color:var(--t3)}
+
+/* Дисплейный голос вернулся: имя набрано Unbounded, как позывные в досье. */
+#ctx .ttl{margin-top:18px;font-family:'Unbounded','Trebuchet MS',sans-serif;
+  font-size:19px;font-weight:300;line-height:1.32;letter-spacing:.03em}
+#ctx .ttl .lv{display:block;margin-top:9px;font-family:'JetBrains Mono',ui-monospace,monospace;
+  font-size:9px;letter-spacing:.24em;color:var(--t3)}
+#ctx .say{margin-top:20px;font-size:12px;line-height:1.75;color:rgba(242,240,237,.5);
+  text-wrap:pretty}
+
+/* Интервалы неравные: группа свойств отбита от имени сильнее, чем строки
+   внутри группы. Вертикальная линейка возникает выравниванием колонок. */
+#ctx .tbl{margin:30px 0 0;display:flex;flex-direction:column;gap:13px}
+#ctx .tbl .r{display:flex;gap:20px;align-items:baseline}
+#ctx .tbl dt{flex:0 0 84px;margin:0;font-size:8px;letter-spacing:.2em;
+  color:var(--t4);text-align:right;line-height:1.7}
+#ctx .tbl dd{flex:1 1 auto;margin:0;font-size:12px;line-height:1.55;
+  color:rgba(242,240,237,.86);font-variant-numeric:tabular-nums}
+#ctx .foot{margin-top:30px;display:flex;gap:20px}
+#ctx .foot .l{flex:0 0 84px;font-size:8px;letter-spacing:.2em;color:var(--t3);text-align:right}
+#ctx .foot .r{flex:1 1 auto;font-size:8px;letter-spacing:.2em;color:var(--t4)}
 #ctx.attn .eye .n,#ctx.attn .eye .g{color:var(--sol)}
+
+/* Левое поле зеркалит: ярлыки прижаты к диаграмме, туда же приходит выноска. */
+#ctx.left{text-align:right}
+#ctx.left .eye{flex-direction:row-reverse}
+#ctx.left .tbl .r,#ctx.left .foot{flex-direction:row-reverse}
+#ctx.left .tbl dt,#ctx.left .foot .l{text-align:left}
+
+.ctxlead{fill:none;stroke-width:1}
+.rail{transition:opacity .26s var(--ease),transform .32s var(--ease)}
+.rail.away{opacity:0;pointer-events:none}
+#railL.away{transform:translateX(-14px)}
+#railR.away{transform:translateX(14px)}
 
 /* ---------- анатомия ---------- */
 #anat{position:fixed;inset:0;z-index:40;opacity:0;pointer-events:none;
@@ -157,7 +168,7 @@ body.nw .ag .ho{left:7px;top:7px}
 @keyframes spin{from{transform:rotate(0)}to{transform:rotate(360deg)}}
 #acore{position:absolute;z-index:46;border-radius:50%;display:flex;flex-direction:column;
   align-items:center;justify-content:center;gap:9px;padding:0 18px;text-align:center;
-  background:radial-gradient(circle at 42% 36%,var(--l4) 0%,var(--l3) 58%,var(--l1) 100%);
+  background:radial-gradient(circle at 40% 34%,#14171E 0%,#0E1116 62%,#090B0F 100%);
   border:1px solid rgba(242,240,237,.14)}
 #acore .chip{padding:3px 10px;border-radius:var(--R);border:1px solid rgba(242,240,237,.14);
   background:rgba(7,8,10,.55);font-size:7px;letter-spacing:.24em;color:var(--t2)}
@@ -178,8 +189,7 @@ body.nw #acore .chip{font-size:6.5px;letter-spacing:.18em;padding:2px 8px}
 .acard{position:absolute;z-index:52;width:276px;
   pointer-events:none;animation:rise .18s var(--ease)}
 .acard::before{content:'';position:absolute;inset:-48px -70px -54px -70px;z-index:-1;
-  backdrop-filter:blur(24px) saturate(.82);-webkit-backdrop-filter:blur(24px) saturate(.82);
-  background:rgba(7,8,10,.80);
+  background:rgba(5,6,8,.88);
   -webkit-mask-image:linear-gradient(to right, transparent 0, #000 15%, #000 85%, transparent 100%),
     linear-gradient(to bottom, transparent 0, #000 16%, #000 84%, transparent 100%);
   -webkit-mask-composite:source-in;
@@ -238,9 +248,8 @@ body.nw #acore .chip{font-size:6.5px;letter-spacing:.18em;padding:2px 8px}
 #sheet{position:fixed;left:0;right:0;bottom:0;z-index:80;transform:translateY(104%);
   transition:transform .42s var(--ease);padding:34px 20px 26px}
 #sheet::before{content:'';position:absolute;inset:0;z-index:-1;
-  backdrop-filter:blur(24px) saturate(.84);-webkit-backdrop-filter:blur(24px) saturate(.84);
-  background:linear-gradient(to bottom, rgba(7,8,10,0) 0%, rgba(7,8,10,.72) 30%,
-    rgba(7,8,10,.94) 100%);
+  background:linear-gradient(to bottom, rgba(5,6,8,0) 0%, rgba(5,6,8,.80) 28%,
+    rgba(5,6,8,.96) 100%);
   -webkit-mask-image:linear-gradient(to bottom, transparent 0%, #000 26%);
   mask-image:linear-gradient(to bottom, transparent 0%, #000 26%)}
 #sheet.on{transform:none}
@@ -267,7 +276,6 @@ footer{position:fixed;left:40px;bottom:28px;z-index:56;font-size:8.5px;line-heig
 
   header{position:relative;left:auto;top:auto;padding:22px 18px 0}
   .wm .nm{font-size:13.5px;letter-spacing:.22em}
-  header .sub{margin:11px 0 0;font-size:10px;line-height:1.6}
 
   #modes{position:relative;right:auto;top:auto;margin:18px 18px 0;display:flex}
   #modes button{flex:1 1 0;min-height:44px;padding:0 10px;font-size:8.5px;letter-spacing:.16em}
@@ -345,7 +353,6 @@ footer{position:fixed;left:40px;bottom:28px;z-index:56;font-size:8.5px;line-heig
       </svg>
       <div class="nm disp">ГЕЛИУС СИНЕРДЖИ</div>
     </div>
-    <div class="sub">Экосистема ИИ-агентов Корпорации «Синергия» · стратегия от 03.09.2026</div>
   </header>
 
   <button id="back"><span class="mono">←</span> К ЭКОСИСТЕМЕ</button>
@@ -526,7 +533,7 @@ var CONS = [
 var st = {
   mode:'eco', hoverStage:null, hoverCat:null, hoverAgent:null,
   focus:null, hotSlot:null, W:0, H:0, R:0, cx:0, cy:0,
-  narrow:false, box:0, sheet:null, hover:null, mx:0, my:0
+  narrow:false, box:0, sheet:null, hover:null, mx:0, my:0, hoverSrc:null
 };
 /* Матрица вращается как одно целое. Угол кодирует категорию, поэтому агент
    не вправе уезжать из своего сектора: секторы, спицы и подписи поворачиваются
@@ -608,9 +615,9 @@ function buildRails(){
     b.innerHTML = '<span class="k mono">'+s.n+'</span><span class="lv mono">'+s.lv+
       '</span><span class="ct mono">'+byStage[s.k]+'</span>';
     var enter = function(e){
-      setHover({ kind:'stage', id:s.k });
-      ctxPlace(e && e.clientX ? e.clientX : b.getBoundingClientRect().right,
-               e && e.clientY ? e.clientY : b.getBoundingClientRect().top);
+      if (e && e.clientX){ st.mx = e.clientX; st.my = e.clientY; }
+      setHover({ kind:'stage', id:s.k }, 'railL');
+      ctxPlace();
     };
     b.addEventListener('mouseenter', enter);
     b.addEventListener('mousemove', enter);
@@ -625,9 +632,9 @@ function buildRails(){
     b.dataset.cat = c.k;
     b.innerHTML = '<span class="k mono">'+c.n+'</span><span class="ct mono">'+byCat[c.k].length+'</span>';
     var enterC = function(e){
-      setHover({ kind:'cat', id:c.k });
-      ctxPlace(e && e.clientX ? e.clientX : b.getBoundingClientRect().left,
-               e && e.clientY ? e.clientY : b.getBoundingClientRect().top);
+      if (e && e.clientX){ st.mx = e.clientX; st.my = e.clientY; }
+      setHover({ kind:'cat', id:c.k }, 'railR');
+      ctxPlace();
     };
     b.addEventListener('mouseenter', enterC);
     b.addEventListener('mousemove', enterC);
@@ -660,9 +667,23 @@ function buildStage(){
   catLabs.forEach(function(e){ e.remove(); });
   agEls = []; catLabs = [];
 
+  var defs = ns('defs');
+  var lg = ns('linearGradient');
+  lg.setAttribute('id','ctxLead'); lg.setAttribute('gradientUnits','userSpaceOnUse');
+  var st0 = ns('stop'); st0.setAttribute('offset','0');
+  st0.setAttribute('stop-color','#F2F0ED'); st0.setAttribute('stop-opacity','0');
+  var st1 = ns('stop'); st1.setAttribute('offset','1');
+  st1.setAttribute('stop-color','#F2F0ED'); st1.setAttribute('stop-opacity','0.34');
+  lg.appendChild(st0); lg.appendChild(st1); defs.appendChild(lg);
+  svg.appendChild(defs);
+  svg._leadG = lg;
+
   var gWedge = ns('g'), gRing = ns('g'), gSpoke = ns('g'), gChord = ns('g');
   svg.appendChild(gWedge); svg.appendChild(gSpoke); svg.appendChild(gRing);
   svg.appendChild(gChord);
+  var lead = ns('path'); lead.setAttribute('class','ctxlead');
+  lead.setAttribute('stroke','url(#ctxLead)'); lead.setAttribute('opacity','0');
+  svg.appendChild(lead); svg._lead = lead;
   svg.dataset.ready = '1';
   svg._w = gWedge; svg._r = gRing; svg._s = gSpoke; svg._c = gChord;
 
@@ -708,11 +729,7 @@ function buildStage(){
     b.appendChild(g);
     b.addEventListener('focus', function(){
       setHover({ kind:'agent', id:a.id });
-      var q = POS[a.id];
-      if (q) {
-        var r = stageEl.getBoundingClientRect();
-        ctxPlace(r.left + q[0] + 26, r.top + q[1]);
-      }
+      ctxPlace();
     });
     b.addEventListener('blur', function(){ setHover(null); });
     b.addEventListener('click', function(){
@@ -770,7 +787,7 @@ function paint(){
     d.style.top = (ly - 14) + 'px';
     d.style.textAlign = right ? 'left' : 'right';
     d.className = 'catlab' + (hC===c.k ? ' on' : '');
-    d.style.opacity = (hC && hC !== c.k) ? .34 : 1;
+    d.style.opacity = (hC && hC !== c.k) ? .10 : (st.hover ? 1 : .8);
   });
 
   /* кольца */
@@ -869,7 +886,13 @@ function sameHover(a, b){
   return a.kind === b.kind && a.id === b.id;
 }
 
-function setHover(h){
+function setHover(h, src){
+  st.hoverSrc = h ? (src || 'map') : null;
+  /* Уходит тот борт, чьё поле занимает контекст, и никогда — тот, на который
+     сейчас наведён курсор. */
+  var away = h && !st.narrow ? (st.hoverSrc === 'railR' ? 'railL' : 'railR') : null;
+  document.getElementById('railL').classList.toggle('away', away === 'railL');
+  document.getElementById('railR').classList.toggle('away', away === 'railR');
   if (sameHover(st.hover, h)) return;
   st.hover = h;
   st.hoverAgent = (h && h.kind === 'agent') ? h.id : null;
@@ -878,19 +901,87 @@ function setHover(h){
   st.hoverCat = (h && h.kind === 'cat') ? h.id : null;
   ctxRender();
   paint();
+  if (h) ctxPlace(); else leadHide();
 }
 
-function ctxPlace(x, y){
-  var pad = 40, w = 356;
-  var h = ctxEl.offsetHeight || 210;
-  var left = x + 40, top = y - 30;
-  if (left + w + pad > st.W) left = x - 20 - w;
-  if (left < pad) left = pad;
-  if (top + h + pad > st.H) top = st.H - h - pad;
-  if (top < pad) top = pad;
+/* Точка привязки — сам элемент, а не курсор: текст встаёт в пустое поле,
+   а выноска показывает, чьи это свойства. */
+function anchorOf(h){
+  var r = stageEl.getBoundingClientRect();
+  if (h.kind === 'agent'){
+    var q = POS[h.id];
+    return q ? [r.left + q[0], r.top + q[1]] : [r.left + st.cx, r.top + st.cy];
+  }
+  if (h.kind === 'stage'){
+    var th = Math.atan2(st.my - r.top - st.cy, st.mx - r.left - st.cx);
+    var rr = st.R * stg(h.id).rf;
+    return [r.left + st.cx + rr * Math.cos(th), r.top + st.cy + rr * Math.sin(th)];
+  }
+  if (h.kind === 'cat'){
+    var c = cat(h.id);
+    var mid = (c.a0 + c.aw / 2 + spin) * Math.PI / 180;
+    var rr2 = st.R * 0.88;
+    return [r.left + st.cx + rr2 * Math.cos(mid), r.top + st.cy + rr2 * Math.sin(mid)];
+  }
+  return [r.left + st.cx, r.top + st.cy];
+}
+
+function ctxPlace(){
+  var h = st.hover;
+  if (!h) { leadHide(); return; }
+  var a = anchorOf(h);
+  var w = 322, pad = 44;
+  var hh = ctxEl.offsetHeight || 220;
+  /* Контекст всегда стопкой в правой колонке. Единственное исключение —
+     наведение на сам правый борт: блок не должен накрывать свой же триггер. */
+  var side = (st.hoverSrc === 'railR') ? 'left' : 'right';
+
+  var left = (side === 'right') ? (st.W - pad - w) : pad;
+  var top = Math.max(96, Math.min(st.H - hh - 40, a[1] - hh * 0.34));
+
+  ctxEl.classList.toggle('left', side === 'left');
   ctxEl.style.left = Math.round(left) + 'px';
   ctxEl.style.top = Math.round(top) + 'px';
+
+  var innerX = (side === 'right') ? left : left + w;
+  leadShow(a[0], a[1], innerX, top + 8);
 }
+
+/* Выноска не режет диск: короткий радиальный вынос от элемента, дуга по
+   внешней границе до нужной стороны и прямой отвод к тексту. Так делают
+   выносные линии на чертеже — линия нигде не пересекает предмет. */
+function leadShow(ax, ay, bx, by){
+  var l = svg._lead;
+  if (!l) return;
+  var r = stageEl.getBoundingClientRect();
+  var x0 = ax - r.left, y0 = ay - r.top;
+  var x1 = bx - r.left, y1 = by - r.top;
+
+  var rOut = st.R * 1.14;
+  var a0 = Math.atan2(y0 - st.cy, x0 - st.cx);
+  var px = st.cx + rOut * Math.cos(a0), py = st.cy + rOut * Math.sin(a0);
+
+  var dy = Math.max(-rOut * 0.985, Math.min(rOut * 0.985, y1 - st.cy));
+  var a1 = Math.asin(dy / rOut);
+  if (x1 < st.cx) a1 = Math.PI - a1;
+  var qx = st.cx + rOut * Math.cos(a1), qy = st.cy + rOut * Math.sin(a1);
+
+  var d = ((a1 - a0) % (Math.PI * 2) + Math.PI * 2) % (Math.PI * 2);
+  var sweep = d <= Math.PI ? 1 : 0;
+
+  l.setAttribute('d',
+    'M' + x0.toFixed(1) + ' ' + y0.toFixed(1) +
+    ' L' + px.toFixed(1) + ' ' + py.toFixed(1) +
+    ' A' + rOut.toFixed(1) + ' ' + rOut.toFixed(1) + ' 0 0 ' + sweep + ' ' +
+    qx.toFixed(1) + ' ' + qy.toFixed(1) +
+    ' L' + x1.toFixed(1) + ' ' + y1.toFixed(1));
+
+  var g = svg._leadG;
+  g.setAttribute('x1', x0.toFixed(1)); g.setAttribute('y1', y0.toFixed(1));
+  g.setAttribute('x2', x1.toFixed(1)); g.setAttribute('y2', y1.toFixed(1));
+  l.setAttribute('opacity', '1');
+}
+function leadHide(){ if (svg._lead) svg._lead.setAttribute('opacity', '0'); }
 
 /* Глифы контекста берутся из словаря самой карты: мон линейки, набор колец
    стадий, ядро. Иконок со стороны здесь нет. */
@@ -953,7 +1044,7 @@ function ctxRender(){
   };
   var T = function(t, lv){
     var e = el('div','ttl'); e.textContent = t;
-    if (lv){ var s2 = el('span','lv mono'); s2.textContent = lv; e.appendChild(s2); }
+    if (lv){ var s2 = el('span','lv'); s2.textContent = lv; e.appendChild(s2); }
     ctxEl.appendChild(e);
   };
   var D = function(t){ var e = el('div','say'); e.textContent = t; ctxEl.appendChild(e); };
@@ -961,9 +1052,10 @@ function ctxRender(){
   var R2 = function(l, v){
     if (!v) return;
     if (!tbl){ tbl = el('dl','tbl'); ctxEl.appendChild(tbl); }
+    var row = el('div','r');
     var dt = el('dt','mono'); dt.textContent = l;
     var dd = el('dd'); dd.textContent = v;
-    tbl.appendChild(dt); tbl.appendChild(dd);
+    row.appendChild(dt); row.appendChild(dd); tbl.appendChild(row);
   };
   var F = function(left, right){
     if (!left && !right) return;
@@ -1019,8 +1111,8 @@ stageEl.addEventListener('mousemove', function(e){
   if (st.narrow || st.mode !== 'eco') return;
   var q = stageXY(e);
   st.mx = e.clientX; st.my = e.clientY;
-  setHover(hitTest(q[0], q[1]));
-  if (st.hover) ctxPlace(e.clientX, e.clientY);
+  setHover(hitTest(q[0], q[1]), 'map');
+  if (st.hover) ctxPlace();
 });
 stageEl.addEventListener('mouseleave', function(){ setHover(null); });
 stageEl.addEventListener('click', function(e){
