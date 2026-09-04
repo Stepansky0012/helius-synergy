@@ -419,6 +419,219 @@ footer{position:fixed;left:40px;bottom:28px;z-index:56;font-size:8.5px;line-heig
   .cons{grid-template-columns:1fr;gap:14px;margin-top:40px}
   .fn{margin-top:44px}
 }
+
+/* ============================================================
+   СЦЕНАРИЙ ЗАВЕДЕНИЯ АГЕНТА
+   Наведение на Солнце → стартовый стол → брифование → заявка.
+   ============================================================ */
+
+/* ---------- Солнце как вход ---------- */
+#sunHit{position:absolute;left:-46px;top:-46px;width:92px;height:92px;border-radius:50%;
+  pointer-events:auto;z-index:2}
+#sunHit .ring{position:absolute;left:50%;top:50%;width:74px;height:74px;margin:-37px 0 0 -37px;
+  border-radius:50%;border:1px dashed rgba(242,240,237,.34);
+  opacity:0;transform:scale(.86);transition:opacity .18s var(--ease),transform .18s var(--ease)}
+#sunHit:hover .ring,#sunHit:focus-visible .ring{opacity:1;transform:none}
+#sun .sunCall{position:absolute;left:-150px;top:52px;width:300px;text-align:center;
+  opacity:0;transform:translateY(-4px);transition:opacity .18s var(--ease),transform .18s var(--ease);
+  pointer-events:none}
+#sun .sunCall b{display:block;font-size:9px;font-weight:400;letter-spacing:.26em;color:var(--t1)}
+#sun .sunCall i{display:block;margin-top:6px;font-style:normal;font-size:8px;
+  letter-spacing:.14em;color:var(--t3)}
+#sun.call .cap{opacity:0}
+#sun.call .sunCall{opacity:1;transform:none}
+#sun .cap{transition:opacity .18s var(--ease)}
+
+/* ---------- слой сценария ---------- */
+#launch{position:fixed;inset:0;z-index:45;opacity:0;pointer-events:none;
+  background:radial-gradient(120% 90% at 50% 50%,#101218 0%,var(--l0) 46%,var(--ink) 100%);
+  transition:opacity .42s var(--ease)}
+#launch.on{opacity:1;pointer-events:auto}
+#launch .lhead{position:absolute;left:40px;top:88px;z-index:6}
+#launch .lt{font-size:15px;font-weight:300;letter-spacing:.26em}
+#launch .ls{margin-top:11px;font-size:11px;color:var(--t3)}
+#launch .lsteps{position:absolute;right:40px;top:90px;z-index:6;display:flex;gap:22px}
+#launch .lsteps span{font-size:8.5px;letter-spacing:.22em;color:var(--t4)}
+#launch .lsteps span.on{color:var(--t1)}
+#launch .lsteps span.done{color:var(--t3)}
+
+.lstep{position:absolute;inset:152px 40px 34px;display:none}
+.lstep.on{display:block}
+
+/* ---------- шаг 1 · стартовый стол ---------- */
+.padwrap{position:absolute;left:0;top:0;bottom:0;width:52%}
+.padwrap svg{position:absolute;inset:0;width:100%;height:100%}
+.padcore{position:absolute;left:50%;top:50%;width:30px;height:30px;margin:-15px 0 0 -15px;
+  border-radius:50%;background:radial-gradient(circle at 38% 34%,#FFD8CF 0%,var(--sol) 38%,var(--sol-d) 100%);
+  box-shadow:0 0 26px color-mix(in oklab,var(--sol) 42%,transparent)}
+.padhalo{position:absolute;left:50%;top:50%;width:240px;height:240px;margin:-120px 0 0 -120px;
+  border-radius:50%;pointer-events:none;
+  background:radial-gradient(circle,color-mix(in oklab,var(--sol) 12%,transparent) 0%,transparent 62%)}
+.padlab{position:absolute;width:150px;font-size:9px;letter-spacing:.16em;color:var(--t2);
+  pointer-events:none;transform:translate(-50%,-50%);text-align:center}
+.padlab i{display:block;margin-top:5px;font-style:normal;font-size:8.5px;
+  letter-spacing:.1em;color:var(--t4)}
+.padlab.void{color:var(--t4)} .padlab.void i{color:var(--sol)}
+
+.lform{position:absolute;right:0;top:0;width:44%;max-width:520px}
+.lf{display:block;margin-bottom:26px}
+.lf .lk{display:block;font-size:8px;letter-spacing:.24em;color:var(--t3);
+  font-family:'JetBrains Mono',monospace}
+.lf input{display:block;width:100%;margin-top:11px;padding:9px 0;background:none;border:0;
+  border-bottom:1px solid var(--hair);color:var(--t1);font:400 15px/1.4 inherit;outline:none}
+.lf input::placeholder{color:var(--t4)}
+.lf input:focus{border-bottom-color:rgba(242,240,237,.42)}
+.cats{display:flex;flex-wrap:wrap;gap:8px;margin-top:13px}
+.cats button{padding:8px 14px;border:1px solid var(--hair);border-radius:30px;
+  font-size:10px;letter-spacing:.1em;color:var(--t3);transition:all .18s var(--ease)}
+.cats button:hover{color:var(--t1);border-color:rgba(242,240,237,.3)}
+.cats button.on{color:var(--ink);background:var(--t1);border-color:var(--t1)}
+.lready{margin-top:34px;padding-top:20px;border-top:1px solid var(--hair);
+  display:flex;align-items:baseline;gap:10px}
+.lready b{font-family:'Unbounded',sans-serif;font-weight:200;font-size:36px;line-height:1}
+.lready span{font-size:13px;color:var(--t3)}
+.lready em{font-style:normal;margin-left:auto;font-size:10.5px;color:var(--sol)}
+.lgo{margin-top:26px;padding:12px 26px;border:1px solid rgba(242,240,237,.24);border-radius:30px;
+  font-size:11px;letter-spacing:.06em;transition:all .18s var(--ease)}
+.lgo:hover:not(:disabled){background:var(--t1);color:var(--ink);border-color:var(--t1)}
+.lgo:disabled{color:var(--t4);border-color:var(--hair);cursor:default}
+.lgo .mono{margin-left:9px}
+
+/* ---------- шаг 2 · брифование ---------- */
+.lrail{position:absolute;left:0;top:0;bottom:0;width:250px;overflow:auto;padding-right:4px}
+.lrail::-webkit-scrollbar{width:5px}
+.lrail::-webkit-scrollbar-thumb{background:rgba(242,240,237,.14);border-radius:3px}
+.lcap{font-size:8px;letter-spacing:.26em;color:var(--t3);font-family:'JetBrains Mono',monospace}
+.mrow{position:relative;margin-top:14px;padding-bottom:12px;border-bottom:1px solid rgba(242,240,237,.07)}
+.mrow .mk{font-size:7.5px;letter-spacing:.22em;color:var(--t4);font-family:'JetBrains Mono',monospace}
+.mrow .mt{margin-top:6px;font-size:11px;color:var(--t2);padding-right:36px}
+.mrow .mc{position:absolute;right:0;top:14px;font-size:10px;color:var(--t3);
+  font-family:'JetBrains Mono',monospace}
+.mnone{margin-top:13px;font-size:10.5px;line-height:1.6;color:var(--t4)}
+.ldrop{margin-top:20px;padding:14px;border:1px dashed rgba(242,240,237,.22)}
+.ldrop.hot{border-color:rgba(242,240,237,.5);background:rgba(242,240,237,.03)}
+.ldrop textarea{display:block;width:100%;height:78px;resize:none;background:none;border:0;
+  color:var(--t1);font:400 11px/1.6 inherit;outline:none}
+.ldrop textarea::placeholder{color:var(--t4)}
+.ldrop .db{display:flex;gap:8px;margin-top:10px;align-items:center}
+.ldrop .db button{padding:7px 14px;border:1px solid var(--hair);border-radius:30px;
+  font-size:10px;color:var(--t2)}
+.ldrop .db button:hover{color:var(--t1);border-color:rgba(242,240,237,.3)}
+.ldrop .dn{font-size:9px;line-height:1.5;color:var(--t4);margin-left:auto;text-align:right}
+.lprog{margin-top:24px}
+.lprog .pv{margin-top:9px;display:flex;align-items:baseline;gap:7px;font-size:13px;color:var(--t3)}
+.lprog .pv b{font-family:'Unbounded',sans-serif;font-weight:200;font-size:32px;
+  line-height:1;color:var(--t1)}
+.lprog .pn{margin-top:7px;font-size:10.5px;color:var(--sol)}
+.lprog .pn.ok{color:rgba(120,180,110,.9)}
+.lsend{margin-top:20px;width:100%;padding:12px 0;border:1px solid rgba(242,240,237,.24);
+  border-radius:30px;font-size:10.5px;letter-spacing:.22em;transition:all .18s var(--ease)}
+.lsend:hover:not(:disabled){background:var(--t1);color:var(--ink);border-color:var(--t1)}
+.lsend:disabled{color:var(--t4);border-color:var(--hair);cursor:default}
+.lsn{margin-top:9px;font-size:9.5px;color:var(--t4);text-align:center}
+
+.ltree{position:absolute;left:282px;right:400px;top:0;bottom:0}
+.ltree svg{position:absolute;inset:0;width:100%;height:100%}
+.tlab{position:absolute;transform:translateY(-50%);cursor:pointer;
+  transition:color .18s var(--ease)}
+.tlab .k{font-size:10.5px;letter-spacing:.13em;color:var(--t2)}
+.tlab .v{margin-top:4px;font-size:8.5px;letter-spacing:.08em;color:var(--t4);
+  font-family:'JetBrains Mono',monospace}
+.tlab:hover .k{color:var(--t1)}
+.tlab.sel .k{color:var(--t1)}
+.tlab.void .k{color:var(--t4)} .tlab.void .v{color:var(--sol)}
+.qlab{position:absolute;width:210px;transform:translateY(-50%);font-size:11px;line-height:1.4;
+  color:var(--t4);cursor:pointer;transition:color .18s var(--ease)}
+.qlab:hover{color:var(--t2)}
+.qlab.done,.qlab.mat{color:var(--t2)}
+.qlab.now{color:var(--t1)}
+.qlab i{display:inline-block;width:7px;height:7px;margin-right:8px;vertical-align:1px;
+  border-radius:50%;border:1px solid rgba(242,240,237,.55)}
+.qlab.done i{background:rgba(242,240,237,.86);border-color:transparent}
+.qlab.mat i{border-width:1.4px}
+.qlab.now i{background:var(--sol);border-color:transparent}
+.qlab.gen i{border-style:dashed;width:6px;height:6px}
+
+.lpanel{position:absolute;right:0;top:0;width:372px;background:var(--l3);
+  border:1px solid var(--hair);padding:24px 26px 22px}
+.lpanel .qk{font-size:8px;letter-spacing:.22em;color:var(--sol);
+  font-family:'JetBrains Mono',monospace}
+.lpanel .qk.minor{color:var(--t3)}
+.lpanel .qq{margin-top:14px;font-size:19px;line-height:1.34}
+.lpanel .qw{margin-top:14px;padding-left:12px;border-left:1px solid var(--hair);
+  font-size:11px;line-height:1.6;color:var(--t3)}
+.lpanel input{display:block;width:100%;margin-top:18px;padding:8px 0;background:none;border:0;
+  border-bottom:1px solid rgba(242,240,237,.24);color:var(--t1);font:400 14px/1.4 inherit;outline:none}
+.lpanel input::placeholder{color:var(--t4)}
+.lpanel input:focus{border-bottom-color:rgba(242,240,237,.5)}
+.lacts{margin-top:17px;display:flex;gap:9px}
+.lacts button{padding:10px 17px;border-radius:30px;font-size:10.5px}
+.lacts .go{background:var(--t1);color:var(--ink)}
+.lacts .go:disabled{background:rgba(242,240,237,.14);color:var(--t4);cursor:default}
+.lacts .sk{border:1px solid rgba(242,240,237,.18);color:var(--t3)}
+.lacts .sk:hover{color:var(--t1)}
+.lnext{margin-top:20px;padding-top:15px;border-top:1px solid var(--hair)}
+.lnext .nk{font-size:7.5px;letter-spacing:.24em;color:var(--t3);
+  font-family:'JetBrains Mono',monospace}
+.lnext .nv{margin-top:8px;font-size:11.5px;line-height:1.45;color:var(--t2)}
+.lnext .nn{margin-top:8px;font-size:10px;line-height:1.5;color:var(--t4)}
+.lleg{position:absolute;right:0;bottom:0;width:372px;display:flex;flex-direction:column;gap:10px;
+  font-size:10px;color:var(--t3)}
+.lleg i{display:inline-block;width:7px;height:7px;margin-right:9px;vertical-align:1px;
+  border-radius:50%;border:1px solid rgba(242,240,237,.55)}
+.lleg i.f{background:rgba(242,240,237,.86);border-color:transparent}
+.lleg i.g{border-style:dashed;width:6px;height:6px}
+.lleg i.m{border-width:1.4px}
+.lleg i.n{background:var(--sol);border-color:transparent}
+
+/* ---------- шаг 3 · заявка принята ---------- */
+.doneWrap{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;gap:64px}
+.doneMap{position:relative;width:440px;height:440px;flex-grow:0}
+.doneMap svg{position:absolute;inset:0;width:100%;height:100%}
+.doneMap .c{position:absolute;left:50%;top:50%;width:26px;height:26px;margin:-13px 0 0 -13px;
+  border-radius:50%;background:radial-gradient(circle at 38% 34%,#FFD8CF 0%,var(--sol) 38%,var(--sol-d) 100%);
+  box-shadow:0 0 24px color-mix(in oklab,var(--sol) 40%,transparent)}
+.doneCard{width:400px}
+.doneCard .dk{font-size:8px;letter-spacing:.24em;color:var(--t1);
+  font-family:'JetBrains Mono',monospace}
+.doneCard .dn{margin-top:14px;font-size:26px;font-weight:300;line-height:1.24;
+  font-family:'Unbounded',sans-serif}
+.doneCard .dd{margin-top:11px;font-size:11.5px;color:var(--t3)}
+.dsteps{margin-top:24px}
+.dst{display:flex;align-items:center;gap:12px;padding:8px 0;font-size:11.5px;color:var(--t4)}
+.dst i{width:7px;height:7px;border-radius:50%;border:1px solid rgba(242,240,237,.3);flex-grow:0}
+.dst span{flex-grow:1}
+.dst em{font-style:normal;font-size:9px;letter-spacing:.1em;color:var(--t4);
+  font-family:'JetBrains Mono',monospace}
+.dst.done{color:var(--t2)}
+.dst.done i{background:rgba(242,240,237,.7);border-color:transparent}
+.dst.now{color:var(--t1)}
+.dst.now i{background:var(--sol);border-color:transparent;
+  box-shadow:0 0 0 4px color-mix(in oklab,var(--sol) 18%,transparent)}
+.doneCard .df{margin-top:20px;padding-top:15px;border-top:1px solid var(--hair);
+  font-size:10.5px;line-height:1.65;color:var(--t3)}
+.doneCard .dgo{margin-top:20px;padding:12px 24px;border:1px solid rgba(242,240,237,.24);
+  border-radius:30px;font-size:11px;transition:all .18s var(--ease)}
+.doneCard .dgo:hover{background:var(--t1);color:var(--ink);border-color:var(--t1)}
+
+/* ---------- узкий экран ---------- */
+@media (max-width:1100px){
+  #launch{overflow:auto}
+  .lstep{position:relative;inset:auto;margin:88px 0 40px}
+  .lstep.on{display:block}
+  .padwrap{position:relative;width:100%;height:300px}
+  .lform{position:relative;width:100%;max-width:none;margin-top:28px}
+  .lrail,.ltree,.lpanel,.lleg{position:relative;left:auto;right:auto;top:auto;bottom:auto;
+    width:100%;inset:auto}
+  .ltree{height:420px;margin:26px 0}
+  .lpanel{margin-bottom:22px}
+  .lleg{margin-top:20px}
+  .doneWrap{position:relative;flex-direction:column;gap:32px}
+  .doneMap{width:100%;max-width:360px;height:360px}
+  .doneCard{width:100%}
+  #launch .lsteps{position:relative;right:auto;top:auto;margin:0 40px 18px;flex-wrap:wrap;gap:14px}
+  #launch .lhead{position:relative;left:auto;top:auto;margin:28px 40px 14px}
+}
 </style>
 </head>
 <body>
@@ -463,6 +676,10 @@ footer{position:fixed;left:40px;bottom:28px;z-index:56;font-size:8.5px;line-heig
     <div id="sun">
       <div class="halo"></div><div class="corona"></div><div class="core"></div>
       <div class="cap mono">СИНЕРГИЯ</div>
+      <button id="sunHit" type="button" aria-label="Завести своего агента">
+        <span class="ring"></span>
+      </button>
+      <div class="sunCall mono"><b>ЗАВЕСТИ СВОЕГО АГЕНТА</b><i>инициатива снизу · любой сотрудник</i></div>
     </div>
   </div>
 
@@ -475,6 +692,91 @@ footer{position:fixed;left:40px;bottom:28px;z-index:56;font-size:8.5px;line-heig
     <div class="flank l"><h2 class="disp">ЗАЧЕМ</h2><p id="fWhy" lang="ru"></p></div>
     <div class="flank r"><h2 class="disp">КАК</h2><p id="fHow" lang="ru"></p></div>
     <div id="slotList"></div>
+  </div>
+
+
+  <div id="launch" aria-live="polite">
+    <div class="lhead">
+      <div class="lt disp" id="lTitle">ПУСК</div>
+      <div class="ls" id="lSub">Новый агент · стартовый стол</div>
+    </div>
+    <div class="lsteps mono" id="lSteps">
+      <span data-s="pad">01 СТАРТОВЫЙ СТОЛ</span>
+      <span data-s="brief">02 БРИФОВАНИЕ</span>
+      <span data-s="done">03 ЗАЯВКА</span>
+    </div>
+
+    <section class="lstep" data-step="pad">
+      <div class="padwrap">
+        <div class="padhalo"></div>
+        <svg id="padSvg" aria-hidden="true"></svg>
+        <div class="padcore"></div>
+      </div>
+      <div class="lform">
+        <label class="lf">
+          <span class="lk">НАЗВАНИЕ АГЕНТА</span>
+          <input id="fName" type="text" autocomplete="off"
+                 placeholder="Расчёт академической разницы">
+        </label>
+        <div class="lf">
+          <span class="lk">ЛИНЕЙКА · ВАШ СЕКТОР НА КАРТЕ</span>
+          <div class="cats" id="fCats"></div>
+        </div>
+        <label class="lf">
+          <span class="lk">ВАША РОЛЬ</span>
+          <input id="fRole" type="text" autocomplete="off"
+                 placeholder="Специалист учебного отдела">
+        </label>
+        <div class="lready">
+          <b id="padN">0</b><span>из 6 слотов</span><em id="padWhy"></em>
+        </div>
+        <button class="lgo" id="toBrief" disabled>Перейти к брифованию<span class="mono">→</span></button>
+      </div>
+    </section>
+
+    <section class="lstep" data-step="brief">
+      <div class="lrail">
+        <div class="lcap">МАТЕРИАЛЫ</div>
+        <div id="lMats"></div>
+        <div class="ldrop" id="lDrop">
+          <textarea id="lPaste" placeholder="Вставьте стенограмму, расшифровку или пересланное сообщение — или перетащите сюда текстовый файл"></textarea>
+          <div class="db">
+            <button type="button" id="lParse">Разобрать</button>
+            <div class="dn">разбор идёт в браузере,<br>ничего никуда не уходит</div>
+          </div>
+        </div>
+        <div class="lprog">
+          <div class="lcap">ЗАКРЫТО ВОПРОСОВ</div>
+          <div class="pv"><b id="lDone">0</b><span>/ <i id="lTotal">0</i></span></div>
+          <div class="pn" id="lLeft"></div>
+        </div>
+        <button class="lsend" id="lSend" disabled>ПОДАТЬ ЗАЯВКУ</button>
+        <div class="lsn" id="lSendNote">откроется, когда закроются блокирующие</div>
+      </div>
+
+      <div class="ltree">
+        <svg id="treeSvg" aria-hidden="true"></svg>
+        <div id="treeLabs"></div>
+      </div>
+
+      <div class="lpanel" id="lPanel"></div>
+      <div class="lleg">
+        <span><i></i>каркас слота — спросят обязательно</span>
+        <span><i class="g"></i>дорощен по вашему ответу</span>
+        <span><i class="m"></i>предложен материалом, подтвердите</span>
+        <span><i class="n"></i>здесь мы сейчас</span>
+      </div>
+    </section>
+
+    <section class="lstep" data-step="done">
+      <div class="doneWrap">
+        <div class="doneMap">
+          <svg id="doneSvg" aria-hidden="true"></svg>
+          <div class="c"></div>
+        </div>
+        <div class="doneCard" id="doneCard"></div>
+      </div>
+    </section>
   </div>
 
   <div id="sheet" aria-live="polite">
@@ -501,21 +803,24 @@ var NB = '\u00A0';
    ================================================================== */
 
 var STAGES = [
-  { k:'l3',  n:'АВТОНОМНАЯ',   lv:'L3', rf:0.30, T:39, goal:3, dash:'none',
+  { k:'l3',  n:'АВТОНОМНАЯ',   lv:'L3', rf:0.26, T:39, goal:3, dash:'none',
     note:'Процесс выполняется без участия сотрудника, контроль по отклонениям.',
     goalNote:'Пунктиром показана цель стратегии: 10 % агентов к концу 2026 года, то есть три из тридцати. Именно переход сюда создаёт основной экономический эффект — до него агент экономит время сотрудника, после заменяет операцию целиком.' },
-  { k:'l2',  n:'ПРОМЫШЛЕННАЯ', lv:'L2', rf:0.50, T:85, dash:'16 3',
+  { k:'l2',  n:'ПРОМЫШЛЕННАЯ', lv:'L2', rf:0.435, T:85, dash:'16 3',
     note:'Регулярная работа в процессе, контроль выборочный.',
     goalNote:'Сюда агент попадает после приёмки и подтверждённого замера эффекта.' },
-  { k:'l1',  n:'ПИЛОТ',        lv:'L1', rf:0.70, T:141, dash:'8 4',
+  { k:'l1',  n:'ПИЛОТ',        lv:'L1', rf:0.61, T:141, dash:'8 4',
     note:'Работа на реальных данных подразделения под полным контролем сотрудника.',
     goalNote:'Дальше — приёмка, оцифровка эффекта и решение о переводе в регулярную работу.' },
-  { k:'pro', n:'ПРОТОТИП',     lv:'—',  rf:0.86, T:191, dash:'4 5',
+  { k:'pro', n:'ПРОТОТИП',     lv:'—',  rf:0.75, T:191, dash:'4 5',
     note:'Решение собрано, работает на ограниченной выборке, эффект не подтверждён.',
     goalNote:'Эффект ещё не замерен, поэтому в регулярную работу агент не переводится.' },
-  { k:'reg', n:'РЕЕСТР',       lv:'—',  rf:1.00, T:240, dash:'2 7',
+  { k:'reg', n:'РЕЕСТР',       lv:'—',  rf:0.87, T:240, dash:'2 7',
     note:'Заявлено в стратегии. Стадия в документе не зафиксирована.',
-    goalNote:'Впереди первые три этапа воронки: дайджест ИИ-автоматизации, рабочая сессия и формирование реестра подразделения.' }
+    goalNote:'Впереди первые три этапа воронки: дайджест ИИ-автоматизации, рабочая сессия и формирование реестра подразделения.' },
+  { k:'idea', n:'ИДЕЯ',        lv:'—',  rf:1.00, T:296, dash:'2 9',
+    note:'Заявка принята, агента ещё не существует. Требования собраны, сборка впереди.',
+    goalNote:'Самая дальняя орбита: инициатива сотрудника, ещё не ставшая работой. Отсюда путь только внутрь.' }
 ];
 
 var CATS = [
@@ -591,6 +896,21 @@ var A = [
    не описаны проблема, действие и эффект. */
 A.forEach(function(a){ a.thin = (a.pr && a.ac && a.ef) ? 0 : 1; });
 
+/* Заявки, заведённые прямо на странице. Бэкенда пока нет, поэтому черновик
+   живёт в localStorage этого зрителя: он никуда не уходит и никому не виден.
+   Стадия у заявки одна — ИДЕЯ, самая дальняя орбита. */
+var DRAFTS = [];
+try { DRAFTS = JSON.parse(localStorage.getItem('helius.drafts') || '[]') || []; }
+catch (e) { DRAFTS = []; }
+DRAFTS.forEach(function(d){
+  d.draft = 1;
+  d.thin = (d.pr && d.ac && d.ef) ? 0 : 1;
+  A.push(d);
+});
+function saveDrafts(){
+  try { localStorage.setItem('helius.drafts', JSON.stringify(DRAFTS)); } catch (e) {}
+}
+
 var TARGETS = [
   { n:'Прикладные ИИ-агенты в промышленной эксплуатации, накопительно', v:[30,80,150], max:150 },
   { n:'Из них тиражируемых типовых решений', v:[8,20,35], max:150 },
@@ -632,10 +952,7 @@ var spin = 0;
 var SPIN_T = 220;
 var lastT = 0, raf = 0;
 
-var byCat = {}, byStage = {};
-CATS.forEach(function(c){ byCat[c.k] = []; });
-STAGES.forEach(function(s){ byStage[s.k] = 0; });
-A.forEach(function(a){ byCat[a.c].push(a); byStage[a.s] += 1; });
+var byCat = {}, byStage = {}, WSUM = 0;
 
 var SLOTS = [
   { k:'role', t:'РОЛЬ',          a:-90, pos:'top' },
@@ -654,22 +971,28 @@ function ns(t){ return document.createElementNS('http://www.w3.org/2000/svg',t);
 
 /* Сектор категории пропорционален числу агентов в ней: ширина сектора
    и есть вес линейки. Одиночная категория получает минимум, иначе в неё
-   не попасть курсором. */
-var WSUM = 0;
-CATS.forEach(function(c){ c._w = Math.max(1.7, byCat[c.k].length); WSUM += c._w; });
-var acc = -90;
-CATS.forEach(function(c){ c.a0 = acc; c.aw = c._w / WSUM * 360; acc += c.aw; });
-
-/* базовый угол агента внутри своего сектора и кольца */
-A.forEach(function(a){
-  var c = cat(a.c);
-  var peers = byCat[a.c].filter(function(x){ return x.s === a.s; });
-  var idx = peers.indexOf(a);
-  var n = peers.length;
-  var pad = c.aw * 0.15;
-  var span = c.aw - pad * 2;
-  a.a0 = c.a0 + pad + (n === 1 ? span / 2 : span * idx / (n - 1));
-});
+   не попасть курсором.
+   Вынесено в функцию: принятая заявка добавляет агента на лету, и раскладку
+   нужно пересчитать, не перезагружая страницу. */
+function recount(){
+  byCat = {}; byStage = {}; WSUM = 0;
+  CATS.forEach(function(c){ byCat[c.k] = []; });
+  STAGES.forEach(function(s){ byStage[s.k] = 0; });
+  A.forEach(function(a){ byCat[a.c].push(a); byStage[a.s] += 1; });
+  CATS.forEach(function(c){ c._w = Math.max(1.7, byCat[c.k].length); WSUM += c._w; });
+  var acc = -90;
+  CATS.forEach(function(c){ c.a0 = acc; c.aw = c._w / WSUM * 360; acc += c.aw; });
+  A.forEach(function(a){
+    var c = cat(a.c);
+    var peers = byCat[a.c].filter(function(x){ return x.s === a.s; });
+    var idx = peers.indexOf(a);
+    var n = peers.length;
+    var pad = c.aw * 0.15;
+    var span = c.aw - pad * 2;
+    a.a0 = c.a0 + pad + (n === 1 ? span / 2 : span * idx / (n - 1));
+  });
+}
+recount();
 
 /* ============================= ГЕОМЕТРИЯ ============================= */
 
@@ -1715,6 +2038,7 @@ function runBars(){
 }
 
 function setMode(m){
+  if (st.mode === 'launch') closeLaunch();
   if (st.focus) closeAnat();
   st.mode = m;
   document.querySelectorAll('#modes button').forEach(function(b){
@@ -1730,6 +2054,628 @@ function setMode(m){
   document.getElementById('railR').classList.toggle('hide', !eco);
   if (!eco) runBars(); else paint();
 }
+
+
+/* =====================================================================
+   СЦЕНАРИЙ ЗАВЕДЕНИЯ АГЕНТА
+   Наведение на Солнце открывает вход, клик ведёт по трём шагам:
+   стартовый стол → брифование → принятая заявка на орбите ИДЕЯ.
+
+   Всё считается на фронте. Бэкенда пока нет, и там, где он понадобится
+   (настоящий разбор материалов, порождение вопросов моделью, поиск
+   паттернов), стоит честная заглушка, а не выдуманные цифры.
+   ===================================================================== */
+
+/* Ветки дерева — те же шесть слотов, которыми на карте описан любой агент.
+   Второй грамматики нет: заполнить слоты нового и прочитать слоты
+   существующего — один и тот же жест. */
+var LQ = [
+  { k:'role', slot:'role', core:1, q:'Чья это рутина — кто сегодня делает работу руками?',
+    w:'Роль, а не фамилия: по ней система найдёт похожие заявки в других подразделениях.',
+    kw:['я ','мы ','сотрудник','менеджер','специалист','делаю','делаем','руками'] },
+  { k:'peers', slot:'role', core:0, q:'Сколько человек делают то же самое?',
+    w:'Число подскажет, тиражируется ли агент за пределы вашего отдела.',
+    kw:['человек','сотрудник','в каждом','во всех','филиал','вуз'] },
+
+  { k:'pr', slot:'ef', core:1, q:'Что происходит сегодня?',
+    w:'Как рутина устроена сейчас — без слов «надо» и «должно». Пока это не описано, обод агента на карте остаётся пунктирным.',
+    kw:['вручную','руками','занимает','тратим','excel','полдня','час','каждый раз'] },
+  { k:'ac', slot:'ef', core:1, q:'Что должно происходить вместо этого?',
+    w:'Одно предложение о новой механике. Это ответ на вопрос «что делает агент».',
+    kw:['агент','автомат','переводим','вместо','должен','сам '] },
+  { k:'ef', slot:'ef', core:1, q:'Как поймём, что стало лучше?',
+    w:'Измеримо: время, доля, число ошибок. Без замера агент не переводится в регулярную работу.',
+    kw:['%','процент','быстрее','снизит','сократ','экономи','раза','минут'] },
+
+  { k:'cat', slot:'cat', core:1, auto:1, q:'К какой линейке относится' },
+  { k:'st',  slot:'st',  core:1, auto:1, q:'С какой орбиты начинаем' },
+
+  { k:'unit', slot:'unit', core:1, q:'Где внедряем первым?',
+    w:'Подразделение, на котором проверим. Одно, а не все сразу.',
+    kw:['отдел','департамент','кд','филиал','вуз','мти','мап','комиссия'] },
+  { k:'appr', slot:'unit', core:0, q:'Кто согласует запуск?',
+    w:'Роль, которая скажет «да». Это первый майлстоун с участием человека.',
+    kw:['руководител','директор','согласу','утверд','владелец'] },
+
+  { k:'sys', slot:'sys', core:1, q:'С какими системами работает?',
+    w:'Заготовка подставлена по линейке — поправьте, если у вас иначе.',
+    kw:['crm','lms','dwh','1с','битрикс','telegram','excel','почта'] },
+  { k:'acc', slot:'sys', core:0, q:'Нужны ли доступы, которых сейчас нет?',
+    w:'Если да — это станет блокером внедрения, и его лучше знать заранее.',
+    kw:['доступ','логин','пароль','нет доступа','закрыт'] }
+];
+
+var L = null;
+
+function lReset(){
+  L = {
+    step:'pad', name:'', cat:null, role:'', sel:'ef', cur:null,
+    mats:[], ans:{}, src:{}, gen:[]
+  };
+}
+lReset();
+
+function lQuestions(){ return LQ.concat(L.gen); }
+function lOpen(q){ return !L.ans[q.k]; }
+function lBlocking(){
+  return lQuestions().filter(function(q){ return q.core && !q.auto && !L.ans[q.k]; });
+}
+function lCount(){
+  var all = lQuestions().filter(function(q){ return !q.auto; });
+  var done = all.filter(function(q){ return L.ans[q.k]; });
+  return { done:done.length, total:all.length, left:lBlocking().length };
+}
+function lSlotQs(k){ return lQuestions().filter(function(q){ return q.slot === k; }); }
+
+/* ---------- вход ---------- */
+var launchEl = document.getElementById('launch');
+var sunEl = document.getElementById('sun');
+
+function openLaunch(){
+  lReset();
+  st.mode = 'launch';
+  closeSheet();
+  setHover(null);
+  launchEl.classList.add('on');
+  backBtn.classList.add('on');
+  stageEl.classList.add('back');
+  document.getElementById('railL').classList.add('hide');
+  document.getElementById('railR').classList.add('hide');
+  document.querySelector('header').classList.add('hide');
+  document.getElementById('modes').classList.add('hide');
+  lStep('pad');
+  buildCats();
+  padPaint();
+}
+
+function closeLaunch(){
+  st.mode = 'eco';
+  launchEl.classList.remove('on');
+  backBtn.classList.remove('on');
+  stageEl.classList.remove('back');
+  document.getElementById('railL').classList.remove('hide');
+  document.getElementById('railR').classList.remove('hide');
+  document.querySelector('header').classList.remove('hide');
+  document.getElementById('modes').classList.remove('hide');
+  paint();
+}
+
+function lStep(s){
+  L.step = s;
+  document.querySelectorAll('.lstep').forEach(function(e){
+    e.classList.toggle('on', e.dataset.step === s);
+  });
+  var order = ['pad','brief','done'], i = order.indexOf(s);
+  document.querySelectorAll('#lSteps span').forEach(function(e){
+    var j = order.indexOf(e.dataset.s);
+    e.classList.toggle('on', j === i);
+    e.classList.toggle('done', j < i);
+  });
+  var T = { pad:['ПУСК','Новый агент · стартовый стол'],
+            brief:['БРИФОВАНИЕ','Дерево требований · система подсказывает, порядок за вами'],
+            done:['ЗАЯВКА ПРИНЯТА','Ваш агент занял место на карте'] };
+  document.getElementById('lTitle').textContent = T[s][0];
+  document.getElementById('lSub').textContent = T[s][1];
+  if (s === 'brief') { briefPaint(); }
+  if (s === 'done') { donePaint(); }
+}
+
+/* ---------- шаг 1 · стартовый стол ---------- */
+/* Какие из шести слотов уже известны на стартовом столе. Остальные два
+   собираются брифованием — врать про них кольцу нельзя. */
+function padMap(){
+  return {
+    role: !!L.role,
+    ef:   false,
+    cat:  !!L.cat,
+    st:   true,                                /* заявка всегда начинает с орбиты ИДЕЯ */
+    unit: false,
+    sys:  !!L.cat                              /* линейка приносит свои системы */
+  };
+}
+function padFilled(){
+  var m = padMap(), n = 0;
+  for (var k in m) if (m[k]) n += 1;
+  return n;
+}
+
+function buildCats(){
+  var box = document.getElementById('fCats');
+  box.textContent = '';
+  CATS.forEach(function(c){
+    var b = el('button'); b.type = 'button'; b.textContent = c.n;
+    b.classList.toggle('on', L.cat === c.k);
+    b.addEventListener('click', function(){
+      L.cat = c.k;
+      buildCats(); padPaint(); padSync();
+    });
+    box.appendChild(b);
+  });
+}
+
+function padPaint(){
+  var wrap = document.querySelector('.padwrap');
+  var svgP = document.getElementById('padSvg');
+  var W = wrap.clientWidth, H = wrap.clientHeight;
+  if (!W || !H) return;
+  svgP.setAttribute('viewBox', '0 0 ' + W + ' ' + H);
+  svgP.textContent = '';
+  wrap.querySelectorAll('.padlab').forEach(function(e){ e.remove(); });
+
+  var cx = W / 2, cy = H / 2;
+  var R = Math.max(112, Math.min(206, Math.min(W, H) / 2 - 84));
+  var m = padMap();
+  SLOTS.forEach(function(s, i){
+    var a0 = -90 + i * 60 - 26, a1 = -90 + i * 60 + 26;
+    var p = ns('path');
+    p.setAttribute('d', arcD(cx, cy, R, a0, a1));
+    p.setAttribute('fill', 'none');
+    p.setAttribute('stroke-linecap', 'round');
+    var on = m[s.k];
+    p.setAttribute('stroke', on ? 'rgba(242,240,237,.86)' : 'rgba(242,240,237,.26)');
+    p.setAttribute('stroke-width', on ? '2.4' : '1.4');
+    if (!on) p.setAttribute('stroke-dasharray', '2 8');
+    svgP.appendChild(p);
+
+    var mid = -90 + i * 60;
+    var lp = polD(cx, cy, R + 40, mid);
+    var d = el('div', 'padlab' + (on ? '' : ' void'));
+    d.style.left = lp[0] + 'px'; d.style.top = lp[1] + 'px';
+    d.innerHTML = '<span>' + s.t + '</span><i>' + (on ? 'есть' : 'соберём') + '</i>';
+    wrap.appendChild(d);
+  });
+}
+
+function arcD(cx, cy, r, a0, a1){
+  var p0 = polD(cx, cy, r, a0), p1 = polD(cx, cy, r, a1);
+  return 'M' + p0[0].toFixed(1) + ' ' + p0[1].toFixed(1) +
+         ' A' + r.toFixed(1) + ' ' + r.toFixed(1) + ' 0 0 1 ' +
+         p1[0].toFixed(1) + ' ' + p1[1].toFixed(1);
+}
+function polD(cx, cy, r, deg){
+  var a = deg * Math.PI / 180;
+  return [cx + r * Math.cos(a), cy + r * Math.sin(a)];
+}
+
+function padSync(){
+  var n = padFilled();
+  document.getElementById('padN').textContent = n;
+  var need = [];
+  if (!L.name) need.push('название');
+  if (!L.cat) need.push('линейка');
+  if (!L.role) need.push('роль');
+  document.getElementById('padWhy').textContent = need.length ? 'не хватает: ' + need.join(', ') : '';
+  document.getElementById('toBrief').disabled = !(L.name && L.cat && L.role);
+  padPaint();
+}
+
+/* ---------- шаг 2 · брифование ---------- */
+function briefPaint(){
+  /* заготовка роли: линейка приносит системы, стадия известна заранее */
+  if (!L.ans.cat) { L.ans.cat = cat(L.cat).n; L.src.cat = 'tpl'; }
+  if (!L.ans.st)  { L.ans.st = 'ИДЕЯ — самая дальняя орбита'; L.src.st = 'tpl'; }
+  if (!L.ans.sys) { L.ans.sys = cat(L.cat).sys; L.src.sys = 'tpl'; }
+  if (!L.ans.role){ L.ans.role = L.role; L.src.role = 'tpl'; }
+  if (!L.cur) L.cur = (lBlocking()[0] || lQuestions().filter(lOpen)[0] || null);
+  if (L.cur) L.sel = L.cur.slot;
+  treePaint(); railPaint(); panelPaint();
+}
+
+function railPaint(){
+  var box = document.getElementById('lMats');
+  box.textContent = '';
+  if (!L.mats.length) {
+    var n = el('div', 'mnone');
+    n.textContent = 'Пока пусто. Всё, что уже сказано о рутине — на встрече, в записи, в переписке, — можно принести сюда, и часть вопросов закроется без вас.';
+    box.appendChild(n);
+  }
+  L.mats.forEach(function(m){
+    var r = el('div', 'mrow');
+    r.innerHTML = '<div class="mk">' + m.kind + '</div><div class="mt">' + m.title +
+                  '</div><div class="mc">' + (m.hit ? '−' + m.hit : '0') + '</div>';
+    box.appendChild(r);
+  });
+  var c = lCount();
+  document.getElementById('lDone').textContent = c.done;
+  document.getElementById('lTotal').textContent = c.total;
+  var left = document.getElementById('lLeft');
+  left.textContent = c.left ? 'осталось блокирующих: ' + c.left : 'блокирующих не осталось';
+  left.classList.toggle('ok', !c.left);
+  document.getElementById('lSend').disabled = c.left > 0;
+  document.getElementById('lSendNote').textContent = c.left
+    ? 'откроется, когда закроются блокирующие'
+    : 'заявка уйдёт на орбиту ИДЕЯ';
+}
+
+function treePaint(){
+  var wrap = document.querySelector('.ltree');
+  var svgT = document.getElementById('treeSvg');
+  var labs = document.getElementById('treeLabs');
+  var W = wrap.clientWidth, H = wrap.clientHeight;
+  if (!W || !H) return;
+  svgT.setAttribute('viewBox', '0 0 ' + W + ' ' + H);
+  svgT.textContent = '';
+  labs.textContent = '';
+
+  /* Раскладка горизонтальная, а не полярная: контейнер тянется по ширине,
+     и веер на радиусах разъезжался бы. Пучковые кривые те же. */
+  var pad = 30;
+  var xLimb = 22;
+  var xHub = Math.min(206, W * 0.19);
+  var xLeaf = xHub + Math.min(268, W * 0.26);
+  var ys = SLOTS.map(function(_, i){ return pad + (H - pad * 2) * (i + 0.5) / SLOTS.length; });
+
+  /* дуга ядра — с разрывом посередине, как у Солнца на карте */
+  [[pad, H / 2 - 24], [H / 2 + 24, H - pad]].forEach(function(g){
+    var p = ns('path');
+    p.setAttribute('d', 'M' + (xLimb + 14) + ' ' + g[0].toFixed(1) +
+                   ' Q' + (xLimb - 12) + ' ' + ((g[0] + g[1]) / 2).toFixed(1) +
+                   ' ' + (xLimb + 14) + ' ' + g[1].toFixed(1));
+    p.setAttribute('fill', 'none');
+    p.setAttribute('stroke', 'rgba(242,240,237,.9)');
+    p.setAttribute('stroke-width', '2.2');
+    p.setAttribute('stroke-linecap', 'round');
+    svgT.appendChild(p);
+  });
+
+  SLOTS.forEach(function(s, i){
+    var hy = ys[i];
+    var qs = lSlotQs(s.k);
+    var closed = qs.filter(function(q){ return L.ans[q.k]; }).length;
+    var sel = L.sel === s.k;
+    var empty = closed === 0;
+
+    var tr = ns('path');
+    tr.setAttribute('d', bz(xLimb + 16, H / 2, xHub, hy));
+    tr.setAttribute('fill', 'none');
+    tr.setAttribute('stroke', sel ? '#FF3B20'
+      : (empty ? 'rgba(242,240,237,.14)' : 'rgba(242,240,237,.22)'));
+    tr.setAttribute('stroke-width', sel ? '1.3' : '1');
+    if (empty && !sel) tr.setAttribute('stroke-dasharray', '2 6');
+    svgT.appendChild(tr);
+
+    var hc = ns('circle');
+    hc.setAttribute('cx', xHub.toFixed(1)); hc.setAttribute('cy', hy.toFixed(1));
+    hc.setAttribute('r', sel ? '8' : (5 + qs.length * 1.1).toFixed(1));
+    if (sel) {
+      hc.setAttribute('fill', 'none');
+      hc.setAttribute('stroke', '#F2F0ED'); hc.setAttribute('stroke-width', '1.6');
+    } else if (empty) {
+      hc.setAttribute('fill', 'none');
+      hc.setAttribute('stroke', '#FF3B20'); hc.setAttribute('stroke-width', '1');
+      hc.setAttribute('stroke-dasharray', '2 4');
+    } else hc.setAttribute('fill', 'rgba(242,240,237,.86)');
+    svgT.appendChild(hc);
+
+    var d = el('div', 'tlab' + (sel ? ' sel' : '') + (empty ? ' void' : ''));
+    d.style.left = (xHub + 18) + 'px';
+    d.style.top = (sel ? hy - 26 : hy) + 'px';
+    d.innerHTML = '<div class="k">' + s.t + '</div><div class="v">' + closed + ' / ' + qs.length + '</div>';
+    d.addEventListener('click', function(){
+      L.sel = s.k;
+      var open = qs.filter(lOpen);
+      if (open.length) L.cur = open[0];
+      treePaint(); panelPaint();
+    });
+    labs.appendChild(d);
+
+    /* Раскрыта одна ветка: иначе листья шести веток налезут друг на друга.
+       Свёрнутые показывают только счёт — этого хватает, чтобы выбрать. */
+    if (!sel) return;
+    var m = qs.length;
+    var gap = Math.min(52, (H - pad * 2) / (m + 1));
+    qs.forEach(function(q, j){
+      var ly = hy + (j - (m - 1) / 2) * gap;
+      ly = Math.max(pad, Math.min(H - pad, ly));
+      var state = L.ans[q.k]
+        ? (L.src[q.k] === 'mat' ? 'mat' : 'done')
+        : (L.cur && L.cur.k === q.k ? 'now' : 'todo');
+
+      var ld = ns('path');
+      ld.setAttribute('d', bz(xHub, hy, xLeaf, ly));
+      ld.setAttribute('fill', 'none');
+      ld.setAttribute('stroke', state === 'now' ? '#FF3B20'
+        : (state === 'todo' ? 'rgba(242,240,237,.11)' : 'rgba(242,240,237,.22)'));
+      ld.setAttribute('stroke-width', state === 'now' ? '1.4' : '1');
+      svgT.appendChild(ld);
+
+      var lc = ns('circle');
+      lc.setAttribute('cx', xLeaf.toFixed(1)); lc.setAttribute('cy', ly.toFixed(1));
+      lc.setAttribute('r', state === 'now' ? '7' : (q.gen ? '3.4' : '5'));
+      if (state === 'done') lc.setAttribute('fill', 'rgba(242,240,237,.86)');
+      else if (state === 'now') lc.setAttribute('fill', '#FF3B20');
+      else {
+        lc.setAttribute('fill', 'none');
+        lc.setAttribute('stroke', state === 'mat' ? 'rgba(242,240,237,.7)' : 'rgba(242,240,237,.3)');
+        lc.setAttribute('stroke-width', state === 'mat' ? '1.4' : '1');
+        if (q.gen) lc.setAttribute('stroke-dasharray', '1.6 2.2');
+      }
+      svgT.appendChild(lc);
+
+      var t = el('div', 'qlab ' + state + (q.gen ? ' gen' : ''));
+      t.style.left = (xLeaf + 18) + 'px';
+      t.style.top = ly + 'px';
+      t.innerHTML = '<i></i>' + q.q;
+      t.addEventListener('click', function(){ L.cur = q; treePaint(); panelPaint(); });
+      labs.appendChild(t);
+    });
+  });
+}
+
+function bz(x0, y0, x1, y1){
+  var mx = x0 + (x1 - x0) * 0.52;
+  return 'M' + x0.toFixed(1) + ' ' + y0.toFixed(1) +
+         ' C' + mx.toFixed(1) + ' ' + y0.toFixed(1) + ' ' +
+         mx.toFixed(1) + ' ' + y1.toFixed(1) + ' ' +
+         x1.toFixed(1) + ' ' + y1.toFixed(1);
+}
+
+function panelPaint(){
+  var p = document.getElementById('lPanel');
+  p.textContent = '';
+  var q = L.cur;
+  if (!q) {
+    p.innerHTML = '<div class="qk minor">ВСЁ ОТВЕЧЕНО</div>' +
+      '<div class="qq">Вопросов не осталось</div>' +
+      '<div class="qw">Можно подать заявку. Всё, что не спросили, спросит тот, кто будет строить агента.</div>';
+    return;
+  }
+  var slot = SLOTS.filter(function(s){ return s.k === q.slot; })[0];
+  var qs = lSlotQs(q.slot);
+  var idx = qs.indexOf(q) + 1;
+  var blocking = q.core && !q.auto;
+  var next = lBlocking().filter(function(x){ return x.k !== q.k; })[0];
+
+  var head = el('div', 'qk' + (blocking ? '' : ' minor'));
+  head.textContent = slot.t + ' · ВОПРОС ' + idx + ' ИЗ ' + qs.length +
+                     (blocking ? ' · БЛОКИРУЕТ' : ' · УТОЧНЯЕТ');
+  p.appendChild(head);
+
+  var qq = el('div', 'qq'); qq.textContent = q.q; p.appendChild(qq);
+  if (q.w) { var w = el('div', 'qw'); w.textContent = q.w; p.appendChild(w); }
+
+  var inp = el('input'); inp.type = 'text'; inp.id = 'lAns';
+  inp.placeholder = 'Своими словами';
+  inp.value = L.ans[q.k] || '';
+  if (L.src[q.k] === 'mat') inp.placeholder = 'Предложено материалом — проверьте';
+  p.appendChild(inp);
+
+  var acts = el('div', 'lacts');
+  var go = el('button', 'go'); go.type = 'button'; go.textContent = 'Ответить и дальше';
+  var sk = el('button', 'sk'); sk.type = 'button'; sk.textContent = 'Пропустить';
+  acts.appendChild(go); acts.appendChild(sk); p.appendChild(acts);
+
+  function commit(){
+    var v = inp.value.trim();
+    if (!v) return;
+    lAnswer(q, v, 'man');
+  }
+  go.addEventListener('click', commit);
+  inp.addEventListener('keydown', function(e){ if (e.key === 'Enter') commit(); });
+  sk.addEventListener('click', function(){
+    var open = lQuestions().filter(function(x){ return lOpen(x) && x.k !== q.k; });
+    L.cur = open[0] || null;
+    if (L.cur) L.sel = L.cur.slot;
+    treePaint(); panelPaint();
+  });
+
+  var nx = el('div', 'lnext');
+  nx.innerHTML = '<div class="nk">СЛЕДУЮЩИЙ БЛОКИРУЮЩИЙ</div>' +
+    '<div class="nv">' + (next ? next.q : 'Блокирующих больше нет') + '</div>' +
+    '<div class="nn">Порядок не навязан: кликните по любой ветке или листу и отвечайте там.</div>';
+  p.appendChild(nx);
+  inp.focus();
+}
+
+/* Ответ на каркасный вопрос может дорастить уточняющий: дерево растёт
+   по ходу разговора, а не разворачивается из готового справочника. */
+var GROW = {
+  pr: { k:'pr2', slot:'ef', q:'Сколько времени это отнимает за неделю?',
+        w:'Из этого получится замер эффекта — без него агент не выйдет из пилота.' },
+  ac: { k:'ac2', slot:'ef', q:'Что агент не должен делать никогда?',
+        w:'Граница компетенции. Её отсутствие — самая частая причина недоверия к агенту.' },
+  unit:{ k:'unit2', slot:'unit', q:'Кто в подразделении проверит первые результаты руками?',
+        w:'Майлстоун с участием человека: без ручной сверки пилот не закрывается.' }
+};
+
+function lGrow(k){
+  var g = GROW[k];
+  if (!g || L.gen.some(function(x){ return x.k === g.k; })) return;
+  L.gen.push({ k:g.k, slot:g.slot, core:0, gen:1, q:g.q, w:g.w, kw:[] });
+}
+
+function lAnswer(q, v, how){
+  L.ans[q.k] = v;
+  L.src[q.k] = how;
+  lGrow(q.k);
+  var open = lQuestions().filter(lOpen);
+  var nb = lBlocking()[0];
+  L.cur = nb || open[0] || null;
+  if (L.cur) L.sel = L.cur.slot;
+  treePaint(); railPaint(); panelPaint();
+}
+
+/* ---------- разбор материала ---------- */
+/* Наивный разбор в браузере: текст режется на предложения, каждое
+   примеряется к открытым вопросам по ключевым словам. Настоящий разбор —
+   работа бэкенда; здесь предложение всегда помечено как предложение
+   и требует подтверждения. */
+function lParseText(text, title, kind){
+  var sent = text.split(/(?:[.!?…]|\n)+/)
+                 .map(function(s){ return s.trim(); })
+                 .filter(function(s){ return s.length > 12; });
+  var hit = 0;
+  lQuestions().forEach(function(q){
+    if (L.ans[q.k] || !q.kw || !q.kw.length) return;
+    var best = null, bestN = 0;
+    sent.forEach(function(s){
+      var low = s.toLowerCase(), n = 0;
+      q.kw.forEach(function(w){ if (low.indexOf(w) >= 0) n += 1; });
+      if (n > bestN) { bestN = n; best = s; }
+    });
+    if (best && bestN >= 2) {
+      L.ans[q.k] = best.length > 160 ? best.slice(0, 157) + '…' : best;
+      L.src[q.k] = 'mat';
+      lGrow(q.k);                    /* материал закрыл лист — уточняющий всё равно вырастает */
+      hit += 1;
+    }
+  });
+  L.mats.push({ kind:kind, title:title, hit:hit });
+  var nb = lBlocking()[0];
+  L.cur = nb || lQuestions().filter(lOpen)[0] || null;
+  if (L.cur) L.sel = L.cur.slot;
+  treePaint(); railPaint(); panelPaint();
+  return hit;
+}
+
+/* ---------- подача ---------- */
+function lSubmit(){
+  var id = 'draft-' + Date.now().toString(36);
+  var a = {
+    id:id, c:L.cat, s:'idea', n:L.name,
+    role:L.ans.role || L.role,
+    pr:L.ans.pr || '', ac:L.ans.ac || '', ef:L.ans.ef || '',
+    ev:L.ans.unit || '', draft:1
+  };
+  a.thin = (a.pr && a.ac && a.ef) ? 0 : 1;
+  DRAFTS.push(a); saveDrafts();
+  A.push(a);
+  recount(); buildRails(); buildStage(); paint();
+  L.newId = id;
+  lStep('done');
+}
+
+function donePaint(){
+  var svgD = document.getElementById('doneSvg');
+  var box = document.querySelector('.doneMap');
+  var W = box.clientWidth, H = box.clientHeight;
+  svgD.setAttribute('viewBox', '0 0 ' + W + ' ' + H);
+  svgD.textContent = '';
+  var cx = W / 2, cy = H / 2, R = Math.min(W, H) / 2 - 16;
+  STAGES.forEach(function(s){
+    var c = ns('circle');
+    c.setAttribute('cx', cx); c.setAttribute('cy', cy);
+    c.setAttribute('r', (R * s.rf).toFixed(1));
+    c.setAttribute('fill', 'none');
+    c.setAttribute('stroke', s.k === 'idea' ? 'rgba(242,240,237,.3)' : 'rgba(242,240,237,.09)');
+    if (s.dash !== 'none') c.setAttribute('stroke-dasharray', s.dash);
+    svgD.appendChild(c);
+  });
+  var a = agent(L.newId);
+  if (a) {
+    var p = polD(cx, cy, R * stg('idea').rf, a.a0);
+    var g = ns('circle');
+    g.setAttribute('cx', p[0].toFixed(1)); g.setAttribute('cy', p[1].toFixed(1));
+    g.setAttribute('r', '11'); g.setAttribute('fill', 'none');
+    g.setAttribute('stroke', '#F2F0ED'); g.setAttribute('stroke-width', '1.6');
+    if (a.thin) g.setAttribute('stroke-dasharray', '2.6 2.6');
+    svgD.appendChild(g);
+    var h = ns('circle');
+    h.setAttribute('cx', p[0].toFixed(1)); h.setAttribute('cy', p[1].toFixed(1));
+    h.setAttribute('r', '21'); h.setAttribute('fill', 'none');
+    h.setAttribute('stroke', 'rgba(242,240,237,.26)');
+    h.setAttribute('stroke-dasharray', '2 5');
+    svgD.appendChild(h);
+  }
+
+  var steps = [
+    ['Требования собраны', 'done', 'сейчас'],
+    ['Заявка на орбите ИДЕЯ', 'now', 'идёт'],
+    ['Дайджест и рабочая сессия', 'todo', '—'],
+    ['Формирование реестра', 'todo', '—'],
+    ['Пилот L1 на реальных данных', 'todo', '—']
+  ];
+  var c = lCount();
+  document.getElementById('doneCard').innerHTML =
+    '<div class="dk">' + cat(L.cat).n + ' · ЗАЯВКА ПРИНЯТА</div>' +
+    '<div class="dn">' + L.name + '</div>' +
+    '<div class="dd">' + (L.ans.role || L.role) +
+      (L.ans.unit ? ' · ' + L.ans.unit : '') + '</div>' +
+    '<div class="dsteps">' + steps.map(function(s){
+      return '<div class="dst ' + s[1] + '"><i></i><span>' + s[0] + '</span><em>' + s[2] + '</em></div>';
+    }).join('') + '</div>' +
+    '<div class="df">' + (a && a.thin
+      ? 'Обод пунктирный: проблема, действие или эффект ещё не описаны. Это то же правило, по которому пунктирны агенты из стратегии — обещание, за которым пока ничего нет.'
+      : 'Проблема, действие и эффект описаны — обод сплошной. Дальше агент пойдёт внутрь, к ядру.') +
+    ' Закрыто вопросов: ' + c.done + ' из ' + c.total + '.</div>' +
+    '<button class="dgo" type="button" id="doneGo">Показать на карте <span class="mono">→</span></button>';
+  document.getElementById('doneGo').addEventListener('click', function(){
+    closeLaunch();
+    var ag = agent(L.newId);
+    if (ag) { st.hoverAgent = null; setHover({ kind:'agent', id:ag.id }); }
+  });
+}
+
+/* ---------- проводка ---------- */
+(function(){
+  var hit = document.getElementById('sunHit');
+  hit.addEventListener('mouseenter', function(){ sunEl.classList.add('call'); });
+  hit.addEventListener('mouseleave', function(){ sunEl.classList.remove('call'); });
+  hit.addEventListener('focus', function(){ sunEl.classList.add('call'); });
+  hit.addEventListener('blur', function(){ sunEl.classList.remove('call'); });
+  hit.addEventListener('click', openLaunch);
+
+  var nm = document.getElementById('fName');
+  var rl = document.getElementById('fRole');
+  nm.addEventListener('input', function(){ L.name = nm.value.trim(); padSync(); });
+  rl.addEventListener('input', function(){ L.role = rl.value.trim(); padSync(); });
+  document.getElementById('toBrief').addEventListener('click', function(){ lStep('brief'); });
+
+  var ta = document.getElementById('lPaste');
+  document.getElementById('lParse').addEventListener('click', function(){
+    var t = ta.value.trim();
+    if (t.length < 40) return;
+    lParseText(t, 'Вставленный текст', 'ВСТАВЛЕНО');
+    ta.value = '';
+  });
+  var drop = document.getElementById('lDrop');
+  ['dragenter','dragover'].forEach(function(ev){
+    drop.addEventListener(ev, function(e){ e.preventDefault(); drop.classList.add('hot'); });
+  });
+  ['dragleave','drop'].forEach(function(ev){
+    drop.addEventListener(ev, function(e){ e.preventDefault(); drop.classList.remove('hot'); });
+  });
+  drop.addEventListener('drop', function(e){
+    var f = e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files[0];
+    if (!f) return;
+    if (!/^text\/|\.(txt|md|csv|json)$/i.test(f.type + f.name)) {
+      L.mats.push({ kind:'ФАЙЛ', title:f.name + ' — разбор на бэкенде', hit:0 });
+      railPaint();
+      return;
+    }
+    var r = new FileReader();
+    r.onload = function(){ lParseText(String(r.result), f.name, 'ФАЙЛ'); };
+    r.readAsText(f);
+  });
+
+  document.getElementById('lSend').addEventListener('click', lSubmit);
+  window.addEventListener('resize', function(){
+    if (st.mode !== 'launch') return;
+    if (L.step === 'pad') padPaint();
+    if (L.step === 'brief') treePaint();
+    if (L.step === 'done') donePaint();
+  });
+})();
 
 /* ============================= ЗАПУСК ============================= */
 
@@ -1750,6 +2696,7 @@ window.addEventListener('resize', function(){
 
 document.addEventListener('keydown', function(e){
   if (e.key !== 'Escape') return;
+  if (st.mode === 'launch') { closeLaunch(); return; }
   if (st.sheet) { closeSheet(); return; }
   if (st.focus) { closeAnat(); return; }
   if (st.mode !== 'eco') { setMode('eco'); return; }
@@ -1767,7 +2714,9 @@ document.querySelectorAll('#modes button').forEach(function(b){
   railL.addEventListener('mouseleave', function(){ st.overAxis = false; axisSync(); });
 })();
 
-backBtn.addEventListener('click', closeAnat);
+backBtn.addEventListener('click', function(){
+  if (st.mode === 'launch') closeLaunch(); else closeAnat();
+});
 document.getElementById('sheetClose').addEventListener('click', closeSheet);
 document.getElementById('sheetGo').addEventListener('click', function(){
   if (st.sheet) openAnat(st.sheet);
