@@ -50,6 +50,34 @@ header{position:fixed;left:40px;top:34px;z-index:60}
 #railL{left:40px}
 #railR{right:40px;text-align:right}
 .rail .cap{font-size:8.5px;letter-spacing:.28em;color:var(--t3)}
+/* ---------- путь агента: спица со станциями ---------- */
+.axis{margin-top:24px}
+.stn{display:grid;grid-template-columns:24px 1fr;row-gap:10px;
+  width:100%;padding:0 0 20px 24px;text-align:left;position:relative;
+  cursor:pointer;transition:opacity .2s var(--ease)}
+.stn::before{content:'';position:absolute;left:4px;top:3px;bottom:0;
+  border-left:1px solid rgba(242,240,237,.14)}
+.stn:last-child::before{bottom:auto;height:12px}
+.stn.ghost::before{border-left-style:dashed;border-left-color:rgba(242,240,237,.10)}
+.stn .node{position:absolute;left:0;top:0;width:9px;height:9px;border-radius:50%;
+  border:1px solid rgba(242,240,237,.32);background:var(--ink);
+  transition:background .2s,border-color .2s,transform .2s var(--ease)}
+.stn .lv{font-size:8px;letter-spacing:.2em;color:var(--t4);line-height:1.4}
+.stn .nm{font-size:9.5px;letter-spacing:.2em;color:var(--t2);line-height:1.4}
+.stn .dots{grid-column:1/-1;display:flex;flex-wrap:wrap;gap:5px}
+.stn .dots i{width:6px;height:6px;border-radius:50%;display:block;
+  border:1px solid rgba(242,240,237,.5);transition:background .2s,border-color .2s}
+.stn .dots i.goal{border-style:dashed;border-color:rgba(242,240,237,.2)}
+.stn .dots .none{font-size:8px;letter-spacing:.2em;color:var(--t4)}
+.stn:hover .node{border-color:rgba(242,240,237,.6)}
+.stn:hover .nm{color:var(--t1)}
+.stn.on .node{background:#F2F0ED;border-color:#F2F0ED;transform:scale(1.15)}
+.stn.on .nm{color:var(--t1)}
+.stn.on .dots i:not(.goal){background:rgba(242,240,237,.86);border-color:rgba(242,240,237,.86)}
+.axis.picked .stn:not(.on){opacity:.42}
+.tale{margin-top:8px;font-size:11.5px;line-height:1.78;color:rgba(242,240,237,.5);
+  text-wrap:pretty;min-height:1px}
+
 .rail .rows{margin-top:20px;display:flex;flex-direction:column}
 .rw{display:flex;align-items:baseline;gap:11px;padding:10px 8px;border-top:1px solid rgba(242,240,237,.07);
   cursor:crosshair;transition:background .18s,padding .22s var(--ease);width:100%;text-align:left}
@@ -363,9 +391,9 @@ footer{position:fixed;left:40px;bottom:28px;z-index:56;font-size:8.5px;line-heig
   </nav>
 
   <aside class="rail" id="railL">
-    <div class="cap mono">СТАДИЯ ЗРЕЛОСТИ · РАДИУС</div>
-    <div class="rows" id="stageRows"></div>
-    <div class="note" id="stageNote"></div>
+    <div class="cap mono">ПУТЬ АГЕНТА</div>
+    <div class="axis" id="axis"></div>
+    <div class="tale" id="tale"></div>
   </aside>
 
   <aside class="rail" id="railR">
@@ -417,16 +445,20 @@ var NB = '\u00A0';
    ================================================================== */
 
 var STAGES = [
-  { k:'l3',  n:'АВТОНОМНАЯ',   lv:'L3', rf:0.30, T:39,
-    note:'Процесс выполняется без участия сотрудника, контроль по отклонениям.' },
+  { k:'l3',  n:'АВТОНОМНАЯ',   lv:'L3', rf:0.30, T:39, goal:3,
+    note:'Процесс выполняется без участия сотрудника, контроль по отклонениям.',
+    goalNote:'Пунктиром показана цель стратегии: 10 % агентов к концу 2026 года, то есть три из тридцати. Именно переход сюда создаёт основной экономический эффект — до него агент экономит время сотрудника, после заменяет операцию целиком.' },
   { k:'l2',  n:'ПРОМЫШЛЕННАЯ', lv:'L2', rf:0.50, T:85,
-    note:'Регулярная работа в процессе, контроль выборочный.' },
+    note:'Регулярная работа в процессе, контроль выборочный.',
+    goalNote:'Сюда агент попадает после приёмки и подтверждённого замера эффекта.' },
   { k:'l1',  n:'ПИЛОТ',        lv:'L1', rf:0.70, T:141,
-    note:'Работа на реальных данных подразделения под полным контролем сотрудника.' },
+    note:'Работа на реальных данных подразделения под полным контролем сотрудника.',
+    goalNote:'Дальше — приёмка, оцифровка эффекта и решение о переводе в регулярную работу.' },
   { k:'pro', n:'ПРОТОТИП',     lv:'—',  rf:0.86, T:191,
     note:'Решение собрано, работает на ограниченной выборке, эффект не подтверждён.' },
   { k:'reg', n:'РЕЕСТР',       lv:'—',  rf:1.00, T:240,
-    note:'Заявлено в стратегии. Стадия в документе не зафиксирована.' }
+    note:'Заявлено в стратегии. Стадия в документе не зафиксирована.',
+    goalNote:'Впереди первые три этапа воронки: дайджест ИИ-автоматизации, рабочая сессия и формирование реестра подразделения.' }
 ];
 
 var CATS = [
@@ -533,7 +565,7 @@ var CONS = [
 var st = {
   mode:'eco', hoverStage:null, hoverCat:null, hoverAgent:null,
   focus:null, hotSlot:null, W:0, H:0, R:0, cx:0, cy:0,
-  narrow:false, box:0, sheet:null, hover:null, mx:0, my:0, hoverSrc:null
+  narrow:false, box:0, sheet:null, hover:null, mx:0, my:0, hoverSrc:null, pick:null
 };
 /* Матрица вращается как одно целое. Угол кодирует категорию, поэтому агент
    не вправе уезжать из своего сектора: секторы, спицы и подписи поворачиваются
@@ -607,25 +639,62 @@ function measure(){
 
 /* ============================= БОРТА ============================= */
 
-function buildRails(){
-  var L = document.getElementById('stageRows'); L.textContent='';
-  STAGES.forEach(function(s){
-    var b = el('button','rw' + (byStage[s.k]===0 ? ' nil':''));
-    b.dataset.stage = s.k;
-    b.innerHTML = '<span class="k mono">'+s.n+'</span><span class="lv mono">'+s.lv+
-      '</span><span class="ct mono">'+byStage[s.k]+'</span>';
-    var enter = function(e){
-      if (e && e.clientX){ st.mx = e.clientX; st.my = e.clientY; }
-      setHover({ kind:'stage', id:s.k }, 'railL');
-      ctxPlace();
-    };
-    b.addEventListener('mouseenter', enter);
-    b.addEventListener('mousemove', enter);
-    b.addEventListener('mouseleave', function(){ setHover(null); });
-    b.addEventListener('focus', enter);
-    b.addEventListener('blur', function(){ setHover(null); });
-    L.appendChild(b);
+/* Станция выше самой зрелой заселённой — призрак: путь туда не пройден. */
+function topReached(){
+  for (var i = 0; i < STAGES.length; i++) if (byStage[STAGES[i].k]) return i;
+  return STAGES.length;
+}
+
+function buildAxis(){
+  var box = document.getElementById('axis');
+  box.textContent = '';
+  var reached = topReached();
+  STAGES.forEach(function(s, i){
+    var b = el('button','stn' + (i < reached ? ' ghost' : ''));
+    b.type = 'button';
+    b.dataset.k = s.k;
+    var n = byStage[s.k] || 0;
+    b.setAttribute('aria-label', s.n + (s.lv !== '—' ? ', ' + s.lv : '') + ', агентов: ' + n);
+
+    b.appendChild(el('span','node'));
+    var lv = el('span','lv mono'); lv.textContent = s.lv !== '—' ? s.lv : '';
+    var nm = el('span','nm mono'); nm.textContent = s.n;
+    var dots = el('span','dots');
+    for (var k = 0; k < n; k++) dots.appendChild(el('i'));
+    var goal = (s.goal || 0) - n;
+    for (var g = 0; g < goal; g++) dots.appendChild(el('i','goal'));
+    if (!n && !s.goal){ var z = el('span','none mono'); z.textContent = '—'; dots.appendChild(z); }
+
+    b.appendChild(lv); b.appendChild(nm); b.appendChild(dots);
+    b.addEventListener('click', function(){
+      st.pick = (st.pick === s.k) ? null : s.k;
+      paintAxis(); paint();
+    });
+    box.appendChild(b);
   });
+  paintAxis();
+}
+
+/* Рассказ о стадии — в пустоте под спицей, без плашки и без рамки. */
+function paintAxis(){
+  var box = document.getElementById('axis');
+  box.classList.toggle('picked', !!st.pick);
+  box.querySelectorAll('.stn').forEach(function(b){
+    b.classList.toggle('on', b.dataset.k === st.pick);
+  });
+  var tale = document.getElementById('tale');
+  if (!st.pick){ tale.textContent = ''; return; }
+  var s = stg(st.pick), n = byStage[st.pick] || 0;
+  var word = (n % 10 === 1 && n % 100 !== 11) ? 'агент'
+    : ((n % 10 >= 2 && n % 10 <= 4 && (n % 100 < 10 || n % 100 >= 20)) ? 'агента' : 'агентов');
+  var t = s.note + ' ';
+  t += n ? ('Сейчас на этом кольце ' + n + ' ' + word + '.') : 'Сейчас кольцо пустое.';
+  if (s.goalNote) t += ' ' + s.goalNote;
+  tale.textContent = t;
+}
+
+function buildRails(){
+  buildAxis();
   var R = document.getElementById('catRows'); R.textContent='';
   CATS.forEach(function(c){
     var b = el('button','rw');
@@ -647,9 +716,7 @@ function buildRails(){
 }
 
 function note(){
-  var sn = document.getElementById('stageNote');
   var cn = document.getElementById('catNote');
-  sn.textContent = st.hoverStage ? stg(st.hoverStage).note : '';
   cn.textContent = st.hoverCat ? cat(st.hoverCat).d : '';
 }
 
@@ -796,7 +863,8 @@ function paint(){
     var r = st.R * s.rf;
     var c = rings[i];
     c.setAttribute('cx', st.cx); c.setAttribute('cy', st.cy); c.setAttribute('r', r.toFixed(1));
-    c.setAttribute('class','ring' + (byStage[s.k]===0 ? ' nil':'') + (hS===s.k ? ' on':''));
+    c.setAttribute('class','ring' + (byStage[s.k]===0 ? ' nil':'')
+      + ((hS===s.k || st.pick===s.k) ? ' on':''));
   });
 
   /* агенты */
@@ -807,6 +875,7 @@ function paint(){
     if (hA) op = (a.id === hA.id) ? 1 : (a.c === hA.c ? .78 : .18);
     else if (hC) op = (a.c === hC) ? 1 : .2;
     else if (hS) op = (a.s === hS) ? 1 : .26;
+    else if (st.pick) op = (a.s === st.pick) ? 1 : .18;
     op = Math.max(.16, op);
     var col = a.attn ? 'var(--sol)' : 'rgba(242,240,237,.92)';
     var e = a._el;
@@ -835,9 +904,6 @@ function paint(){
   }
 
   /* синхронизация бортов */
-  document.querySelectorAll('#stageRows .rw').forEach(function(b){
-    b.classList.toggle('on', b.dataset.stage === hS);
-  });
   document.querySelectorAll('#catRows .rw').forEach(function(b){
     b.classList.toggle('on', b.dataset.cat === hC);
   });
@@ -890,7 +956,8 @@ function setHover(h, src){
   st.hoverSrc = h ? (src || 'map') : null;
   /* Уходит тот борт, чьё поле занимает контекст, и никогда — тот, на который
      сейчас наведён курсор. */
-  var away = h && !st.narrow ? (st.hoverSrc === 'railR' ? 'railL' : 'railR') : null;
+  var away = h && !st.narrow && st.hoverSrc === 'railR' ? 'railL'
+    : (h && !st.narrow ? 'railR' : null);
   document.getElementById('railL').classList.toggle('away', away === 'railL');
   document.getElementById('railR').classList.toggle('away', away === 'railR');
   if (sameHover(st.hover, h)) return;
@@ -1536,7 +1603,8 @@ document.addEventListener('keydown', function(e){
   if (st.focus) { closeAnat(); return; }
   if (st.mode !== 'eco') { setMode('eco'); return; }
   if (st.hoverAgent) { st.hoverAgent = null; paint(); return; }
-  if (st.hoverStage || st.hoverCat) { st.hoverStage = null; st.hoverCat = null; paint(); note(); }
+  if (st.hover) { setHover(null); return; }
+  if (st.pick) { st.pick = null; paintAxis(); paint(); }
 });
 
 document.querySelectorAll('#modes button').forEach(function(b){
