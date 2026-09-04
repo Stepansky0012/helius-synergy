@@ -47,7 +47,9 @@ header{position:fixed;left:40px;top:34px;z-index:60}
 
 /* ---------- борта ---------- */
 .rail{position:fixed;top:118px;width:238px;z-index:55;transition:opacity .32s var(--ease),transform .42s var(--ease)}
-#railL{left:40px}
+#railL{left:40px;opacity:0;visibility:hidden;transform:translateX(-12px);
+  transition:opacity .24s var(--ease),transform .3s var(--ease),visibility .24s}
+#railL.live{opacity:1;visibility:visible;transform:none}
 #railR{right:40px;text-align:right}
 .rail .cap{font-size:8.5px;letter-spacing:.28em;color:var(--t3)}
 /* ---------- путь агента: спица со станциями ---------- */
@@ -55,10 +57,9 @@ header{position:fixed;left:40px;top:34px;z-index:60}
 .stn{display:grid;grid-template-columns:24px 1fr;row-gap:10px;
   width:100%;padding:0 0 20px 24px;text-align:left;position:relative;
   cursor:pointer;transition:opacity .2s var(--ease)}
-.stn::before{content:'';position:absolute;left:4px;top:3px;bottom:0;
-  border-left:1px solid rgba(242,240,237,.14)}
-.stn:last-child::before{bottom:auto;height:12px}
-.stn.ghost::before{border-left-style:dashed;border-left-color:rgba(242,240,237,.10)}
+/* Сегмент спицы набран тем же штрихом, что и его кольцо на карте. */
+.stn .seg{position:absolute;left:4px;top:4px;bottom:0;width:1px}
+.stn:last-child .seg{bottom:auto;height:14px}
 .stn .node{position:absolute;left:0;top:0;width:9px;height:9px;border-radius:50%;
   border:1px solid rgba(242,240,237,.32);background:var(--ink);
   transition:background .2s,border-color .2s,transform .2s var(--ease)}
@@ -96,9 +97,13 @@ header{position:fixed;left:40px;top:34px;z-index:60}
 #stage{position:fixed;inset:0;z-index:20;cursor:crosshair;transition:opacity .42s var(--ease),transform .52s var(--ease)}
 #stage.back{opacity:.07;transform:scale(.94);filter:blur(3px);pointer-events:none}
 #svg{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
-.ring{fill:none;stroke:rgba(242,240,237,.17);stroke-width:1;transition:stroke .2s,stroke-width .2s}
-.ring.nil{stroke:rgba(242,240,237,.11);stroke-dasharray:2 9}
-.ring.on{stroke:rgba(242,240,237,.42);stroke-width:1.5}
+/* Штрих несёт зрелость: реестр почти пунктир, автономная — сплошная.
+   Заселённость ушла в яркость, чтобы два канала не спорили за одну линию. */
+.ring{fill:none;stroke:rgba(242,240,237,.24);stroke-width:1;
+  transition:stroke .2s,stroke-width .2s}
+.ring.void{stroke:rgba(242,240,237,.10)}
+.ring.goal{stroke:rgba(242,240,237,.30)}
+.ring.on{stroke:rgba(242,240,237,.52);stroke-width:1.5}
 .spoke{stroke:rgba(242,240,237,.07);stroke-width:1}
 .wedge{fill:rgba(242,240,237,0);transition:fill .24s var(--ease)}
 .wedge.on{fill:rgba(242,240,237,.028)}
@@ -445,18 +450,19 @@ var NB = '\u00A0';
    ================================================================== */
 
 var STAGES = [
-  { k:'l3',  n:'АВТОНОМНАЯ',   lv:'L3', rf:0.30, T:39, goal:3,
+  { k:'l3',  n:'АВТОНОМНАЯ',   lv:'L3', rf:0.30, T:39, goal:3, dash:'none',
     note:'Процесс выполняется без участия сотрудника, контроль по отклонениям.',
     goalNote:'Пунктиром показана цель стратегии: 10 % агентов к концу 2026 года, то есть три из тридцати. Именно переход сюда создаёт основной экономический эффект — до него агент экономит время сотрудника, после заменяет операцию целиком.' },
-  { k:'l2',  n:'ПРОМЫШЛЕННАЯ', lv:'L2', rf:0.50, T:85,
+  { k:'l2',  n:'ПРОМЫШЛЕННАЯ', lv:'L2', rf:0.50, T:85, dash:'16 3',
     note:'Регулярная работа в процессе, контроль выборочный.',
     goalNote:'Сюда агент попадает после приёмки и подтверждённого замера эффекта.' },
-  { k:'l1',  n:'ПИЛОТ',        lv:'L1', rf:0.70, T:141,
+  { k:'l1',  n:'ПИЛОТ',        lv:'L1', rf:0.70, T:141, dash:'8 4',
     note:'Работа на реальных данных подразделения под полным контролем сотрудника.',
     goalNote:'Дальше — приёмка, оцифровка эффекта и решение о переводе в регулярную работу.' },
-  { k:'pro', n:'ПРОТОТИП',     lv:'—',  rf:0.86, T:191,
-    note:'Решение собрано, работает на ограниченной выборке, эффект не подтверждён.' },
-  { k:'reg', n:'РЕЕСТР',       lv:'—',  rf:1.00, T:240,
+  { k:'pro', n:'ПРОТОТИП',     lv:'—',  rf:0.86, T:191, dash:'4 5',
+    note:'Решение собрано, работает на ограниченной выборке, эффект не подтверждён.',
+    goalNote:'Эффект ещё не замерен, поэтому в регулярную работу агент не переводится.' },
+  { k:'reg', n:'РЕЕСТР',       lv:'—',  rf:1.00, T:240, dash:'2 7',
     note:'Заявлено в стратегии. Стадия в документе не зафиксирована.',
     goalNote:'Впереди первые три этапа воронки: дайджест ИИ-автоматизации, рабочая сессия и формирование реестра подразделения.' }
 ];
@@ -565,7 +571,8 @@ var CONS = [
 var st = {
   mode:'eco', hoverStage:null, hoverCat:null, hoverAgent:null,
   focus:null, hotSlot:null, W:0, H:0, R:0, cx:0, cy:0,
-  narrow:false, box:0, sheet:null, hover:null, mx:0, my:0, hoverSrc:null, pick:null
+  narrow:false, box:0, sheet:null, hover:null, mx:0, my:0, hoverSrc:null,
+  pick:null, overAxis:false
 };
 /* Матрица вращается как одно целое. Угол кодирует категорию, поэтому агент
    не вправе уезжать из своего сектора: секторы, спицы и подписи поворачиваются
@@ -656,6 +663,17 @@ function buildAxis(){
     var n = byStage[s.k] || 0;
     b.setAttribute('aria-label', s.n + (s.lv !== '—' ? ', ' + s.lv : '') + ', агентов: ' + n);
 
+    var seg = el('span','seg');
+    if (!s.dash || s.dash === 'none'){
+      seg.style.background = 'rgba(242,240,237,.24)';
+    } else {
+      var f = s.dash.split(' ');
+      var a1 = parseFloat(f[0]), a2 = parseFloat(f[1]);
+      seg.style.background = 'repeating-linear-gradient(to bottom,'
+        + ' rgba(242,240,237,' + (byStage[s.k] ? '.24' : '.12') + ') 0 ' + a1 + 'px,'
+        + ' transparent ' + a1 + 'px ' + (a1 + a2) + 'px)';
+    }
+    b.appendChild(seg);
     b.appendChild(el('span','node'));
     var lv = el('span','lv mono'); lv.textContent = s.lv !== '—' ? s.lv : '';
     var nm = el('span','nm mono'); nm.textContent = s.n;
@@ -668,23 +686,42 @@ function buildAxis(){
     b.appendChild(lv); b.appendChild(nm); b.appendChild(dots);
     b.addEventListener('click', function(){
       st.pick = (st.pick === s.k) ? null : s.k;
-      paintAxis(); paint();
+      axisSync(); paint();
     });
     box.appendChild(b);
   });
-  paintAxis();
+  axisSync();
+}
+
+/* Спица проявляется при наведении на кольцо или на агента и держится, пока
+   стадия выбрана кликом или курсор внутри самой колонки. */
+function axisSync(){
+  var h = st.hover;
+  var fromHover = h && (h.kind === 'stage' || h.kind === 'agent');
+  var show = !st.narrow && (!!st.pick || st.overAxis || !!fromHover);
+  var railL = document.getElementById('railL');
+  railL.classList.toggle('live', !!show && !railL.classList.contains('away'));
+
+  var mark = st.pick;
+  if (!mark && fromHover){
+    mark = (h.kind === 'stage') ? h.id : agent(h.id).s;
+  }
+  /* Длинный рассказ — только когда стадия выбрана или наведена как кольцо:
+     при наведении на агента справа уже есть его карточка. */
+  paintAxis(mark, !!st.pick || (h && h.kind === 'stage'));
 }
 
 /* Рассказ о стадии — в пустоте под спицей, без плашки и без рамки. */
-function paintAxis(){
+function paintAxis(mark, withTale){
+  if (mark === undefined) mark = st.pick;
   var box = document.getElementById('axis');
-  box.classList.toggle('picked', !!st.pick);
+  box.classList.toggle('picked', !!mark);
   box.querySelectorAll('.stn').forEach(function(b){
-    b.classList.toggle('on', b.dataset.k === st.pick);
+    b.classList.toggle('on', b.dataset.k === mark);
   });
   var tale = document.getElementById('tale');
-  if (!st.pick){ tale.textContent = ''; return; }
-  var s = stg(st.pick), n = byStage[st.pick] || 0;
+  if (!mark || !withTale){ tale.textContent = ''; return; }
+  var s = stg(mark), n = byStage[mark] || 0;
   var word = (n % 10 === 1 && n % 100 !== 11) ? 'агент'
     : ((n % 10 >= 2 && n % 10 <= 4 && (n % 100 < 10 || n % 100 >= 20)) ? 'агента' : 'агентов');
   var t = s.note + ' ';
@@ -863,7 +900,9 @@ function paint(){
     var r = st.R * s.rf;
     var c = rings[i];
     c.setAttribute('cx', st.cx); c.setAttribute('cy', st.cy); c.setAttribute('r', r.toFixed(1));
-    c.setAttribute('class','ring' + (byStage[s.k]===0 ? ' nil':'')
+    c.setAttribute('stroke-dasharray', s.dash || 'none');
+    c.setAttribute('class','ring'
+      + (byStage[s.k]===0 ? (s.goal ? ' goal' : ' void') : '')
       + ((hS===s.k || st.pick===s.k) ? ' on':''));
   });
 
@@ -967,6 +1006,7 @@ function setHover(h, src){
     : (h && h.kind === 'agent') ? agent(h.id).s : null;
   st.hoverCat = (h && h.kind === 'cat') ? h.id : null;
   ctxRender();
+  axisSync();
   paint();
   if (h) ctxPlace(); else leadHide();
 }
@@ -1081,6 +1121,11 @@ function ringGlyph(stageKey){
     c.setAttribute('fill','none'); c.setAttribute('stroke','currentColor');
     c.setAttribute('stroke-width', on ? '2.2' : '1');
     c.setAttribute('stroke-opacity', on ? '1' : '0.3');
+    if (s.dash && s.dash !== 'none'){
+      var f = s.dash.split(' ');
+      c.setAttribute('stroke-dasharray',
+        (parseFloat(f[0]) * 0.36).toFixed(1) + ' ' + (parseFloat(f[1]) * 0.36).toFixed(1));
+    }
     g.appendChild(c);
   });
   return g;
@@ -1604,12 +1649,18 @@ document.addEventListener('keydown', function(e){
   if (st.mode !== 'eco') { setMode('eco'); return; }
   if (st.hoverAgent) { st.hoverAgent = null; paint(); return; }
   if (st.hover) { setHover(null); return; }
-  if (st.pick) { st.pick = null; paintAxis(); paint(); }
+  if (st.pick) { st.pick = null; axisSync(); paint(); }
 });
 
 document.querySelectorAll('#modes button').forEach(function(b){
   b.addEventListener('click', function(){ setMode(b.dataset.mode); });
 });
+(function(){
+  var railL = document.getElementById('railL');
+  railL.addEventListener('mouseenter', function(){ st.overAxis = true; axisSync(); });
+  railL.addEventListener('mouseleave', function(){ st.overAxis = false; axisSync(); });
+})();
+
 backBtn.addEventListener('click', closeAnat);
 document.getElementById('sheetClose').addEventListener('click', closeSheet);
 document.getElementById('sheetGo').addEventListener('click', function(){
