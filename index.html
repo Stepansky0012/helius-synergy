@@ -695,10 +695,10 @@ footer{position:fixed;left:40px;bottom:28px;z-index:56;font-size:8.5px;line-heig
 }
 
 /* ---------- анатомия · шапка, статус, легенда (v3.2) ---------- */
-.anhead{position:absolute;left:40px;top:34px;z-index:6}
+.anhead{position:absolute;left:40px;top:88px;z-index:6}
 .anhead .at{font-size:15px;font-weight:300;letter-spacing:.26em}
 .anhead .as{margin-top:11px;font-size:11px;color:var(--t3)}
-.anstat{position:absolute;right:40px;top:36px;z-index:6;text-align:right}
+.anstat{position:absolute;right:40px;top:90px;z-index:6;text-align:right}
 .anstat .k{font-size:8.5px;letter-spacing:.22em;color:var(--t1)}
 .anstat .k i{display:inline-block;width:5px;height:5px;border-radius:50%;background:var(--sol);
   margin-right:9px;vertical-align:1px}
@@ -2999,7 +2999,12 @@ function divePaint(){
   var r = dive.target.kind === 'sun' ? 34 : 22;
   var p = dive.target.kind === 'sun'
     ? { x: st.cx, y: st.cy }
-    : (function(){ var a = agent(dive.target.id); return a ? pos(a) : null; })();
+    : (function(){                              /* pos отдаёт пару [x, y] */
+        var a = agent(dive.target.id);
+        if (!a) return null;
+        var q = pos(a);
+        return { x:q[0], y:q[1] };
+      })();
   if (!p) { c.setAttribute('opacity', '0'); return; }
   var len = 2 * Math.PI * r;
   var k = Math.min(1, dive.v / DIVE_NEED);
@@ -3042,11 +3047,16 @@ stageEl.addEventListener('wheel', function(e){
   }
 }, { passive:false });
 
-/* Изнутри оборот вверх возвращает наружу. */
+/* Изнутри оборот вверх выкручивает обратно — по слою за оборот.
+   Колесо над прокручиваемой панелью не считается: там человек читает,
+   а не выходит. */
 function diveOut(el2, back){
   var acc = { v:0, t:0 };
   el2.addEventListener('wheel', function(e){
     if (e.deltaY >= 0) { acc.v = 0; return; }
+    if (e.target.closest && e.target.closest('.lrail, .lform, .lpanel, .padcard, .padwho, .flank')) {
+      acc.v = 0; return;
+    }
     var now = performance.now();
     if (now - acc.t > 500) acc.v = 0;
     acc.t = now;
@@ -3055,7 +3065,12 @@ function diveOut(el2, back){
   }, { passive:true });
 }
 diveOut(document.getElementById('anat'), function(){ if (st.focus) closeAnat(); });
-diveOut(launchEl, function(){ if (st.mode === 'launch' && L.step === 'pad') closeLaunch(); });
+diveOut(launchEl, function(){
+  if (st.mode !== 'launch') return;
+  if (L.step === 'done') lStep('brief');
+  else if (L.step === 'brief') lStep('pad');
+  else closeLaunch();
+});
 
 /* ============================= ЗАПУСК ============================= */
 
