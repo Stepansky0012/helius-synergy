@@ -2968,10 +2968,10 @@ function donePaint(){
 
 /* =====================================================================
    ПОГРУЖЕНИЕ КОЛЕСОМ
-   Один оборот колеса вниз проваливает внутрь того, на что смотрит курсор:
-   в агента — его анатомия, в ядро — система создания агентов. Оборот вверх
-   изнутри возвращает наружу. Порог набирается постепенно, и вокруг цели
-   растёт дуга — видно, сколько осталось докрутить.
+   Оборот колеса от себя проваливает внутрь того, на что смотрит курсор:
+   в агента — его анатомия, в ядро — система создания агентов. Оборот на
+   себя изнутри возвращает наружу. Порог набирается постепенно, и вокруг
+   цели растёт дуга — видно, сколько осталось докрутить.
    ===================================================================== */
 var DIVE_NEED = 240;                       /* примерно один оборот колеса */
 var dive = { v:0, target:null, t:0, ring:null };
@@ -3037,8 +3037,8 @@ stageEl.addEventListener('wheel', function(e){
       dive.target.id !== t.id) { dive.v = 0; }
   dive.t = now;
   dive.target = t;
-  dive.v += Math.max(0, e.deltaY);          /* внутрь — только вниз */
-  if (e.deltaY < 0) dive.v = Math.max(0, dive.v + e.deltaY);
+  dive.v += Math.max(0, -e.deltaY);         /* внутрь — колесо от себя */
+  if (e.deltaY > 0) dive.v = Math.max(0, dive.v - e.deltaY);
   divePaint();
   if (dive.v >= DIVE_NEED) {
     var kind = t.kind, id = t.id;
@@ -3047,20 +3047,20 @@ stageEl.addEventListener('wheel', function(e){
   }
 }, { passive:false });
 
-/* Изнутри оборот вверх выкручивает обратно — по слою за оборот.
+/* Изнутри оборот на себя выкручивает обратно — по слою за оборот.
    Колесо над прокручиваемой панелью не считается: там человек читает,
    а не выходит. */
 function diveOut(el2, back){
   var acc = { v:0, t:0 };
   el2.addEventListener('wheel', function(e){
-    if (e.deltaY >= 0) { acc.v = 0; return; }
+    if (e.deltaY <= 0) { acc.v = 0; return; }
     if (e.target.closest && e.target.closest('.lrail, .lform, .lpanel, .padcard, .padwho, .flank')) {
       acc.v = 0; return;
     }
     var now = performance.now();
     if (now - acc.t > 500) acc.v = 0;
     acc.t = now;
-    acc.v += -e.deltaY;
+    acc.v += e.deltaY;
     if (acc.v >= DIVE_NEED) { acc.v = 0; back(); }
   }, { passive:true });
 }
