@@ -1,0 +1,1264 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Гелиус Синерджи — экосистема ИИ-агентов Корпорации «Синергия»</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@200;300;400&family=Golos+Text:wght@400;500&family=JetBrains+Mono:wght@300;400&display=swap">
+<style>
+:root{
+  --ink:#07080A; --l0:#0A0B0F; --l1:#0C0E12; --l2:#0F1218; --l3:#12151B; --l4:#1A1E26;
+  --sol:#FF3B20; --sol-d:#7A1206;
+  --t1:rgba(242,240,237,1); --t2:rgba(242,240,237,.62); --t3:rgba(242,240,237,.38); --t4:rgba(242,240,237,.24);
+  --hair:rgba(242,240,237,.10);
+  --R:7px;
+  --ease:cubic-bezier(.22,1,.36,1);
+}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{
+  margin:0; background:var(--ink); color:var(--t1);
+  font-family:'Golos Text','Segoe UI',system-ui,sans-serif;
+  overflow:hidden; -webkit-font-smoothing:antialiased;
+}
+.mono{font-family:'JetBrains Mono',ui-monospace,'Cascadia Mono',monospace;font-variant-numeric:tabular-nums}
+.disp{font-family:'Unbounded','Trebuchet MS',sans-serif}
+button{font-family:inherit;color:inherit;background:none;border:0;padding:0;cursor:pointer}
+button:focus-visible{outline:none}
+a{color:var(--t1);text-decoration:none}
+
+#app{position:fixed;inset:0;background:radial-gradient(120% 90% at 50% 50%,#101218 0%,var(--l0) 46%,var(--ink) 100%)}
+#grain{position:fixed;inset:0;width:100%;height:100%;opacity:.035;mix-blend-mode:soft-light;pointer-events:none;z-index:90}
+
+/* ---------- шапка ---------- */
+header{position:fixed;left:40px;top:34px;z-index:60}
+.wm{display:flex;align-items:center;gap:13px}
+.wm .nm{font-size:16px;font-weight:300;letter-spacing:.30em;line-height:1}
+header .sub{margin:12px 0 0 37px;font-size:10.5px;letter-spacing:.04em;color:var(--t3)}
+
+/* ---------- переключатель вида ---------- */
+#modes{position:fixed;right:40px;top:34px;z-index:60;display:flex;gap:2px;
+  border:1px solid var(--hair);border-radius:calc(var(--R)*3)}
+#modes button{padding:9px 17px;font-size:9px;letter-spacing:.22em;color:var(--t3);
+  border-radius:calc(var(--R)*3);transition:color .18s,background .18s}
+#modes button:hover{color:var(--t1)}
+#modes button.on{color:var(--t1);background:rgba(242,240,237,.06)}
+
+/* ---------- борта ---------- */
+.rail{position:fixed;top:118px;width:238px;z-index:55;transition:opacity .32s var(--ease),transform .42s var(--ease)}
+#railL{left:40px}
+#railR{right:40px;text-align:right}
+.rail .cap{font-size:8.5px;letter-spacing:.28em;color:var(--t3)}
+.rail .rows{margin-top:20px;display:flex;flex-direction:column}
+.rw{display:flex;align-items:baseline;gap:11px;padding:10px 8px;border-top:1px solid rgba(242,240,237,.07);
+  cursor:crosshair;transition:background .18s,padding .22s var(--ease);width:100%;text-align:left}
+#railR .rw{text-align:right}
+.rw:last-child{border-bottom:1px solid rgba(242,240,237,.07)}
+.rw.on{background:rgba(242,240,237,.04)}
+#railL .rw.on{padding-left:14px}
+#railR .rw.on{padding-right:14px}
+.rw .k{flex:1 1 auto;font-size:10px;letter-spacing:.17em;color:var(--t2)}
+.rw .lv{font-size:8px;letter-spacing:.16em;color:var(--t4);flex:0 0 auto}
+.rw .ct{font-size:12px;color:var(--t2);flex:0 0 22px;text-align:right}
+.rw.nil .k,.rw.nil .ct{color:var(--t4)}
+.rail .note{margin-top:22px;font-size:10px;line-height:1.8;color:var(--t3)}
+
+/* ---------- сцена ---------- */
+#stage{position:fixed;inset:0;z-index:20;transition:opacity .42s var(--ease),transform .52s var(--ease)}
+#stage.back{opacity:.10;transform:scale(.94);pointer-events:none}
+#svg{position:absolute;inset:0;width:100%;height:100%}
+.ring{fill:none;stroke:rgba(242,240,237,.17);stroke-width:1;transition:stroke .2s,stroke-width .2s}
+.ring.nil{stroke:rgba(242,240,237,.11);stroke-dasharray:2 9}
+.ring.on{stroke:rgba(242,240,237,.42);stroke-width:1.5}
+.spoke{stroke:rgba(242,240,237,.07);stroke-width:1}
+.wedge{fill:rgba(242,240,237,0);transition:fill .24s var(--ease)}
+.wedge.on{fill:rgba(242,240,237,.028)}
+.corridor{fill:none;stroke:transparent;stroke-width:40;cursor:crosshair}
+.chord{fill:none;stroke:rgba(242,240,237,.3);stroke-width:1;stroke-dasharray:3 5}
+
+.catlab{position:absolute;z-index:24;pointer-events:none;width:146px;
+  font-size:9px;letter-spacing:.19em;line-height:1.5;color:var(--t3);
+  transition:color .22s,opacity .22s}
+.catlab.on{color:var(--t2)}
+.catlab .cc{display:block;margin-top:4px;font-size:9px;color:var(--t4)}
+
+/* Солнце */
+#sun{position:absolute;z-index:26;pointer-events:none}
+#sun .halo{position:absolute;border-radius:50%;
+  background:radial-gradient(circle,color-mix(in oklab,var(--sol) 11%,transparent) 0%,transparent 58%);
+  animation:breathe 6s cubic-bezier(.4,0,.6,1) infinite}
+#sun .corona{position:absolute;left:-31px;top:-31px;width:62px;height:62px;border-radius:50%;
+  background:radial-gradient(circle,color-mix(in oklab,var(--sol) 46%,var(--sol-d)) 0%,transparent 72%);filter:blur(5px)}
+#sun .core{position:absolute;left:-15px;top:-15px;width:30px;height:30px;border-radius:50%;
+  background:radial-gradient(circle at 38% 34%,#FFD8CF 0%,var(--sol) 38%,var(--sol-d) 100%);
+  box-shadow:0 0 22px color-mix(in oklab,var(--sol) 42%,transparent)}
+#sun .cap{position:absolute;left:-110px;width:220px;text-align:center;
+  font-size:8px;letter-spacing:.32em;color:var(--t4)}
+@keyframes breathe{0%,100%{transform:scale(1);opacity:.85}50%{transform:scale(1.07);opacity:1}}
+
+/* агенты */
+.ag{position:absolute;left:0;top:0;width:32px;height:32px;z-index:30;color:var(--t1);
+  transition:opacity .2s var(--ease)}
+body.nw .ag{width:44px;height:44px}
+.ag .glyph{position:absolute;left:5px;top:5px;display:block}
+body.nw .ag .glyph{left:11px;top:11px}
+.ag .ho{position:absolute;left:1px;top:1px;width:30px;height:30px;border-radius:50%;
+  border:1px solid transparent;transition:border-color .18s,transform .2s var(--ease)}
+.ag:focus-visible .ho{border-color:rgba(242,240,237,.72);transform:scale(1.16)}
+body.nw .ag .ho{left:7px;top:7px}
+.ag:hover .ho{border-color:rgba(242,240,237,.3)}
+.tip{position:absolute;z-index:34;pointer-events:none;width:246px;
+  background:rgba(12,14,18,.86);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
+  border:1px solid rgba(242,240,237,.12);border-radius:calc(var(--R)*2);padding:15px 17px 16px;
+  box-shadow:0 16px 40px rgba(0,0,0,.55);animation:rise .2s var(--ease)}
+@keyframes rise{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+.tip .c{font-size:8px;letter-spacing:.22em;color:var(--t3)}
+.tip .n{margin-top:6px;font-size:13px;font-weight:500;line-height:1.35}
+.tip .e{margin-top:10px;font-size:10.5px;line-height:1.5;color:var(--t2)}
+.tip .s{margin-top:11px;padding-top:10px;border-top:1px solid rgba(242,240,237,.09);
+  font-size:8.5px;letter-spacing:.14em;color:var(--t4)}
+
+/* ---------- анатомия ---------- */
+#anat{position:fixed;inset:0;z-index:40;opacity:0;pointer-events:none;
+  transition:opacity .42s var(--ease)}
+#anat.on{opacity:1;pointer-events:auto}
+#anatSvg{position:absolute;inset:0;width:100%;height:100%}
+.leader{stroke-width:1;fill:none}
+.bound{fill:none;stroke:rgba(242,240,237,.09);stroke-width:1;stroke-dasharray:2 8}
+#beat{position:absolute;border-radius:50%;border:1px solid rgba(242,240,237,.11);
+  animation:spin linear infinite;z-index:42}
+#beat .p{position:absolute;left:50%;top:-2.5px;width:5px;height:5px;margin-left:-2.5px;border-radius:50%;
+  background:rgba(242,240,237,.72);box-shadow:0 0 9px rgba(242,240,237,.5)}
+@keyframes spin{from{transform:rotate(0)}to{transform:rotate(360deg)}}
+#acore{position:absolute;z-index:46;border-radius:50%;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;gap:9px;padding:0 18px;text-align:center;
+  background:radial-gradient(circle at 42% 36%,var(--l4) 0%,var(--l3) 58%,var(--l1) 100%);
+  border:1px solid rgba(242,240,237,.14)}
+#acore .chip{padding:3px 10px;border-radius:var(--R);border:1px solid rgba(242,240,237,.14);
+  background:rgba(7,8,10,.55);font-size:7px;letter-spacing:.24em;color:var(--t2)}
+#acore .cl{font-size:11px;font-weight:300;letter-spacing:.06em;line-height:1.45}
+body.nw #acore{padding:0 14px;gap:7px}
+body.nw #acore .cl{font-size:10px;line-height:1.4;letter-spacing:.03em}
+body.nw #acore .chip{font-size:6.5px;letter-spacing:.18em;padding:2px 8px}
+.nd{position:absolute;width:26px;height:26px;z-index:48;color:var(--t1)}
+.nd .dot{position:absolute;left:6px;top:6px;width:14px;height:14px;border-radius:50%;
+  background:var(--l0);border:1.5px solid var(--dc,rgba(242,240,237,.9));
+  box-shadow:var(--dg,0 0 12px rgba(242,240,237,.3));
+  transition:background .18s,transform .2s var(--ease)}
+.nd:hover .dot,.nd:focus-visible .dot{background:var(--dc,rgba(242,240,237,.9));transform:scale(1.22)}
+.nd.slot .dot{border-style:dashed;border-width:1px;box-shadow:none}
+.nlab{position:absolute;z-index:47;pointer-events:none}
+.nlab .t{font-size:8px;letter-spacing:.24em;color:var(--t3)}
+.nlab .v{margin-top:5px;font-size:11.5px;font-weight:500;line-height:1.4}
+.acard{position:absolute;z-index:52;width:272px;padding:17px 19px 18px;
+  background:rgba(12,14,18,.86);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
+  border:1px solid rgba(242,240,237,.12);border-radius:calc(var(--R)*2);
+  box-shadow:0 18px 44px rgba(0,0,0,.55);pointer-events:none;animation:rise .18s var(--ease)}
+.acard .h{font-size:8px;letter-spacing:.24em;color:var(--t2)}
+.acard .b{margin-top:12px;font-size:11px;line-height:1.55;color:var(--t2)}
+.flank{position:fixed;top:50%;transform:translateY(-50%);width:270px;z-index:50}
+.flank h2{margin:0;font-size:12px;font-weight:300;letter-spacing:.28em}
+.flank p{margin:16px 0 0;font-size:12px;line-height:1.9;color:rgba(242,240,237,.55);
+  text-align:justify;hyphens:auto}
+.flank.l{left:40px;text-align:right}
+.flank.l h2{border-right:1px solid rgba(242,240,237,.5);padding-right:13px}
+.flank.r{right:40px;text-align:left}
+.flank.r h2{border-left:1px solid rgba(242,240,237,.5);padding-left:13px}
+#back{position:fixed;left:40px;top:34px;z-index:62;display:flex;align-items:center;gap:11px;
+  font-size:9px;letter-spacing:.22em;color:var(--t3);opacity:0;pointer-events:none;transition:opacity .3s}
+#back.on{opacity:1;pointer-events:auto}
+#back:hover{color:var(--t1)}
+
+/* ---------- показатели ---------- */
+#mx{position:fixed;inset:0;z-index:45;opacity:0;pointer-events:none;overflow-y:auto;
+  transition:opacity .42s var(--ease)}
+#mx.on{opacity:1;pointer-events:auto}
+.mxin{max-width:1180px;margin:0 auto;padding:132px 40px 70px}
+.mxh{font-size:11px;letter-spacing:.3em;color:var(--t4)}
+.tg{margin-top:26px;display:grid;grid-template-columns:1fr;gap:1px;background:rgba(242,240,237,.08)}
+.tgr{display:grid;grid-template-columns:2.1fr repeat(3,1fr);background:var(--l2)}
+.tgr>div{padding:17px 18px}
+.tgr.hd>div{padding:12px 18px;font-size:8px;letter-spacing:.22em;color:var(--t4)}
+.tgr .nmx{font-size:12px;color:var(--t2);line-height:1.45}
+.tgr .vx{font-size:19px;font-weight:300}
+.bar{margin-top:9px;height:2px;background:rgba(242,240,237,.10);position:relative;overflow:hidden}
+.bar i{position:absolute;inset:0 auto 0 0;width:0;background:rgba(242,240,237,.5);
+  transition:width 1.1s var(--ease)}
+.bar.hot i{background:var(--sol)}
+.fn{margin-top:58px}
+.steps{margin-top:24px;display:grid;grid-template-columns:repeat(7,1fr);gap:14px}
+.stp{padding:17px 15px 18px;border-top:1px solid rgba(242,240,237,.16);position:relative}
+.stp .no{font-size:8px;letter-spacing:.2em;color:var(--t4)}
+.stp .ti{margin-top:9px;font-size:11.5px;font-weight:500;line-height:1.35}
+.stp .rs{margin-top:9px;font-size:9.5px;line-height:1.5;color:var(--t3)}
+.stp .rp{margin-top:11px;font-size:8px;letter-spacing:.13em;color:var(--t4);line-height:1.5}
+.stp.live{border-top-color:rgba(242,240,237,.55)}
+.stp.live .ti{color:var(--t1)}
+.cons{margin-top:58px;display:grid;grid-template-columns:repeat(3,1fr);gap:26px}
+.cn{padding:22px 22px 24px;border:1px solid rgba(242,240,237,.10);border-radius:calc(var(--R)*2);background:rgba(242,240,237,.014)}
+.cn .cnh{font-size:8px;letter-spacing:.22em;color:var(--t4)}
+.cn p{margin:13px 0 0;font-size:11.5px;line-height:1.65;color:var(--t2)}
+.cn.hot{border-color:color-mix(in oklab,var(--sol) 42%,transparent)}
+.cn.hot .cnh{color:var(--sol)}
+
+#anatBox{position:fixed;inset:0}
+#slotList{display:none}
+#sheet{position:fixed;left:0;right:0;bottom:0;z-index:80;transform:translateY(104%);
+  transition:transform .42s var(--ease);
+  background:rgba(12,14,18,.95);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);
+  border-top:1px solid rgba(242,240,237,.14);
+  border-radius:calc(var(--R)*3) calc(var(--R)*3) 0 0;padding:24px 20px 26px}
+#sheet.on{transform:none}
+#sheet .c{font-size:8px;letter-spacing:.22em;color:var(--t3)}
+#sheet .n{margin-top:8px;font-size:16px;font-weight:500;line-height:1.35;padding-right:46px}
+#sheet .e{margin-top:12px;font-size:12.5px;line-height:1.6;color:var(--t2)}
+#sheet .s{margin-top:13px;padding-top:12px;border-top:1px solid rgba(242,240,237,.09);
+  font-size:8.5px;letter-spacing:.14em;color:var(--t4);line-height:1.7}
+#sheet .go{margin-top:20px;display:flex;align-items:center;justify-content:space-between;
+  width:100%;min-height:50px;padding:0 22px;border:1px solid rgba(242,240,237,.42);
+  border-radius:calc(var(--R)*5);font-size:12.5px;letter-spacing:.05em}
+#sheet .cl{position:absolute;right:14px;top:16px;width:44px;height:44px;display:flex;
+  align-items:center;justify-content:center;color:var(--t3);font-size:14px}
+.yr{display:none}
+
+footer{position:fixed;left:40px;bottom:28px;z-index:56;font-size:8.5px;line-height:2.1;
+  letter-spacing:.14em;color:var(--t4);transition:opacity .3s}
+.hide{opacity:0!important;pointer-events:none!important}
+/* ---------------- узкий экран: вертикальная лента ---------------- */
+@media (max-width:1099px){
+  body{overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch}
+  #app{position:relative;inset:auto;min-height:100vh;padding-bottom:34px}
+  .hide{display:none!important}
+
+  header{position:relative;left:auto;top:auto;padding:22px 18px 0}
+  .wm .nm{font-size:13.5px;letter-spacing:.22em}
+  header .sub{margin:11px 0 0;font-size:10px;line-height:1.6}
+
+  #modes{position:relative;right:auto;top:auto;margin:18px 18px 0;display:flex}
+  #modes button{flex:1 1 0;min-height:44px;padding:0 10px;font-size:8.5px;letter-spacing:.16em}
+
+  #back{position:relative;left:auto;top:auto;margin:22px 18px 0;min-height:44px;
+    opacity:1;pointer-events:auto}
+  #back:not(.on){display:none}
+
+  .rail,#railL,#railR{position:relative;top:auto;left:auto;right:auto;width:auto;
+    padding:0 18px;margin-top:22px;text-align:left}
+  .rail .cap{font-size:8px}
+  .rail .rows{margin-top:12px;flex-direction:row;gap:8px;overflow-x:auto;padding-bottom:4px}
+  .rail .rows::-webkit-scrollbar{display:none}
+  .rw,#railR .rw,.rw.on{width:auto;flex:0 0 auto;text-align:left;align-items:center;
+    border:1px solid rgba(242,240,237,.11);border-radius:calc(var(--R)*3);
+    padding:11px 15px;gap:10px;min-height:44px}
+  .rw.on{background:rgba(242,240,237,.07);border-color:rgba(242,240,237,.32)}
+  .rw .k{flex:0 0 auto;font-size:9px}
+  .rw .lv{display:none}
+  .rw .ct{flex:0 0 auto;width:auto;font-size:11px}
+  .rail .note{margin-top:15px;font-size:10.5px;line-height:1.75}
+
+  #stage{position:relative;inset:auto;margin-top:20px}
+  #stage.back{opacity:1;transform:none}
+  .catlab,.tip{display:none}
+  footer{position:relative;left:auto;bottom:auto;margin:26px 18px 0;font-size:8.5px}
+
+  #anat{position:relative;inset:auto;opacity:1;pointer-events:auto}
+  #anat:not(.on){display:none}
+  #anatBox{position:relative;inset:auto;margin-top:8px}
+  .nlab,.acard{display:none}
+  .flank{position:relative;top:auto;transform:none;width:auto;
+    padding:0 18px;margin-top:28px}
+  .flank.l,.flank.r{left:auto!important;right:auto!important;text-align:left}
+  .flank.l h2,.flank.r h2{border-right:0;border-left:1px solid rgba(242,240,237,.5);
+    padding:0 0 0 13px}
+  .flank p{text-align:left;font-size:13px;line-height:1.78}
+  #slotList{display:block;padding:0 18px;margin-top:32px}
+  #slotList .sl{border-top:1px solid rgba(242,240,237,.10);padding:16px 0}
+  #slotList .sl:last-child{border-bottom:1px solid rgba(242,240,237,.10)}
+  #slotList .t{font-size:8px;letter-spacing:.22em;color:var(--t3)}
+  #slotList .v{margin-top:8px;font-size:13.5px;font-weight:500;line-height:1.4}
+  #slotList .b{margin-top:10px;font-size:11.5px;line-height:1.65;color:var(--t3)}
+  #slotList .sl.hot .v{color:var(--sol)}
+
+  #mx{position:relative;inset:auto;overflow:visible;opacity:1;pointer-events:auto}
+  #mx:not(.on){display:none}
+  .mxin{padding:24px 18px 46px;max-width:none}
+  .tgr{grid-template-columns:repeat(3,1fr)}
+  .tgr.hd{display:none}
+  .tgr>.nmx{grid-column:1/-1;padding-bottom:2px}
+  .tgr>div{padding:14px 14px}
+  .tgr .vx{font-size:16px}
+  .yr{display:block;font-size:8px;letter-spacing:.18em;color:var(--t4);margin-bottom:7px}
+  .steps{grid-template-columns:1fr;gap:0;margin-top:18px}
+  .stp{border-top:1px solid rgba(242,240,237,.12);padding:16px 0 18px}
+  .cons{grid-template-columns:1fr;gap:14px;margin-top:40px}
+  .fn{margin-top:44px}
+}
+</style>
+</head>
+<body>
+
+<div id="app">
+
+  <svg id="grain" aria-hidden="true">
+    <filter id="gf"><feTurbulence type="fractalNoise" baseFrequency="0.86" numOctaves="3" stitchTiles="stitch"/></filter>
+    <rect width="100%" height="100%" filter="url(#gf)"/>
+  </svg>
+
+  <header>
+    <div class="wm">
+      <svg width="24" height="24" viewBox="0 0 26 26" aria-hidden="true" style="display:block">
+        <path d="M18.6 4.9A10 10 0 1 0 22.4 15.9" fill="none" stroke="#FF3B20" stroke-width="1.4" stroke-linecap="round"/>
+      </svg>
+      <div class="nm disp">ГЕЛИУС СИНЕРДЖИ</div>
+    </div>
+    <div class="sub">Экосистема ИИ-агентов Корпорации «Синергия» · стратегия от 03.09.2026</div>
+  </header>
+
+  <button id="back"><span class="mono">←</span> К ЭКОСИСТЕМЕ</button>
+
+  <nav id="modes">
+    <button data-mode="eco" class="on">ЭКОСИСТЕМА</button>
+    <button data-mode="mx">ПОКАЗАТЕЛИ</button>
+  </nav>
+
+  <aside class="rail" id="railL">
+    <div class="cap mono">СТАДИЯ ЗРЕЛОСТИ · РАДИУС</div>
+    <div class="rows" id="stageRows"></div>
+    <div class="note" id="stageNote"></div>
+  </aside>
+
+  <aside class="rail" id="railR">
+    <div class="cap mono">ПРОДУКТОВАЯ ЛИНЕЙКА · СЕКТОР</div>
+    <div class="rows" id="catRows"></div>
+    <div class="note" id="catNote"></div>
+  </aside>
+
+  <div id="stage">
+    <svg id="svg" aria-hidden="true"></svg>
+    <div id="sun">
+      <div class="halo"></div><div class="corona"></div><div class="core"></div>
+      <div class="cap mono">СИНЕРГИЯ · ШТАБ ИИ</div>
+    </div>
+  </div>
+
+  <div id="anat">
+    <div id="anatBox">
+      <svg id="anatSvg" aria-hidden="true"></svg>
+      <div id="beat"><div class="p"></div></div>
+      <div id="acore"></div>
+    </div>
+    <div class="flank l"><h2 class="disp">ЗАЧЕМ</h2><p id="fWhy" lang="ru"></p></div>
+    <div class="flank r"><h2 class="disp">КАК</h2><p id="fHow" lang="ru"></p></div>
+    <div id="slotList"></div>
+  </div>
+
+  <div id="sheet" aria-live="polite">
+    <button class="cl" type="button" id="sheetClose" aria-label="Закрыть">&#10005;</button>
+    <div id="sheetBody"></div>
+    <button class="go" type="button" id="sheetGo">Анатомия агента<span class="mono">&#8594;</span></button>
+  </div>
+
+  <div id="mx"><div class="mxin" id="mxin"></div></div>
+
+  <footer id="foot">
+    КОЛЬЦО — СТАДИЯ · СЕКТОР — ЛИНЕЙКА<br>
+    АГЕНТ — КОНТЕКСТ · КЛИК — АНАТОМИЯ<br>
+    ESC — НАЗАД
+  </footer>
+
+</div>
+
+<script>
+'use strict';
+var NB = '\u00A0';
+
+/* ============================= ДАННЫЕ =============================
+   Источник: C:\\Стратегия\\Стратегия_ИИ_агенты_Синергия_драфт.docx
+   Руководитель проекта: Лисный А.О. · 03.09.2026
+   Стадии трёх агентов подтверждены документацией самих проектов.
+   ================================================================== */
+
+var STAGES = [
+  { k:'l3',  n:'АВТОНОМНАЯ',   lv:'L3', rf:0.30, T:39,
+    note:'Процесс выполняется без участия сотрудника, контроль по отклонениям.' },
+  { k:'l2',  n:'ПРОМЫШЛЕННАЯ', lv:'L2', rf:0.50, T:85,
+    note:'Регулярная работа в процессе, контроль выборочный.' },
+  { k:'l1',  n:'ПИЛОТ',        lv:'L1', rf:0.70, T:141,
+    note:'Работа на реальных данных подразделения под полным контролем сотрудника.' },
+  { k:'pro', n:'ПРОТОТИП',     lv:'—',  rf:0.86, T:191,
+    note:'Решение собрано, работает на ограниченной выборке, эффект не подтверждён.' },
+  { k:'reg', n:'РЕЕСТР',       lv:'—',  rf:1.00, T:240,
+    note:'Заявлено в стратегии. Стадия в документе не зафиксирована.' }
+];
+
+var CATS = [
+  { k:'per',  n:'ПЕРСОНАЛЬНЫЕ',  d:'Закрепляются за сотрудником, масштабируются лицензиями',
+    sys:'Synergy AI Chat', tir:'лицензия',
+    mon:['M12 3.2V20.8'] },
+  { k:'sal',  n:'ПРОДАЖИ',       d:'Работают в процессе продаж, тиражируются во все КД',
+    sys:'Synergy CRM · Wazzup · корпоративный чат-центр', tir:'типовой',
+    mon:['M5.6 8H18.4L12 18.4Z'] },
+  { k:'mkt',  n:'МАРКЕТИНГ',     d:'Производят и публикуют контент, ведут SEO и каналы',
+    sys:'DWH · рекламные кабинеты · площадки публикации', tir:'типовой',
+    mon:['M4.7 8.6H19.3','M6.4 15.4H17.6'] },
+  { k:'corp', n:'ОБЩЕКОРПОРАТИВНЫЕ', d:'Обслуживают процессы, общие для всех подразделений',
+    sys:'Почта и календарь · трекер задач · внутренняя вики', tir:'типовой',
+    mon:['M12 3.2V20.8','M3.2 12H20.8'] },
+  { k:'edu',  n:'ОБРАЗОВАТЕЛЬНЫЙ КОНТУР', d:'Учебный процесс, абитуриенты и студенты',
+    sys:'Synergy LMS', tir:'типовой',
+    mon:['M8 5.6V18.4','M16 5.6V18.4'] },
+  { k:'ana',  n:'АНАЛИТИЧЕСКИЕ', d:'Срезы под конкретный запрос, разрабатываются штучно',
+    sys:'DWH · внешние источники', tir:'штучный',
+    mon:['M6 9.6L12 14.2L18 9.6'] },
+  { k:'dev',  n:'РАЗРАБОТКИ',    d:'Пишут и проверяют код под контролем команды',
+    sys:'Трекер задач · тестовый контур', tir:'в стратегии не описано',
+    mon:['M3.2 12H20.8'] }
+];
+
+var RESP = {
+  reg:'Отдел ИИ-агентов', pro:'Отдел ИИ-агентов',
+  l1:'ИИ-автоматизатор и рабочая группа', l2:'Подразделение', l3:'Подразделение'
+};
+
+var A = [
+  { id:'per-claude', c:'per', s:'reg', n:'Персональные ИИ-агенты на базе Claude',
+    role:'Преподаватель и сотрудники подразделений',
+    pr:'Используются внешние ИИ-сервисы вне корпоративного контура',
+    ac:'Выдаём корпоративные лицензии, доступ даём через единое окно Synergy AI Chat',
+    ef:'Работа в корпоративном контуре с журналом аудита' },
+
+  { id:'sal-rop', c:'sal', s:'reg', n:'AI-РОП',
+    role:'Руководитель отдела продаж',
+    pr:'План-факт собирается вручную в Excel и занимает полдня, работа менеджеров разбирается выборочно',
+    ac:'Сборку план-факта и отчётности переводим на агента, разбор работы менеджеров ставим на поток',
+    ef:'−70'+NB+'% времени на отчётность; +30'+NB+'% конверсия лидов в сделки' },
+  { id:'sal-kb', c:'sal', s:'reg', n:'ИИ-база знаний',
+    role:'Менеджер по продажам',
+    pr:'Ответы для клиента ищет на внешних сайтах, корпоративная база запутанная',
+    ac:'Отвечаем из корпоративной базы знаний за секунды',
+    ef:'−60'+NB+'% времени на поиск информации для клиента' },
+  { id:'sal-calls', c:'sal', s:'reg', n:'ИИ-менеджер звонков и чатов',
+    role:'Менеджер по продажам',
+    pr:'Звонки и чаты обрабатываются вручную',
+    ac:'Типовые обращения передаём агенту',
+    ef:'−40'+NB+'% нагрузки по типовым обращениям' },
+  { id:'sal-night', c:'sal', s:'reg', n:'ИИ-агент обработки ночных лидов',
+    role:'Менеджер по продажам',
+    pr:'Заявки, поступившие ночью и в выходные, обрабатываются только в следующий рабочий день',
+    ac:'Отвечаем и квалифицируем лид в момент поступления, в любое время суток',
+    ef:'+20'+NB+'% конверсия лидов, поступивших в нерабочее время' },
+  { id:'sal-kp', c:'sal', s:'reg', n:'ИИ-агент подготовки коммерческого предложения',
+    role:'Менеджер по продажам',
+    pr:'КП собирается вручную под каждого клиента, программы и цены переносятся из разных источников',
+    ac:'Собираем КП по брифу в стиле Корпорации с актуальными программами и ценами',
+    ef:'−70'+NB+'% времени на подготовку КП' },
+  { id:'sal-deal', c:'sal', s:'reg', n:'ИИ-агент фиксации договорённостей',
+    role:'Менеджер по продажам',
+    pr:'Договорённости из мессенджеров теряются, в CRM попадают скриншотами',
+    ac:'Выделяем договорённости из переписки и ставим задачи в CRM',
+    ef:'−30'+NB+'% времени на ведение CRM' },
+  { id:'sal-hist', c:'sal', s:'reg', n:'ИИ-агент истории клиента',
+    role:'Менеджер по работе с действующими клиентами',
+    pr:'Апселл зависит от менеджера, история клиента разрознена по продуктам',
+    ac:'Собираем историю по всем продуктам и подсказываем следующий шаг',
+    ef:'+25'+NB+'% повторные продажи' },
+  { id:'sal-new', c:'sal', s:'reg', n:'ИИ-ассистент нового менеджера',
+    role:'Менеджер в период адаптации',
+    pr:'Не знает истории общения с клиентом, при увольнении коллеги заявка остаётся без владельца',
+    ac:'Готовим сводку по клиенту и перераспределяем сделки',
+    ef:'−50'+NB+'% времени адаптации' },
+  { id:'sal-direct', c:'sal', s:'reg', n:'ИИ-агент управления Яндекс'+NB+'Директом',
+    role:'Интернет-маркетолог',
+    pr:'Кампании ведутся и корректируются вручную',
+    ac:'Ведение кампаний передаём агенту',
+    ef:'−50'+NB+'% времени на ведение кампаний' },
+
+  { id:'mkt-factory', c:'mkt', s:'reg', n:'ИИ-контент-завод',
+    role:'Контент-продюсер',
+    pr:'Ролики и карусели производятся вручную',
+    ac:'Ставим конвейер автоматической нарезки, монтажа и публикации контента',
+    ef:'20 млн охватов в месяц на автоматической нарезке' },
+  { id:'mkt-seo', c:'mkt', s:'reg', n:'AI-SEO редакция',
+    role:'SEO-редактор',
+    pr:'Подготовка и редактура SEO-контента выполняются вручную',
+    ac:'Подготовку и редактуру переводим на агента',
+    ef:'Трёхкратный рост объёма выпускаемого контента' },
+  { id:'mkt-creo', c:'mkt', s:'reg', n:'ИИ-генерация креативов и баннеров',
+    role:'Дизайнер',
+    pr:'Креативы и баннеры под каналы готовятся вручную',
+    ac:'Генерацию креативов переводим на агента',
+    ef:'Трёхкратный рост числа креативов на канал' },
+  { id:'mkt-ana', c:'mkt', s:'reg', n:'ИИ-маркетолог-аналитик',
+    role:'Интернет-маркетолог',
+    pr:'Отдача каналов оценивается постфактум',
+    ac:'Считаем отдачу каналов непрерывно',
+    ef:'−70'+NB+'% времени на отчёт по каналам' },
+
+  { id:'corp-lead', c:'corp', s:'l1', n:'ИИ-ассистент руководителя',
+    role:'Директор департамента, руководитель направления',
+    pr:'Статус поручений и повестка штабов собираются вручную',
+    ac:'Сбор статуса и подготовку повестки переводим на агента',
+    ef:'−3 часа рутины в день',
+    ev:'C:\\Stepansky_automation — реестр на 63 поручения, боевой бот в Telegram, три профиля через общую доску' },
+  { id:'corp-pm', c:'corp', s:'reg', n:'ИИ-ассистент менеджера проектов',
+    role:'Менеджер проектов',
+    pr:'Статусы, протоколы и контроль задач ведутся вручную',
+    ac:'Ведение статусов и протоколов передаём агенту',
+    ef:'−50'+NB+'% времени на статусы и протоколы' },
+  { id:'corp-pres', c:'corp', s:'reg', n:'ИИ-агент создания презентаций', thin:1 },
+  { id:'corp-doc', c:'corp', s:'reg', n:'ИИ-агент форматирования докладов', thin:1 },
+
+  { id:'edu-acd', c:'edu', s:'l1', n:'ИИ-расчёт академической разницы',
+    role:'Специалист учебного отдела',
+    pr:'Академическая разница считается вручную по каждому студенту',
+    ac:'Расчёт переводим на агента',
+    ef:'−80'+NB+'% времени на расчёт по студенту',
+    attn:'152-ФЗ: документы уходят во внешний сервис распознавания',
+    ev:'C:\\academ_dif — сходится 24 дела из 29, средняя ошибка +1,5 дисциплины' },
+  { id:'edu-prm', c:'edu', s:'l1', n:'ИИ-ассистент приёмной комиссии',
+    role:'Менеджер приёмной комиссии',
+    pr:'Абитуриент ждёт ответа, в нерабочее время обращения не обрабатываются',
+    ac:'Автоответы на частые вопросы абитуриентов, в том числе в нерабочее время',
+    ef:'Соблюдение SLA по всем обращениям',
+    ev:'C:\\priemka — цикл приёма 10 минут, 388 обращений с документами' },
+
+  { id:'ana-analyst', c:'ana', s:'reg', n:'ИИ-ассистент аналитика и аналитик рынка EdTech',
+    role:'Аналитик',
+    pr:'Разовые запросы по данным собираются вручную из нескольких систем',
+    ac:'Закрываем запросы агентом со сквозным доступом к системам',
+    ef:'Пятикратный рост скорости исследований' },
+  { id:'ana-reviews', c:'ana', s:'reg', n:'ИИ-мониторинг отзывов и упоминаний',
+    role:'Директор по маркетингу',
+    pr:'Упоминания и отзывы на агрегаторах отслеживаются вручную и выборочно, негатив обнаруживается поздно',
+    ac:'Отслеживаем упоминания непрерывно, негатив передаём ответственному сразу',
+    ef:'Реакция на негативный отзыв в течение суток; −90'+NB+'% времени на сбор упоминаний' },
+  { id:'ana-mna', c:'ana', s:'reg', n:'ИИ-агент анализа M&A-сделок', thin:1 },
+  { id:'ana-labor', c:'ana', s:'reg', n:'ИИ-мониторинг рынка труда', thin:1 },
+
+  { id:'dev-code', c:'dev', s:'reg', n:'ИИ-агент автономной разработки кода',
+    role:'Разработчик и тестировщик',
+    pr:'Типовые доработки выполняются вручную',
+    ac:'Передаём на автономную разработку под контролем команды',
+    ef:'Четырёхкратный рост производительности, пятикратное снижение трудозатрат' },
+  { id:'dev-it', c:'dev', s:'reg', n:'ИИ-автоматизация типовых ИТ-операций',
+    role:'Инженер поддержки',
+    pr:'Типовые тикеты обрабатываются вручную',
+    ac:'Обработку типовых тикетов переводим на агента',
+    ef:'60'+NB+'% типовых тикетов закрывается без инженера' }
+];
+
+var TARGETS = [
+  { n:'Прикладные ИИ-агенты в промышленной эксплуатации, накопительно', v:[30,80,150], max:150 },
+  { n:'Из них тиражируемых типовых решений', v:[8,20,35], max:150 },
+  { n:'Доля агентов на уровне автономности L3', v:[10,35,60], max:100, pc:1, hot:1 },
+  { n:'Пользователи персональных ИИ-агентов (лицензии)', v:[100,250,500], max:500 }
+];
+
+var FUNNEL = [
+  { t:'Дайджест ИИ-автоматизации', r:'Подразделение видит применимые сценарии', p:'Отдел ИИ-агентов' },
+  { t:'Рабочая сессия', r:'Отобраны и приоритизированы задачи', p:'Отдел ИИ-агентов и руководитель подразделения' },
+  { t:'Формирование реестра', r:'Утверждённый приоритизированный перечень', p:'Отдел ИИ-агентов' },
+  { t:'Пилот L1', r:'Агент работает на реальных данных под контролем', p:'ИИ-автоматизатор и рабочая группа', live:1 },
+  { t:'Приёмка и оцифровка эффекта', r:'Подтверждённый эффект, решение о переводе в регулярную работу', p:'Руководитель подразделения' },
+  { t:'Промышленная эксплуатация L2–L3', r:'Процесс работает штатно', p:'Подразделение' },
+  { t:'Тиражирование', r:'Агент внедрён в смежные подразделения', p:'Отдел ИИ-агентов' }
+];
+
+var CONS = [
+  { h:'ДОСТУП К ДАННЫМ',
+    p:'Корпоративные системы не готовы отдавать данные ИИ-агентам: доступ к Synergy'+NB+'CRM, Synergy'+NB+'LMS и DWH выстроен под людей и отчётность, а не под программные запросы.' },
+  { h:'СЛОЙ MCP-КОННЕКТОРОВ', hot:1,
+    p:'Без единого слоя MCP-коннекторов каждый агент требует отдельной интеграции, и срок вывода агента в работу определяет не разработка самого агента, а получение доступа к данным.' },
+  { h:'МАСШТАБИРОВАНИЕ ДО 150',
+    p:'Архитектуру корпоративных систем требуется перестроить под быстрый программный доступ. Без этого масштабирование упирается в интеграции, а не в число разработчиков.' }
+];
+
+/* ============================= СОСТОЯНИЕ ============================= */
+
+var st = {
+  mode:'eco', hoverStage:null, hoverCat:null, hoverAgent:null,
+  focus:null, hotSlot:null, W:0, H:0, R:0, cx:0, cy:0,
+  narrow:false, box:0, sheet:null
+};
+var phase = STAGES.map(function(){ return 0; });
+var lastT = 0, raf = 0;
+
+var byCat = {}, byStage = {};
+CATS.forEach(function(c){ byCat[c.k] = []; });
+STAGES.forEach(function(s){ byStage[s.k] = 0; });
+A.forEach(function(a){ byCat[a.c].push(a); byStage[a.s] += 1; });
+
+var SLOTS = [
+  { k:'role', t:'РОЛЬ',          a:-90, pos:'top' },
+  { k:'ef',   t:'ЭФФЕКТ',        a:-35, pos:'r' },
+  { k:'cat',  t:'ЛИНЕЙКА',       a:35,  pos:'r' },
+  { k:'st',   t:'СТАДИЯ',        a:90,  pos:'bot' },
+  { k:'resp', t:'ОТВЕТСТВЕННЫЙ', a:145, pos:'l' },
+  { k:'sys',  t:'СИСТЕМЫ',       a:215, pos:'l' }
+];
+
+function cat(k){ for (var i=0;i<CATS.length;i++) if (CATS[i].k===k) return CATS[i]; return CATS[0]; }
+function stg(k){ for (var i=0;i<STAGES.length;i++) if (STAGES[i].k===k) return STAGES[i]; return STAGES[0]; }
+function agent(id){ for (var i=0;i<A.length;i++) if (A[i].id===id) return A[i]; return null; }
+function el(t,c){ var e=document.createElement(t); if(c) e.className=c; return e; }
+function ns(t){ return document.createElementNS('http://www.w3.org/2000/svg',t); }
+
+/* Сектор категории пропорционален числу агентов в ней: ширина сектора
+   и есть вес линейки. Одиночная категория получает минимум, иначе в неё
+   не попасть курсором. */
+var WSUM = 0;
+CATS.forEach(function(c){ c._w = Math.max(1.7, byCat[c.k].length); WSUM += c._w; });
+var acc = -90;
+CATS.forEach(function(c){ c.a0 = acc; c.aw = c._w / WSUM * 360; acc += c.aw; });
+
+/* базовый угол агента внутри своего сектора и кольца */
+A.forEach(function(a){
+  var c = cat(a.c);
+  var peers = byCat[a.c].filter(function(x){ return x.s === a.s; });
+  var idx = peers.indexOf(a);
+  var n = peers.length;
+  var pad = c.aw * 0.15;
+  var span = c.aw - pad * 2;
+  a.a0 = c.a0 + pad + (n === 1 ? span / 2 : span * idx / (n - 1));
+});
+
+/* ============================= ГЕОМЕТРИЯ ============================= */
+
+function measure(){
+  st.W = window.innerWidth; st.H = window.innerHeight;
+  st.narrow = st.W < 1100;
+  document.body.classList.toggle('nw', st.narrow);
+  if (st.narrow) {
+    /* Телефон: матрица — квадратный блок в потоке, остальное листается под ним.
+       Орбиты стоят: на касании точность важнее движения. */
+    st.box = Math.min(st.W - 20, 560);
+    stageEl.style.height = st.box + 'px';
+    if (anatBox) anatBox.style.height = st.box + 'px';
+    st.cx = st.W / 2; st.cy = st.box / 2;
+    st.R = Math.max(120, Math.min(st.W / 2 - 26, st.box / 2 - 26));
+  } else {
+    stageEl.style.height = '';
+    if (anatBox) anatBox.style.height = '';
+    var availW = st.W - 636;
+    var availH = st.H - 210;
+    st.R = Math.max(150, Math.min(availW / 2 - 56, availH / 2 - 34));
+    st.cx = st.W / 2; st.cy = 118 + availH / 2;
+  }
+}
+
+/* ============================= БОРТА ============================= */
+
+function buildRails(){
+  var L = document.getElementById('stageRows'); L.textContent='';
+  STAGES.forEach(function(s){
+    var b = el('button','rw' + (byStage[s.k]===0 ? ' nil':''));
+    b.dataset.stage = s.k;
+    b.innerHTML = '<span class="k mono">'+s.n+'</span><span class="lv mono">'+s.lv+
+      '</span><span class="ct mono">'+byStage[s.k]+'</span>';
+    b.addEventListener('mouseenter', function(){ st.hoverStage=s.k; paint(); note(); });
+    b.addEventListener('mouseleave', function(){ st.hoverStage=null; paint(); note(); });
+    b.addEventListener('focus', function(){ st.hoverStage=s.k; paint(); note(); });
+    b.addEventListener('blur', function(){ st.hoverStage=null; paint(); note(); });
+    L.appendChild(b);
+  });
+  var R = document.getElementById('catRows'); R.textContent='';
+  CATS.forEach(function(c){
+    var b = el('button','rw');
+    b.dataset.cat = c.k;
+    b.innerHTML = '<span class="k mono">'+c.n+'</span><span class="ct mono">'+byCat[c.k].length+'</span>';
+    b.addEventListener('mouseenter', function(){ st.hoverCat=c.k; paint(); note(); });
+    b.addEventListener('mouseleave', function(){ st.hoverCat=null; paint(); note(); });
+    b.addEventListener('focus', function(){ st.hoverCat=c.k; paint(); note(); });
+    b.addEventListener('blur', function(){ st.hoverCat=null; paint(); note(); });
+    R.appendChild(b);
+  });
+  note();
+}
+
+var THIN = A.filter(function(a){ return a.thin; }).length;
+function note(){
+  var sn = document.getElementById('stageNote');
+  var cn = document.getElementById('catNote');
+  sn.textContent = st.hoverStage ? stg(st.hoverStage).note
+    : 'В стратегии заявлено 10 действующих агентов. Стадия трёх подтверждена документацией проектов, у остальных в документе не зафиксирована.';
+  cn.textContent = st.hoverCat ? cat(st.hoverCat).d
+    : A.length + ' агента названы в стратегии. У ' + THIN + ' из них не описаны проблема, действие и эффект — их обод пунктирный.';
+}
+
+/* ============================= СЦЕНА ============================= */
+
+var svg = document.getElementById('svg');
+var stageEl = document.getElementById('stage');
+var agEls = [], catLabs = [], tipEl = null;
+
+function buildStage(){
+  svg.textContent = '';
+  agEls.forEach(function(e){ e.remove(); });
+  catLabs.forEach(function(e){ e.remove(); });
+  agEls = []; catLabs = [];
+
+  var gWedge = ns('g'), gRing = ns('g'), gSpoke = ns('g'), gChord = ns('g'), gCorr = ns('g');
+  svg.appendChild(gWedge); svg.appendChild(gSpoke); svg.appendChild(gRing);
+  svg.appendChild(gChord); svg.appendChild(gCorr);
+  svg.dataset.ready = '1';
+  svg._w = gWedge; svg._r = gRing; svg._s = gSpoke; svg._c = gChord; svg._k = gCorr;
+
+  /* клинья категорий */
+  CATS.forEach(function(c,i){
+    var p = ns('path'); p.setAttribute('class','wedge'); p.dataset.cat = c.k;
+    gWedge.appendChild(p);
+  });
+  /* спицы */
+  CATS.forEach(function(){ var l = ns('line'); l.setAttribute('class','spoke'); gSpoke.appendChild(l); });
+  /* кольца + коридоры */
+  STAGES.forEach(function(s){
+    var c = ns('circle'); c.setAttribute('class','ring'); c.dataset.stage = s.k; gRing.appendChild(c);
+    var k = ns('circle'); k.setAttribute('class','corridor'); k.setAttribute('pointer-events','stroke');
+    k.addEventListener('mouseenter', function(){ st.hoverStage=s.k; paint(); note(); });
+    k.addEventListener('mouseleave', function(){ st.hoverStage=null; paint(); note(); });
+    gCorr.appendChild(k);
+  });
+
+  /* подписи категорий */
+  CATS.forEach(function(c){
+    var d = el('div','catlab'); d.dataset.cat = c.k;
+    d.innerHTML = '<span>'+c.n+'</span><span class="cc mono">'+byCat[c.k].length+'</span>';
+    stageEl.appendChild(d); catLabs.push(d);
+  });
+
+  /* агенты */
+  A.forEach(function(a){
+    var b = el('button','ag');
+    b.type = 'button';
+    b.setAttribute('aria-label', a.n + ' — ' + cat(a.c).n + ', ' + stg(a.s).n);
+    var ho = el('span','ho'); b.appendChild(ho);
+    var g = ns('svg'); g.setAttribute('class','glyph'); g.setAttribute('width','22');
+    g.setAttribute('height','22'); g.setAttribute('viewBox','0 0 24 24'); g.setAttribute('aria-hidden','true');
+    var ring = ns('circle');
+    ring.setAttribute('cx','12'); ring.setAttribute('cy','12'); ring.setAttribute('r','9');
+    ring.setAttribute('fill','none'); ring.setAttribute('stroke','currentColor');
+    ring.setAttribute('stroke-width','1.6');
+    if (a.thin) ring.setAttribute('stroke-dasharray','2.6 2.6');
+    g.appendChild(ring);
+    cat(a.c).mon.forEach(function(d){
+      var p = ns('path'); p.setAttribute('d',d); p.setAttribute('fill','none');
+      p.setAttribute('stroke','currentColor'); p.setAttribute('stroke-width','1.6');
+      p.setAttribute('stroke-linecap','round'); p.setAttribute('stroke-linejoin','round');
+      g.appendChild(p);
+    });
+    b.appendChild(g);
+    b.addEventListener('mouseenter', function(){ st.hoverAgent=a.id; st.hoverStage=a.s; paint(); });
+    b.addEventListener('mouseleave', function(){ st.hoverAgent=null; paint(); });
+    b.addEventListener('focus', function(){ st.hoverAgent=a.id; st.hoverStage=a.s; paint(); });
+    b.addEventListener('blur', function(){ st.hoverAgent=null; paint(); });
+    b.addEventListener('click', function(){
+      if (st.narrow) openSheet(a.id); else openAnat(a.id);
+    });
+    stageEl.appendChild(b);
+    a._el = b; a._ring = ring;
+    agEls.push(b);
+  });
+}
+
+function pos(a){
+  var s = stg(a.s);
+  var th = (phase[STAGES.indexOf(s)] + a.a0) * Math.PI / 180;
+  var r = st.R * s.rf;
+  return [ st.cx + r * Math.cos(th), st.cy + r * Math.sin(th) ];
+}
+
+function paint(){
+  var sun = document.getElementById('sun');
+  sun.style.left = st.cx + 'px'; sun.style.top = st.cy + 'px';
+  var hr = st.R * 0.34;
+  var hl = sun.querySelector('.halo');
+  hl.style.width = (hr*2)+'px'; hl.style.height = (hr*2)+'px';
+  hl.style.left = (-hr)+'px'; hl.style.top = (-hr)+'px';
+  sun.querySelector('.cap').style.top = (st.R*0.155)+'px';
+
+  var hA = st.hoverAgent ? agent(st.hoverAgent) : null;
+  var hC = hA ? hA.c : st.hoverCat;
+  var hS = st.hoverStage;
+
+  /* клинья и спицы */
+  var wedges = svg._w.childNodes, spokes = svg._s.childNodes;
+  CATS.forEach(function(c,i){
+    var a0 = c.a0 * Math.PI/180, a1 = (c.a0 + c.aw) * Math.PI/180;
+    var Rr = st.R * 1.04;
+    var x0 = st.cx + Rr*Math.cos(a0), y0 = st.cy + Rr*Math.sin(a0);
+    var x1 = st.cx + Rr*Math.cos(a1), y1 = st.cy + Rr*Math.sin(a1);
+    var w = wedges[i];
+    w.setAttribute('d','M'+st.cx+' '+st.cy+' L'+x0.toFixed(1)+' '+y0.toFixed(1)+
+      ' A'+Rr.toFixed(1)+' '+Rr.toFixed(1)+' 0 '+(c.aw>180?1:0)+' 1 '+
+      x1.toFixed(1)+' '+y1.toFixed(1)+' Z');
+    w.setAttribute('class','wedge' + (hC===c.k ? ' on' : ''));
+    var sp = spokes[i];
+    sp.setAttribute('x1', st.cx); sp.setAttribute('y1', st.cy);
+    sp.setAttribute('x2', x0.toFixed(1)); sp.setAttribute('y2', y0.toFixed(1));
+
+    /* подпись категории */
+    var mid = (c.a0 + c.aw/2) * Math.PI/180;
+    var lr = st.R * 1.07;
+    var lx = st.cx + lr*Math.cos(mid), ly = st.cy + lr*Math.sin(mid);
+    var d = catLabs[i];
+    var right = Math.cos(mid) >= 0;
+    d.style.left = (right ? lx : lx - 146) + 'px';
+    d.style.top = (ly - 14) + 'px';
+    d.style.textAlign = right ? 'left' : 'right';
+    d.className = 'catlab' + (hC===c.k ? ' on' : '');
+    d.style.opacity = (hC && hC !== c.k) ? .34 : 1;
+  });
+
+  /* кольца */
+  var rings = svg._r.childNodes, corrs = svg._k.childNodes;
+  STAGES.forEach(function(s,i){
+    var r = st.R * s.rf;
+    var c = rings[i];
+    c.setAttribute('cx', st.cx); c.setAttribute('cy', st.cy); c.setAttribute('r', r.toFixed(1));
+    c.setAttribute('class','ring' + (byStage[s.k]===0 ? ' nil':'') + (hS===s.k ? ' on':''));
+    var k = corrs[i];
+    k.setAttribute('cx', st.cx); k.setAttribute('cy', st.cy); k.setAttribute('r', r.toFixed(1));
+  });
+
+  /* агенты */
+  var P = {};
+  A.forEach(function(a){
+    var p = pos(a); P[a.id] = p;
+    var op = 1;
+    if (hA) op = (a.id === hA.id) ? 1 : (a.c === hA.c ? .78 : .18);
+    else if (hC) op = (a.c === hC) ? 1 : .2;
+    else if (hS) op = (a.s === hS) ? 1 : .26;
+    op = Math.max(.16, op);
+    var col = a.attn ? 'var(--sol)' : 'rgba(242,240,237,.92)';
+    var e = a._el;
+    var half = st.narrow ? 22 : 16;
+    e.style.transform = 'translate('+(p[0]-half).toFixed(1)+'px,'+(p[1]-half).toFixed(1)+'px)';
+    e.style.opacity = op.toFixed(2);
+    e.style.color = col;
+    e.style.zIndex = (hA && a.id===hA.id) ? 33 : 30;
+    e.querySelector('.ho').style.boxShadow = a.attn
+      ? '0 0 16px color-mix(in oklab, var(--sol) 45%, transparent)' : 'none';
+  });
+
+  /* хорды: агенты одной категории */
+  var g = svg._c; g.textContent = '';
+  if (hA) {
+    byCat[hA.c].forEach(function(o){
+      if (o.id === hA.id) return;
+      var Aa = P[hA.id], Bb = P[o.id];
+      var qx = (Aa[0]+Bb[0])/2*0.4 + st.cx*0.6;
+      var qy = (Aa[1]+Bb[1])/2*0.4 + st.cy*0.6;
+      var p = ns('path'); p.setAttribute('class','chord');
+      p.setAttribute('d','M'+Aa[0].toFixed(1)+' '+Aa[1].toFixed(1)+' Q'+qx.toFixed(1)+' '+qy.toFixed(1)+
+        ' '+Bb[0].toFixed(1)+' '+Bb[1].toFixed(1));
+      g.appendChild(p);
+    });
+  }
+
+  /* подсказка */
+  if (tipEl) { tipEl.remove(); tipEl = null; }
+  if (hA && !st.narrow) {
+    var p = P[hA.id];
+    var t = el('div','tip');
+    var right = p[0] <= st.cx;
+    t.innerHTML =
+      '<div class="c mono">'+cat(hA.c).n+'</div>'+
+      '<div class="n">'+hA.n+'</div>'+
+      '<div class="e">'+(hA.ef || 'Плановый эффект в стратегии не описан')+'</div>'+
+      '<div class="s mono">'+stg(hA.s).n+' · '+stg(hA.s).lv+
+        (hA.ev ? ' · ПОДТВЕРЖДЕНО КОДОМ' : '')+'</div>';
+    t.style.left = (right ? p[0]+28 : p[0]-28-246) + 'px';
+    t.style.top = Math.max(12, Math.min(st.H-190, p[1]-40)) + 'px';
+    stageEl.appendChild(t); tipEl = t;
+  }
+
+  /* синхронизация бортов */
+  document.querySelectorAll('#stageRows .rw').forEach(function(b){
+    b.classList.toggle('on', b.dataset.stage === hS);
+  });
+  document.querySelectorAll('#catRows .rw').forEach(function(b){
+    b.classList.toggle('on', b.dataset.cat === hC);
+  });
+}
+
+/* ============================= ЦИКЛ ============================= */
+
+function tick(now){
+  var dt = Math.min(.05, (now - lastT)/1000); lastT = now;
+  /* Геометрия пересчитывается в цикле: окно может измениться до того,
+     как отработает resize, и тогда матрица осталась бы от прежнего размера. */
+  if (window.innerWidth !== st.W || window.innerHeight !== st.H) {
+    measure();
+    if (st.mode === 'anat') paintAnat();
+  }
+  var frozen = st.mode !== 'eco' || st.hoverAgent != null || st.narrow;
+  if (!frozen) {
+    for (var i=0;i<STAGES.length;i++){
+      if (st.hoverStage === STAGES[i].k) continue;
+      phase[i] = (phase[i] + 360/STAGES[i].T * dt) % 360;
+    }
+  }
+  if (st.mode === 'eco' && !st.narrow) paint();
+  raf = requestAnimationFrame(tick);
+}
+
+/* ============================= АНАТОМИЯ ============================= */
+
+var anat = document.getElementById('anat');
+var anatBox = document.getElementById('anatBox');
+var anatSvg = document.getElementById('anatSvg');
+var sheet = document.getElementById('sheet');
+var acore = document.getElementById('acore');
+var beat = document.getElementById('beat');
+var backBtn = document.getElementById('back');
+var ndEls = [], nlEls = [], cardEl = null;
+
+function slotVal(a, k){
+  var c = cat(a.c), s = stg(a.s);
+  if (k==='role') return a.role || 'В стратегии не описана';
+  if (k==='ef')   return a.ef || 'В стратегии не описан';
+  if (k==='cat')  return c.n.charAt(0) + c.n.slice(1).toLowerCase() + ' · ' + c.tir;
+  if (k==='st')   return s.n.charAt(0) + s.n.slice(1).toLowerCase() + (s.lv!=='—' ? ' · '+s.lv : '');
+  if (k==='resp') return RESP[a.s];
+  return c.sys;
+}
+function slotLines(a, k){
+  var c = cat(a.c), s = stg(a.s);
+  if (k==='role') return a.role
+    ? ['Агент работает на роль, а не на подразделение целиком.', a.role]
+    : ['Роль сотрудника в стратегии не указана — агент назван только в продуктовой линейке.'];
+  if (k==='ef')   return a.ef
+    ? [a.ef, 'Базовый замер до старта пилота, контрольный — через три месяца после перевода в промышленную эксплуатацию.']
+    : ['Плановый эффект в стратегии не описан.', 'Без замера эффекта агент не проходит приёмку и не переводится на L2.'];
+  if (k==='cat')  return [c.d, 'Тиражируемость: ' + c.tir + '.'];
+  if (k==='st')   return a.ev
+    ? [s.note, 'Подтверждено документацией проекта: ' + a.ev]
+    : [s.note, 'Соответствие агента стадии в стратегии не зафиксировано.'];
+  if (k==='resp') return [RESP[a.s], 'Этап воронки внедрения задаёт ответственного: до пилота — отдел ИИ-агентов, на пилоте — автоматизатор с рабочей группой, дальше — подразделение.'];
+  return [c.sys, 'Без единого слоя MCP-коннекторов срок вывода агента определяет получение доступа к данным, а не разработка.'];
+}
+
+function buildAnat(a){
+  anatSvg.textContent = '';
+  ndEls.forEach(function(e){ e.remove(); }); ndEls = [];
+  nlEls.forEach(function(e){ e.remove(); }); nlEls = [];
+  if (cardEl) { cardEl.remove(); cardEl = null; }
+
+  var defs = ns('defs');
+  [['leaderA','#F2F0ED',.44],['leaderB','#F2F0ED',.16],['leaderC','#FF3B20',.62]].forEach(function(d){
+    var g = ns('radialGradient');
+    g.setAttribute('id',d[0]); g.setAttribute('gradientUnits','userSpaceOnUse');
+    var s0 = ns('stop'); s0.setAttribute('offset','0.34');
+    s0.setAttribute('stop-color',d[1]); s0.setAttribute('stop-opacity','0');
+    var s1 = ns('stop'); s1.setAttribute('offset','1');
+    s1.setAttribute('stop-color',d[1]); s1.setAttribute('stop-opacity',String(d[2]));
+    g.appendChild(s0); g.appendChild(s1); defs.appendChild(g);
+  });
+  anatSvg.appendChild(defs);
+  anatSvg._defs = defs;
+
+  var bound = ns('circle'); bound.setAttribute('class','bound'); anatSvg.appendChild(bound);
+  anatSvg._bound = bound;
+  anatSvg._lines = [];
+  SLOTS.forEach(function(){ var l = ns('line'); l.setAttribute('class','leader');
+    anatSvg.appendChild(l); anatSvg._lines.push(l); });
+
+  var c = cat(a.c), s = stg(a.s);
+  acore.innerHTML =
+    '<svg width="34" height="34" viewBox="0 0 24 24" aria-hidden="true" style="color:rgba(242,240,237,.9)">'+
+      '<circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="1.2"'+
+        (a.thin ? ' stroke-dasharray="2.6 2.6"' : '')+'/>'+
+      c.mon.map(function(d){ return '<path d="'+d+'" fill="none" stroke="currentColor" stroke-width="1.2" '+
+        'stroke-linecap="round" stroke-linejoin="round"/>'; }).join('')+
+    '</svg>'+
+    '<div class="chip mono">'+c.n+'</div>'+
+    '<div class="cl disp">'+a.n+'</div>';
+
+  document.getElementById('fWhy').textContent = a.pr
+    || 'В стратегии этот агент назван только в продуктовой линейке: проблема, которую он снимает, не описана. До рабочей сессии с подразделением его нельзя ни приоритизировать, ни оценить.';
+  var acT = a.ac ? (/[.!?]$/.test(a.ac) ? a.ac : a.ac + '.') + ' ' : '';
+  var efT = a.ef ? 'Плановый эффект: ' + a.ef.charAt(0).toLowerCase() + a.ef.slice(1) + '.' : '';
+  document.getElementById('fHow').textContent = (acT + efT)
+    || 'Действие и плановый эффект в стратегии не описаны. Первый шаг воронки — дайджест ИИ-автоматизации и рабочая сессия с подразделением.';
+
+  SLOTS.forEach(function(sl, i){
+    var b = el('button','nd' + ((sl.k==='ef' && !a.ef) || (sl.k==='role' && !a.role) ? ' slot' : ''));
+    b.type = 'button';
+    b.setAttribute('aria-label', sl.t + ': ' + slotVal(a, sl.k));
+    b.innerHTML = '<span class="dot"></span>';
+    var hot = (sl.k === 'st' && a.attn);
+    b.style.setProperty('--dc', hot ? 'var(--sol)' : 'rgba(242,240,237,.9)');
+    b.style.setProperty('--dg', hot ? '0 0 16px rgba(255,59,32,.5)' : '0 0 12px rgba(242,240,237,.3)');
+    b.addEventListener('click', function(){
+      if (!st.narrow) return;
+      var row = document.querySelectorAll('#slotList .sl')[i];
+      if (!row) return;
+      row.scrollIntoView({ behavior:'smooth', block:'center' });
+      row.style.transition = 'background .6s var(--ease)';
+      row.style.background = 'rgba(242,240,237,.07)';
+      setTimeout(function(){ row.style.background = ''; }, 900);
+    });
+    b.addEventListener('mouseenter', function(){ if (!st.narrow) { st.hotSlot = sl.k; paintAnat(); } });
+    b.addEventListener('mouseleave', function(){ st.hotSlot = null; paintAnat(); });
+    b.addEventListener('focus', function(){ if (!st.narrow) { st.hotSlot = sl.k; paintAnat(); } });
+    b.addEventListener('blur', function(){ st.hotSlot = null; paintAnat(); });
+    b.style.animation = 'rise .5s var(--ease) '+(0.14 + i*0.055)+'s both';
+    anatBox.appendChild(b); ndEls.push(b);
+
+    var d = el('div','nlab');
+    d.innerHTML = '<div class="t mono">'+sl.t+'</div><div class="v"></div>';
+    d.querySelector('.v').textContent = slotVal(a, sl.k);
+    if (hot) d.querySelector('.v').style.color = 'var(--sol)';
+    d.style.animation = 'rise .5s var(--ease) '+(0.2 + i*0.055)+'s both';
+    anatBox.appendChild(d); nlEls.push(d);
+  });
+
+  beat.style.animationDuration = s.T + 's';
+
+  /* Тот же набор шести слотов списком — для телефона, где выноски не помещаются. */
+  var list = document.getElementById('slotList');
+  list.textContent = '';
+  SLOTS.forEach(function(sl){
+    var hotS = (sl.k === 'st' && a.attn);
+    var d = el('div','sl' + (hotS ? ' hot' : ''));
+    var tt = el('div','t mono'); tt.textContent = sl.t;
+    var vv = el('div','v'); vv.textContent = slotVal(a, sl.k);
+    var bb = el('div','b'); bb.textContent = slotLines(a, sl.k).join(' ');
+    d.appendChild(tt); d.appendChild(vv); d.appendChild(bb);
+    list.appendChild(d);
+  });
+}
+
+function paintAnat(){
+  var a = agent(st.focus); if (!a) return;
+  /* Композиция анатомии держит собственную ширину: на широком экране
+     фланги не уезжают к краям окна, а остаются при схеме. */
+  var cx, cy, Rn;
+  if (st.narrow) {
+    cx = st.W/2; cy = st.box/2;
+    Rn = Math.max(110, Math.min(st.W/2 - 30, st.box/2 - 30));
+  } else {
+    var contentW = Math.min(st.W - 80, 1820);
+    Rn = Math.max(150, Math.min(contentW/2 - 300, st.H/2 - 118));
+    cx = st.W/2; cy = st.H/2;
+    var fL = document.querySelector('.flank.l'), fR = document.querySelector('.flank.r');
+    var edge = Math.max(24, cx - contentW/2);
+    fL.style.left = edge + 'px'; fL.style.right = 'auto';
+    fR.style.right = edge + 'px'; fR.style.left = 'auto';
+  }
+  var r1 = st.narrow ? Rn*0.50 : Rn*0.40;
+  var r2 = Rn*0.93;
+  var cr = st.narrow ? Rn*0.44 : Rn*0.335;
+  var br = st.narrow ? Rn*0.57 : Rn*0.46;
+
+  anatSvg._defs.childNodes.forEach(function(g){
+    g.setAttribute('cx',cx); g.setAttribute('cy',cy); g.setAttribute('r',Rn);
+  });
+  anatSvg._bound.setAttribute('cx',cx); anatSvg._bound.setAttribute('cy',cy);
+  anatSvg._bound.setAttribute('r',Rn.toFixed(1));
+
+  acore.style.width = (cr*2)+'px'; acore.style.height = (cr*2)+'px';
+  acore.style.left = (cx-cr)+'px'; acore.style.top = (cy-cr)+'px';
+  beat.style.width = (br*2)+'px'; beat.style.height = (br*2)+'px';
+  beat.style.left = (cx-br)+'px'; beat.style.top = (cy-br)+'px';
+
+  if (cardEl) { cardEl.remove(); cardEl = null; }
+
+  SLOTS.forEach(function(sl, i){
+    var th = sl.a * Math.PI/180, ux = Math.cos(th), uy = Math.sin(th);
+    var nx = cx + Rn*ux, ny = cy + Rn*uy;
+    var thin = (sl.k==='ef' && !a.ef) || (sl.k==='role' && !a.role);
+    var hot = (sl.k==='st' && a.attn);
+
+    var l = anatSvg._lines[i];
+    l.setAttribute('x1',(cx+r1*ux).toFixed(1)); l.setAttribute('y1',(cy+r1*uy).toFixed(1));
+    l.setAttribute('x2',(cx+r2*ux).toFixed(1)); l.setAttribute('y2',(cy+r2*uy).toFixed(1));
+    l.setAttribute('stroke', hot ? 'url(#leaderC)' : (thin ? 'url(#leaderB)' : 'url(#leaderA)'));
+    l.setAttribute('stroke-dasharray', thin ? '2 6' : 'none');
+
+    ndEls[i].style.left = (nx-13).toFixed(1)+'px';
+    ndEls[i].style.top  = (ny-13).toFixed(1)+'px';
+
+    var d = nlEls[i];
+    if (sl.pos==='top'){ d.style.left=(cx-130)+'px'; d.style.top=(ny-74)+'px'; d.style.width='260px'; d.style.textAlign='center'; }
+    else if (sl.pos==='bot'){ d.style.left=(cx-130)+'px'; d.style.top=(ny+26)+'px'; d.style.width='260px'; d.style.textAlign='center'; }
+    else if (sl.pos==='r'){ d.style.left=(nx+26).toFixed(0)+'px'; d.style.top=(ny-26).toFixed(0)+'px'; d.style.width='186px'; d.style.textAlign='left'; }
+    else { d.style.left=(nx-212).toFixed(0)+'px'; d.style.top=(ny-26).toFixed(0)+'px'; d.style.width='186px'; d.style.textAlign='right'; }
+
+    if (st.hotSlot === sl.k){
+      var c = el('div','acard');
+      c.innerHTML = '<div class="h mono">'+sl.t+'</div>';
+      var b = el('div','b');
+      slotLines(a, sl.k).forEach(function(t,j){
+        var p = el('div'); p.textContent = t;
+        if (j) p.style.marginTop = '9px';
+        p.style.color = j ? 'var(--t3)' : 'var(--t2)';
+        b.appendChild(p);
+      });
+      c.appendChild(b);
+      if (sl.pos==='top'){ c.style.left=(cx-136)+'px'; c.style.top=(ny+30)+'px'; }
+      else if (sl.pos==='bot'){ c.style.left=(cx-136)+'px'; c.style.top=Math.min(st.H-210,(ny+56))+'px'; }
+      else if (sl.pos==='r'){ c.style.left=Math.min(st.W-292,(nx+218))+'px'; c.style.top=Math.max(16,(ny-70))+'px'; }
+      else { c.style.left=Math.max(20,(nx-490))+'px'; c.style.top=Math.max(16,(ny-70))+'px'; }
+      anatBox.appendChild(c); cardEl = c;
+    }
+  });
+}
+
+function openAnat(id){
+  st.focus = id; st.mode = 'anat'; st.hotSlot = null; st.hoverAgent = null;
+  buildAnat(agent(id));
+  closeSheet();
+  if (st.narrow) stageEl.style.display = 'none';
+  stageEl.classList.add('back');
+  anat.classList.add('on');
+  backBtn.classList.add('on');
+  document.getElementById('railL').classList.add('hide');
+  document.getElementById('railR').classList.add('hide');
+  document.getElementById('foot').classList.add('hide');
+  document.querySelector('header').classList.add('hide');
+  document.getElementById('modes').classList.add('hide');
+  paintAnat();
+  if (st.narrow) window.scrollTo(0,0);
+}
+function closeAnat(){
+  st.focus = null; st.mode = 'eco'; st.hotSlot = null;
+  if (st.narrow) { stageEl.style.display = ''; window.scrollTo(0,0); }
+  stageEl.classList.remove('back');
+  anat.classList.remove('on');
+  backBtn.classList.remove('on');
+  document.getElementById('railL').classList.remove('hide');
+  document.getElementById('railR').classList.remove('hide');
+  document.getElementById('foot').classList.remove('hide');
+  document.querySelector('header').classList.remove('hide');
+  document.getElementById('modes').classList.remove('hide');
+  paint();
+}
+
+/* --------- нижняя карточка агента: контекст под большой палец --------- */
+function openSheet(id){
+  var a = agent(id); if (!a) return;
+  st.sheet = id;
+  var body = document.getElementById('sheetBody');
+  body.textContent = '';
+  var c1 = el('div','c mono'); c1.textContent = cat(a.c).n;
+  var c2 = el('div','n'); c2.textContent = a.n;
+  var c3 = el('div','e'); c3.textContent = a.ef || 'Плановый эффект в стратегии не описан';
+  var c4 = el('div','s mono');
+  c4.textContent = stg(a.s).n + ' \u00b7 ' + stg(a.s).lv + (a.ev ? ' \u00b7 ПОДТВЕРЖДЕНО КОДОМ' : '');
+  body.appendChild(c1); body.appendChild(c2); body.appendChild(c3); body.appendChild(c4);
+  sheet.classList.add('on');
+}
+function closeSheet(){ st.sheet = null; sheet.classList.remove('on'); }
+
+/* ============================= ПОКАЗАТЕЛИ ============================= */
+
+var mx = document.getElementById('mx');
+
+function buildMx(){
+  var h = '';
+  h += '<div class="mxh mono">ЦЕЛЕВЫЕ ПОКАЗАТЕЛИ 2026–2028</div>';
+  h += '<div class="tg"><div class="tgr hd"><div>ПОКАЗАТЕЛЬ</div><div>2026</div><div>2027</div><div>2028</div></div>';
+  TARGETS.forEach(function(t,i){
+    h += '<div class="tgr"><div class="nmx">'+t.n+'</div>';
+    t.v.forEach(function(v,j){
+      h += '<div><div class="yr mono">'+[2026,2027,2028][j]+'</div>'+
+           '<div class="vx mono">'+v+(t.pc?NB+'%':'')+'</div>'+
+           '<div class="bar'+(t.hot?' hot':'')+'"><i data-w="'+(v/t.max*100)+'" '+
+           'data-d="'+(0.2+i*0.09+j*0.06)+'"></i></div></div>';
+    });
+    h += '</div>';
+  });
+  h += '</div>';
+
+  h += '<div class="fn"><div class="mxh mono">ВОРОНКА ВНЕДРЕНИЯ · ЕДИНАЯ ДЛЯ ВСЕХ ПОДРАЗДЕЛЕНИЙ</div>';
+  h += '<div class="steps">';
+  FUNNEL.forEach(function(f,i){
+    h += '<div class="stp'+(f.live?' live':'')+'"><div class="no mono">0'+(i+1)+'</div>'+
+         '<div class="ti">'+f.t+'</div><div class="rs">'+f.r+'</div>'+
+         '<div class="rp mono">'+f.p.toUpperCase()+'</div></div>';
+  });
+  h += '</div><div class="cn" style="margin-top:26px;border:0;background:none;padding:0">'+
+       '<p style="color:var(--t4);font-size:10px;letter-spacing:.06em">На четвёртом этапе сейчас находятся три агента: '+
+       'расчёт академической разницы, ассистент приёмной комиссии и ассистент руководителя. '+
+       'Остальные 23 названы в стратегии и ждут первых трёх этапов.</p></div></div>';
+
+  h += '<div class="cons">';
+  CONS.forEach(function(c){
+    h += '<div class="cn'+(c.hot?' hot':'')+'"><div class="cnh mono">'+c.h+'</div><p>'+c.p+'</p></div>';
+  });
+  h += '</div>';
+
+  document.getElementById('mxin').innerHTML = h;
+}
+
+function runBars(){
+  var bars = document.querySelectorAll('#mx .bar i');
+  bars.forEach(function(b){ b.style.transition = 'none'; b.style.width = '0'; });
+  setTimeout(function(){
+    bars.forEach(function(b){
+      b.style.transition = '';
+      b.style.transitionDelay = b.dataset.d + 's';
+      b.style.width = b.dataset.w + '%';
+    });
+  }, 40);
+}
+
+function setMode(m){
+  if (st.focus) closeAnat();
+  st.mode = m;
+  document.querySelectorAll('#modes button').forEach(function(b){
+    b.classList.toggle('on', b.dataset.mode === m);
+  });
+  var eco = m === 'eco';
+  closeSheet();
+  if (st.narrow) { stageEl.style.display = eco ? '' : 'none'; window.scrollTo(0,0); }
+  stageEl.classList.toggle('back', !eco);
+  mx.classList.toggle('on', !eco);
+  document.getElementById('railL').classList.toggle('hide', !eco);
+  document.getElementById('railR').classList.toggle('hide', !eco);
+  document.getElementById('foot').classList.toggle('hide', !eco);
+  if (!eco) runBars(); else paint();
+}
+
+/* ============================= ЗАПУСК ============================= */
+
+function boot(){
+  measure();
+  buildRails();
+  buildStage();
+  buildMx();
+  paint();
+  lastT = performance.now();
+  raf = requestAnimationFrame(tick);
+}
+
+window.addEventListener('resize', function(){
+  measure();
+  if (st.mode === 'anat') paintAnat(); else paint();
+});
+
+document.addEventListener('keydown', function(e){
+  if (e.key !== 'Escape') return;
+  if (st.sheet) { closeSheet(); return; }
+  if (st.focus) { closeAnat(); return; }
+  if (st.mode !== 'eco') { setMode('eco'); return; }
+  if (st.hoverAgent) { st.hoverAgent = null; paint(); return; }
+  if (st.hoverStage || st.hoverCat) { st.hoverStage = null; st.hoverCat = null; paint(); note(); }
+});
+
+document.querySelectorAll('#modes button').forEach(function(b){
+  b.addEventListener('click', function(){ setMode(b.dataset.mode); });
+});
+backBtn.addEventListener('click', closeAnat);
+document.getElementById('sheetClose').addEventListener('click', closeSheet);
+document.getElementById('sheetGo').addEventListener('click', function(){
+  if (st.sheet) openAnat(st.sheet);
+});
+
+if (document.fonts && document.fonts.ready) document.fonts.ready.then(function(){ measure(); paint(); });
+boot();
+</script>
+</body>
+</html>
