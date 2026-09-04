@@ -66,16 +66,15 @@ header .sub{margin:12px 0 0 37px;font-size:10.5px;letter-spacing:.04em;color:var
 .rail .note{margin-top:22px;font-size:10px;line-height:1.8;color:var(--t3)}
 
 /* ---------- сцена ---------- */
-#stage{position:fixed;inset:0;z-index:20;transition:opacity .42s var(--ease),transform .52s var(--ease)}
+#stage{position:fixed;inset:0;z-index:20;cursor:crosshair;transition:opacity .42s var(--ease),transform .52s var(--ease)}
 #stage.back{opacity:.10;transform:scale(.94);pointer-events:none}
-#svg{position:absolute;inset:0;width:100%;height:100%}
+#svg{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
 .ring{fill:none;stroke:rgba(242,240,237,.17);stroke-width:1;transition:stroke .2s,stroke-width .2s}
 .ring.nil{stroke:rgba(242,240,237,.11);stroke-dasharray:2 9}
 .ring.on{stroke:rgba(242,240,237,.42);stroke-width:1.5}
 .spoke{stroke:rgba(242,240,237,.07);stroke-width:1}
 .wedge{fill:rgba(242,240,237,0);transition:fill .24s var(--ease)}
 .wedge.on{fill:rgba(242,240,237,.028)}
-.corridor{fill:none;stroke:transparent;stroke-width:40;cursor:crosshair}
 .chord{fill:none;stroke:rgba(242,240,237,.3);stroke-width:1;stroke-dasharray:3 5}
 
 .catlab{position:absolute;z-index:24;pointer-events:none;width:146px;
@@ -109,17 +108,29 @@ body.nw .ag .glyph{left:11px;top:11px}
 .ag:focus-visible .ho{border-color:rgba(242,240,237,.72);transform:scale(1.16)}
 body.nw .ag .ho{left:7px;top:7px}
 .ag:hover .ho{border-color:rgba(242,240,237,.3)}
-.tip{position:absolute;z-index:34;pointer-events:none;width:246px;
-  background:rgba(12,14,18,.86);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
-  border:1px solid rgba(242,240,237,.12);border-radius:calc(var(--R)*2);padding:15px 17px 16px;
-  box-shadow:0 16px 40px rgba(0,0,0,.55);animation:rise .2s var(--ease)}
 @keyframes rise{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
-.tip .c{font-size:8px;letter-spacing:.22em;color:var(--t3)}
-.tip .n{margin-top:6px;font-size:13px;font-weight:500;line-height:1.35}
-.tip .e{margin-top:10px;font-size:10.5px;line-height:1.5;color:var(--t2)}
-.tip .u{margin-top:9px;font-size:10px;line-height:1.45;color:var(--t3)}
-.tip .s{margin-top:11px;padding-top:10px;border-top:1px solid rgba(242,240,237,.09);
-  font-size:8.5px;letter-spacing:.14em;color:var(--t4)}
+
+/* ---------- карточка контекста: всегда у курсора ---------- */
+#ctx{position:fixed;z-index:78;pointer-events:none;width:300px;
+  padding:16px 18px 17px;opacity:0;visibility:hidden;
+  background:rgba(11,13,17,.90);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);
+  border:1px solid rgba(242,240,237,.14);border-radius:calc(var(--R)*2);
+  box-shadow:0 18px 46px rgba(0,0,0,.62);
+  transition:opacity .14s var(--ease)}
+#ctx.on{opacity:1;visibility:visible}
+#ctx .k{font-size:7.5px;letter-spacing:.24em;color:var(--t4)}
+#ctx .t{margin-top:8px;font-size:14px;font-weight:500;line-height:1.32}
+#ctx .t .lv{margin-left:9px;font-size:9px;letter-spacing:.16em;color:var(--t3);font-weight:400}
+#ctx .d{margin-top:11px;font-size:11px;line-height:1.6;color:var(--t2);text-wrap:pretty}
+#ctx .rows{margin-top:14px;display:flex;flex-direction:column;gap:8px}
+#ctx .r2{display:flex;gap:12px;align-items:baseline}
+#ctx .r2 .l{flex:0 0 74px;font-size:7.5px;letter-spacing:.16em;color:var(--t4);line-height:1.5}
+#ctx .r2 .v{flex:1 1 auto;font-size:10.5px;line-height:1.5;color:var(--t2)}
+#ctx .f{margin-top:14px;padding-top:11px;border-top:1px solid rgba(242,240,237,.10);
+  display:flex;justify-content:space-between;gap:10px;
+  font-size:7.5px;letter-spacing:.16em;color:var(--t4)}
+#ctx.attn{border-color:color-mix(in oklab,var(--sol) 46%,transparent)}
+#ctx.attn .k{color:var(--sol)}
 
 /* ---------- анатомия ---------- */
 #anat{position:fixed;inset:0;z-index:40;opacity:0;pointer-events:none;
@@ -260,7 +271,7 @@ footer{position:fixed;left:40px;bottom:28px;z-index:56;font-size:8.5px;line-heig
 
   #stage{position:relative;inset:auto;margin-top:20px}
   #stage.back{opacity:1;transform:none}
-  .catlab,.tip{display:none}
+  .catlab,#ctx{display:none}
   footer{position:relative;left:auto;bottom:auto;margin:26px 18px 0;font-size:8.5px}
 
   #anat{position:relative;inset:auto;opacity:1;pointer-events:auto}
@@ -362,10 +373,8 @@ footer{position:fixed;left:40px;bottom:28px;z-index:56;font-size:8.5px;line-heig
 
   <div id="mx"><div class="mxin" id="mxin"></div></div>
 
-  <footer id="foot">
-    ДАННЫЕ — СТРАТЕГИЯ ПРОЕКТА ОТ 03.09.2026<br>
-    ИСТОЧНИК ПРАВОК — ГЕЛИУС_АГЕНТЫ.XLSX
-  </footer>
+  <div id="ctx"></div>
+
 
 </div>
 
@@ -496,7 +505,7 @@ var CONS = [
 var st = {
   mode:'eco', hoverStage:null, hoverCat:null, hoverAgent:null,
   focus:null, hotSlot:null, W:0, H:0, R:0, cx:0, cy:0,
-  narrow:false, box:0, sheet:null
+  narrow:false, box:0, sheet:null, hover:null, mx:0, my:0
 };
 /* Матрица вращается как одно целое. Угол кодирует категорию, поэтому агент
    не вправе уезжать из своего сектора: секторы, спицы и подписи поворачиваются
@@ -577,10 +586,16 @@ function buildRails(){
     b.dataset.stage = s.k;
     b.innerHTML = '<span class="k mono">'+s.n+'</span><span class="lv mono">'+s.lv+
       '</span><span class="ct mono">'+byStage[s.k]+'</span>';
-    b.addEventListener('mouseenter', function(){ st.hoverStage=s.k; paint(); note(); });
-    b.addEventListener('mouseleave', function(){ st.hoverStage=null; paint(); note(); });
-    b.addEventListener('focus', function(){ st.hoverStage=s.k; paint(); note(); });
-    b.addEventListener('blur', function(){ st.hoverStage=null; paint(); note(); });
+    var enter = function(e){
+      setHover({ kind:'stage', id:s.k });
+      ctxPlace(e && e.clientX ? e.clientX : b.getBoundingClientRect().right,
+               e && e.clientY ? e.clientY : b.getBoundingClientRect().top);
+    };
+    b.addEventListener('mouseenter', enter);
+    b.addEventListener('mousemove', enter);
+    b.addEventListener('mouseleave', function(){ setHover(null); });
+    b.addEventListener('focus', enter);
+    b.addEventListener('blur', function(){ setHover(null); });
     L.appendChild(b);
   });
   var R = document.getElementById('catRows'); R.textContent='';
@@ -588,10 +603,16 @@ function buildRails(){
     var b = el('button','rw');
     b.dataset.cat = c.k;
     b.innerHTML = '<span class="k mono">'+c.n+'</span><span class="ct mono">'+byCat[c.k].length+'</span>';
-    b.addEventListener('mouseenter', function(){ st.hoverCat=c.k; paint(); note(); });
-    b.addEventListener('mouseleave', function(){ st.hoverCat=null; paint(); note(); });
-    b.addEventListener('focus', function(){ st.hoverCat=c.k; paint(); note(); });
-    b.addEventListener('blur', function(){ st.hoverCat=null; paint(); note(); });
+    var enterC = function(e){
+      setHover({ kind:'cat', id:c.k });
+      ctxPlace(e && e.clientX ? e.clientX : b.getBoundingClientRect().left,
+               e && e.clientY ? e.clientY : b.getBoundingClientRect().top);
+    };
+    b.addEventListener('mouseenter', enterC);
+    b.addEventListener('mousemove', enterC);
+    b.addEventListener('mouseleave', function(){ setHover(null); });
+    b.addEventListener('focus', enterC);
+    b.addEventListener('blur', function(){ setHover(null); });
     R.appendChild(b);
   });
   note();
@@ -608,7 +629,9 @@ function note(){
 
 var svg = document.getElementById('svg');
 var stageEl = document.getElementById('stage');
-var agEls = [], catLabs = [], tipEl = null;
+var ctxEl = document.getElementById('ctx');
+var agEls = [], catLabs = [];
+var POS = {};
 
 function buildStage(){
   svg.textContent = '';
@@ -616,11 +639,11 @@ function buildStage(){
   catLabs.forEach(function(e){ e.remove(); });
   agEls = []; catLabs = [];
 
-  var gWedge = ns('g'), gRing = ns('g'), gSpoke = ns('g'), gChord = ns('g'), gCorr = ns('g');
+  var gWedge = ns('g'), gRing = ns('g'), gSpoke = ns('g'), gChord = ns('g');
   svg.appendChild(gWedge); svg.appendChild(gSpoke); svg.appendChild(gRing);
-  svg.appendChild(gChord); svg.appendChild(gCorr);
+  svg.appendChild(gChord);
   svg.dataset.ready = '1';
-  svg._w = gWedge; svg._r = gRing; svg._s = gSpoke; svg._c = gChord; svg._k = gCorr;
+  svg._w = gWedge; svg._r = gRing; svg._s = gSpoke; svg._c = gChord;
 
   /* клинья категорий */
   CATS.forEach(function(c,i){
@@ -629,13 +652,9 @@ function buildStage(){
   });
   /* спицы */
   CATS.forEach(function(){ var l = ns('line'); l.setAttribute('class','spoke'); gSpoke.appendChild(l); });
-  /* кольца + коридоры */
+  /* кольца */
   STAGES.forEach(function(s){
     var c = ns('circle'); c.setAttribute('class','ring'); c.dataset.stage = s.k; gRing.appendChild(c);
-    var k = ns('circle'); k.setAttribute('class','corridor'); k.setAttribute('pointer-events','stroke');
-    k.addEventListener('mouseenter', function(){ st.hoverStage=s.k; paint(); note(); });
-    k.addEventListener('mouseleave', function(){ st.hoverStage=null; paint(); note(); });
-    gCorr.appendChild(k);
   });
 
   /* подписи категорий */
@@ -666,10 +685,15 @@ function buildStage(){
       g.appendChild(p);
     });
     b.appendChild(g);
-    b.addEventListener('mouseenter', function(){ st.hoverAgent=a.id; st.hoverStage=a.s; paint(); });
-    b.addEventListener('mouseleave', function(){ st.hoverAgent=null; paint(); });
-    b.addEventListener('focus', function(){ st.hoverAgent=a.id; st.hoverStage=a.s; paint(); });
-    b.addEventListener('blur', function(){ st.hoverAgent=null; paint(); });
+    b.addEventListener('focus', function(){
+      setHover({ kind:'agent', id:a.id });
+      var q = POS[a.id];
+      if (q) {
+        var r = stageEl.getBoundingClientRect();
+        ctxPlace(r.left + q[0] + 26, r.top + q[1]);
+      }
+    });
+    b.addEventListener('blur', function(){ setHover(null); });
     b.addEventListener('click', function(){
       if (st.narrow) openSheet(a.id); else openAnat(a.id);
     });
@@ -729,18 +753,16 @@ function paint(){
   });
 
   /* кольца */
-  var rings = svg._r.childNodes, corrs = svg._k.childNodes;
+  var rings = svg._r.childNodes;
   STAGES.forEach(function(s,i){
     var r = st.R * s.rf;
     var c = rings[i];
     c.setAttribute('cx', st.cx); c.setAttribute('cy', st.cy); c.setAttribute('r', r.toFixed(1));
     c.setAttribute('class','ring' + (byStage[s.k]===0 ? ' nil':'') + (hS===s.k ? ' on':''));
-    var k = corrs[i];
-    k.setAttribute('cx', st.cx); k.setAttribute('cy', st.cy); k.setAttribute('r', r.toFixed(1));
   });
 
   /* агенты */
-  var P = {};
+  var P = POS;
   A.forEach(function(a){
     var p = pos(a); P[a.id] = p;
     var op = 1;
@@ -774,24 +796,6 @@ function paint(){
     });
   }
 
-  /* подсказка */
-  if (tipEl) { tipEl.remove(); tipEl = null; }
-  if (hA && !st.narrow) {
-    var p = P[hA.id];
-    var t = el('div','tip');
-    var right = p[0] <= st.cx;
-    t.textContent = '';
-    var mk = function(cls, txt){ var e = el('div', cls); e.textContent = txt; t.appendChild(e); };
-    mk('c mono', cat(hA.c).n);
-    mk('n', hA.n);
-    mk('e', hA.ef || 'Плановый эффект в стратегии не описан');
-    if (hA.unit && hA.unit !== '—') mk('u', hA.unit);
-    mk('s mono', stg(hA.s).n + ' · ' + stg(hA.s).lv + (hA.ev ? ' · ПОДТВЕРЖДЕНО' : ''));
-    t.style.left = (right ? p[0]+28 : p[0]-28-246) + 'px';
-    t.style.top = Math.max(12, Math.min(st.H-190, p[1]-40)) + 'px';
-    stageEl.appendChild(t); tipEl = t;
-  }
-
   /* синхронизация бортов */
   document.querySelectorAll('#stageRows .rw').forEach(function(b){
     b.classList.toggle('on', b.dataset.stage === hS);
@@ -800,6 +804,164 @@ function paint(){
     b.classList.toggle('on', b.dataset.cat === hC);
   });
 }
+
+/* ================= ПОПАДАНИЕ И КОНТЕКСТ У КУРСОРА =================
+   Одна функция решает, что под курсором. Приоритет задан явно, а не
+   порядком элементов в SVG: ядро > агент > кольцо > сектор. */
+
+function stageXY(e){
+  var r = stageEl.getBoundingClientRect();
+  return [e.clientX - r.left, e.clientY - r.top];
+}
+
+function hitTest(x, y){
+  var dx = x - st.cx, dy = y - st.cy;
+  var r = Math.sqrt(dx*dx + dy*dy);
+
+  if (r < Math.max(28, st.R * 0.10)) return { kind:'sun' };
+
+  var best = null, bd = 1e9;
+  for (var i = 0; i < A.length; i++){
+    var q = POS[A[i].id];
+    if (!q) continue;
+    var d = Math.sqrt((x-q[0])*(x-q[0]) + (y-q[1])*(y-q[1]));
+    if (d < bd) { bd = d; best = A[i]; }
+  }
+  if (best && bd <= 20) return { kind:'agent', id:best.id };
+
+  for (var j = 0; j < STAGES.length; j++){
+    if (Math.abs(r - st.R * STAGES[j].rf) <= 18) return { kind:'stage', id:STAGES[j].k };
+  }
+
+  if (r <= st.R * 1.16){
+    var ang = Math.atan2(dy, dx) * 180 / Math.PI;
+    for (var m = 0; m < CATS.length; m++){
+      var off = ((ang - spin - CATS[m].a0) % 360 + 360) % 360;
+      if (off < CATS[m].aw) return { kind:'cat', id:CATS[m].k };
+    }
+  }
+  return null;
+}
+
+function sameHover(a, b){
+  if (!a || !b) return a === b;
+  return a.kind === b.kind && a.id === b.id;
+}
+
+function setHover(h){
+  if (sameHover(st.hover, h)) return;
+  st.hover = h;
+  st.hoverAgent = (h && h.kind === 'agent') ? h.id : null;
+  st.hoverStage = (h && h.kind === 'stage') ? h.id
+    : (h && h.kind === 'agent') ? agent(h.id).s : null;
+  st.hoverCat = (h && h.kind === 'cat') ? h.id : null;
+  ctxRender();
+  paint();
+}
+
+function ctxPlace(x, y){
+  var pad = 16, w = 300;
+  var h = ctxEl.offsetHeight || 190;
+  var left = x + 20, top = y - 24;
+  if (left + w + pad > st.W) left = x - 20 - w;
+  if (left < pad) left = pad;
+  if (top + h + pad > st.H) top = st.H - h - pad;
+  if (top < pad) top = pad;
+  ctxEl.style.left = Math.round(left) + 'px';
+  ctxEl.style.top = Math.round(top) + 'px';
+}
+
+function ctxRender(){
+  var h = st.hover;
+  if (!h || st.narrow || st.mode !== 'eco'){
+    ctxEl.classList.remove('on');
+    return;
+  }
+  ctxEl.textContent = '';
+  ctxEl.className = '';
+
+  var K = function(t){ var e = el('div','k mono'); e.textContent = t; ctxEl.appendChild(e); };
+  var T = function(t, lv){
+    var e = el('div','t'); e.textContent = t;
+    if (lv){ var s2 = el('span','lv mono'); s2.textContent = lv; e.appendChild(s2); }
+    ctxEl.appendChild(e);
+  };
+  var D = function(t){ var e = el('div','d'); e.textContent = t; ctxEl.appendChild(e); };
+  var rowsBox = null;
+  var R2 = function(l, v){
+    if (!v) return;
+    if (!rowsBox){ rowsBox = el('div','rows'); ctxEl.appendChild(rowsBox); }
+    var w = el('div','r2');
+    var a1 = el('span','l mono'); a1.textContent = l;
+    var a2 = el('span','v'); a2.textContent = v;
+    w.appendChild(a1); w.appendChild(a2); rowsBox.appendChild(w);
+  };
+  var F = function(left, right){
+    var e = el('div','f mono');
+    var a1 = el('span'); a1.textContent = left; e.appendChild(a1);
+    if (right){ var a2 = el('span'); a2.textContent = right; e.appendChild(a2); }
+    ctxEl.appendChild(e);
+  };
+
+  if (h.kind === 'agent'){
+    var a = agent(h.id), c = cat(a.c), s = stg(a.s);
+    if (a.attn) ctxEl.classList.add('attn');
+    K(a.attn ? 'ТРЕБУЕТ ВНИМАНИЯ' : c.n);
+    T(a.n);
+    if (a.attn) D(a.attn);
+    R2('РОЛЬ', a.role);
+    R2('ЭФФЕКТ', a.ef);
+    R2('БЛОК', a.unit && a.unit !== '—' ? a.unit : '');
+    R2('СИСТЕМЫ', a.sys && a.sys !== '—' ? a.sys : c.sys);
+    F(s.n + (s.lv !== '—' ? ' · ' + s.lv : ''), 'КЛИК — АНАТОМИЯ');
+  } else if (h.kind === 'stage'){
+    var s2 = stg(h.id), n = byStage[h.id];
+    K('СТАДИЯ ЗРЕЛОСТИ · КОЛЬЦО');
+    T(s2.n.charAt(0) + s2.n.slice(1).toLowerCase(), s2.lv !== '—' ? s2.lv : '');
+    D(s2.note);
+    R2('АГЕНТОВ', n ? String(n) : 'ни одного');
+    R2('ОТВЕЧАЕТ', RESP[h.id]);
+    F('РАДИУС ' + Math.round(st.R * s2.rf) + ' PX',
+      n ? '' : 'КОЛЬЦО ПУСТО');
+  } else if (h.kind === 'cat'){
+    var c2 = cat(h.id), n2 = byCat[h.id].length;
+    K('ПРОДУКТОВАЯ ЛИНЕЙКА · СЕКТОР');
+    T(c2.n.charAt(0) + c2.n.slice(1).toLowerCase());
+    D(c2.d);
+    R2('АГЕНТОВ', String(n2));
+    R2('ТИРАЖ', c2.tir);
+    R2('СИСТЕМЫ', c2.sys);
+    F('СЕКТОР ' + Math.round(c2.aw) + '°', 'ШИРИНА = ЧИСЛО АГЕНТОВ');
+  } else {
+    K('ЯДРО');
+    T('Синергия');
+    D('Штаб ИИ и отдел ИИ-агентов. Чем ближе агент к центру, тем он самостоятельнее: от заявки в реестре до автономной работы без участия сотрудника.');
+    R2('АГЕНТОВ', String(A.length));
+    R2('ЛИНЕЕК', String(CATS.length));
+    R2('В РАБОТЕ', String(A.length - (byStage.reg || 0)));
+    F('ОБОРОТ КАРТЫ ' + SPIN_T + ' С');
+  }
+  ctxEl.classList.add('on');
+}
+
+stageEl.addEventListener('mousemove', function(e){
+  if (st.narrow || st.mode !== 'eco') return;
+  var q = stageXY(e);
+  st.mx = e.clientX; st.my = e.clientY;
+  setHover(hitTest(q[0], q[1]));
+  if (st.hover) ctxPlace(e.clientX, e.clientY);
+});
+stageEl.addEventListener('mouseleave', function(){ setHover(null); });
+stageEl.addEventListener('click', function(e){
+  var q = stageXY(e);
+  var h = hitTest(q[0], q[1]);
+  if (!h) { if (st.narrow) closeSheet(); return; }
+  if (h.kind === 'agent'){
+    if (st.narrow) openSheet(h.id); else openAnat(h.id);
+    return;
+  }
+  if (st.narrow) openSheetInfo(h);
+});
 
 /* ============================= ЦИКЛ ============================= */
 
@@ -811,8 +973,7 @@ function tick(now){
     measure();
     if (st.mode === 'anat') paintAnat();
   }
-  var frozen = st.mode !== 'eco' || st.narrow
-    || st.hoverAgent != null || st.hoverStage != null || st.hoverCat != null;
+  var frozen = st.mode !== 'eco' || st.narrow || st.hover != null;
   if (!frozen) spin = (spin + 360 / SPIN_T * dt) % 360;
   if (st.mode === 'eco' && !st.narrow) paint();
   raf = requestAnimationFrame(tick);
@@ -1038,13 +1199,13 @@ function openAnat(id){
   st.focus = id; st.mode = 'anat'; st.hotSlot = null; st.hoverAgent = null;
   buildAnat(agent(id));
   closeSheet();
+  setHover(null);
   if (st.narrow) stageEl.style.display = 'none';
   stageEl.classList.add('back');
   anat.classList.add('on');
   backBtn.classList.add('on');
   document.getElementById('railL').classList.add('hide');
   document.getElementById('railR').classList.add('hide');
-  document.getElementById('foot').classList.add('hide');
   document.querySelector('header').classList.add('hide');
   document.getElementById('modes').classList.add('hide');
   paintAnat();
@@ -1058,7 +1219,6 @@ function closeAnat(){
   backBtn.classList.remove('on');
   document.getElementById('railL').classList.remove('hide');
   document.getElementById('railR').classList.remove('hide');
-  document.getElementById('foot').classList.remove('hide');
   document.querySelector('header').classList.remove('hide');
   document.getElementById('modes').classList.remove('hide');
   paint();
@@ -1084,9 +1244,44 @@ function openSheet(id){
     body.appendChild(cu2);
   }
   body.appendChild(c4);
+  document.getElementById('sheetGo').style.display = '';
   sheet.classList.add('on');
 }
 function closeSheet(){ st.sheet = null; sheet.classList.remove('on'); }
+
+/* Кольцо и сектор на касании объясняют себя в той же нижней карточке. */
+function openSheetInfo(h){
+  var body = document.getElementById('sheetBody');
+  body.textContent = '';
+  var add = function(cls, txt, style){
+    if (!txt) return;
+    var e = el('div', cls); e.textContent = txt;
+    if (style) e.setAttribute('style', style);
+    body.appendChild(e);
+  };
+  if (h.kind === 'stage'){
+    var s2 = stg(h.id), n = byStage[h.id] || 0;
+    add('c mono', 'СТАДИЯ ЗРЕЛОСТИ · КОЛЬЦО');
+    add('n', s2.n.charAt(0) + s2.n.slice(1).toLowerCase() + (s2.lv !== '—' ? ' · ' + s2.lv : ''));
+    add('e', s2.note);
+    add('s mono', (n ? n + ' АГЕНТОВ' : 'КОЛЬЦО ПУСТО') + ' · ОТВЕЧАЕТ — ' + RESP[h.id]);
+  } else if (h.kind === 'cat'){
+    var c2 = cat(h.id);
+    add('c mono', 'ПРОДУКТОВАЯ ЛИНЕЙКА · СЕКТОР');
+    add('n', c2.n.charAt(0) + c2.n.slice(1).toLowerCase());
+    add('e', c2.d);
+    add('e', c2.sys, 'color:var(--t3);font-size:11.5px');
+    add('s mono', byCat[h.id].length + ' АГЕНТОВ · ТИРАЖ — ' + c2.tir.toUpperCase());
+  } else {
+    add('c mono', 'ЯДРО');
+    add('n', 'Синергия');
+    add('e', 'Чем ближе агент к центру, тем он самостоятельнее: от заявки в реестре до автономной работы без участия сотрудника.');
+    add('s mono', A.length + ' АГЕНТОВ · ' + CATS.length + ' ЛИНЕЕК');
+  }
+  st.sheet = null;                 /* кнопка «анатомия» здесь ни к чему */
+  document.getElementById('sheetGo').style.display = 'none';
+  sheet.classList.add('on');
+}
 
 /* ============================= ПОКАЗАТЕЛИ ============================= */
 
@@ -1146,12 +1341,12 @@ function setMode(m){
   });
   var eco = m === 'eco';
   closeSheet();
+  setHover(null);
   if (st.narrow) { stageEl.style.display = eco ? '' : 'none'; window.scrollTo(0,0); }
   stageEl.classList.toggle('back', !eco);
   mx.classList.toggle('on', !eco);
   document.getElementById('railL').classList.toggle('hide', !eco);
   document.getElementById('railR').classList.toggle('hide', !eco);
-  document.getElementById('foot').classList.toggle('hide', !eco);
   if (!eco) runBars(); else paint();
 }
 
