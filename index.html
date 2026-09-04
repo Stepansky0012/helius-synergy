@@ -459,25 +459,6 @@ footer{position:fixed;left:40px;bottom:28px;z-index:56;font-size:8.5px;line-heig
 .lstep{position:absolute;inset:152px 40px 34px;display:none}
 .lstep.on{display:block}
 
-/* ---------- шаг 1 · стартовый стол ---------- */
-.lf{display:block;margin-bottom:20px}
-.lf .lk{display:block;font-size:8px;letter-spacing:.24em;color:var(--t3);
-  font-family:'JetBrains Mono',monospace}
-.lf input{display:block;width:100%;margin-top:11px;padding:9px 0;background:none;border:0;
-  border-bottom:1px solid var(--hair);color:var(--t1);font:400 15px/1.4 inherit;outline:none}
-.lf input::placeholder{color:var(--t4)}
-.lf input:focus{border-bottom-color:rgba(242,240,237,.42)}
-.cats{display:flex;flex-wrap:wrap;gap:8px;margin-top:13px}
-.cats button{padding:8px 14px;border:1px solid var(--hair);border-radius:30px;
-  font-size:10px;letter-spacing:.1em;color:var(--t3);transition:all .18s var(--ease)}
-.cats button:hover{color:var(--t1);border-color:rgba(242,240,237,.3)}
-.cats button.on{color:var(--ink);background:var(--t1);border-color:var(--t1)}
-.lgo{padding:12px 26px;border:1px solid rgba(242,240,237,.24);border-radius:30px;
-  font-size:11px;letter-spacing:.06em;transition:all .18s var(--ease)}
-.lgo:hover:not(:disabled){background:var(--t1);color:var(--ink);border-color:var(--t1)}
-.lgo:disabled{color:var(--t4);border-color:var(--hair);cursor:default}
-.lgo .mono{margin-left:9px}
-
 /* ---------- шаг 2 · брифование ---------- */
 .lrail{position:absolute;left:0;top:0;bottom:0;width:250px;overflow:auto;padding-right:4px}
 .lrail::-webkit-scrollbar{width:5px}
@@ -612,60 +593,118 @@ footer{position:fixed;left:40px;bottom:28px;z-index:56;font-size:8.5px;line-heig
   #launch .lhead{position:relative;left:auto;top:auto;margin:28px 40px 14px}
 }
 
-/* ---------- стартовый стол · сцена и форма (v3.1) ---------- */
-.padwrap{position:absolute;left:0;top:0;bottom:0;width:52%}
-.padwrap svg{position:absolute;inset:0;width:100%;height:100%}
-.padcore{position:absolute;width:26px;height:26px;margin:-13px 0 0 -13px;border-radius:50%;
-  background:radial-gradient(circle at 38% 34%,#FFD8CF 0%,var(--sol) 38%,var(--sol-d) 100%);
-  box-shadow:0 0 24px color-mix(in oklab,var(--sol) 42%,transparent)}
+
+
+/* ---------- стартовый стол · по артборду (v3.2) ---------- */
+.padscene{position:absolute;inset:0 460px 0 0}
+.padscene svg{position:absolute;inset:0;width:100%;height:100%}
 #padLabs{position:absolute;inset:0;pointer-events:none}
-.padask{position:absolute;transform:translate(-50%,-50%);width:280px;text-align:center;
-  font-size:11px;color:var(--t4)}
-.padout{position:absolute;width:210px;pointer-events:none}
-.padout.r{transform:translate(20px,-215%)}
-.padout.l{transform:translate(-100%,-215%);text-align:right;margin-left:-20px}
+.padsun{position:absolute;pointer-events:none}
+.padsun .halo{position:absolute;left:-150px;top:-150px;width:300px;height:300px;border-radius:50%;
+  background:radial-gradient(circle,color-mix(in oklab,var(--sol) 14%,transparent) 0%,transparent 62%);
+  animation:breathe 6s cubic-bezier(.4,0,.6,1) infinite}
+.padsun .core{position:absolute;left:-23px;top:-23px;width:46px;height:46px;border-radius:50%;
+  background:radial-gradient(circle at 38% 34%,#FFD8CF 0%,var(--sol) 38%,var(--sol-d) 100%);
+  box-shadow:0 0 34px color-mix(in oklab,var(--sol) 46%,transparent)}
+.padsun .cap{position:absolute;left:-110px;top:44px;width:220px;text-align:center;
+  font-size:8px;letter-spacing:.28em;color:var(--t3)}
+
+.padstep{position:absolute;width:186px}
+.padstep.s{transform:translate(0,-50%)}
+.padstep.up{transform:translate(0,-265%)}
+.padstep.up.e{transform:translate(-100%,-190%)}
+.padstep.now em{color:var(--sol);opacity:.85}
+.padstep.e{transform:translate(-100%,-50%);text-align:right}
+.padstep.m{transform:translate(-50%,-50%);text-align:center}
+.padstep i{display:inline-block;width:6px;height:6px;border-radius:50%;margin-right:8px;
+  vertical-align:1px;border:1px solid rgba(242,240,237,.34)}
+.padstep.now i{background:var(--sol);border-color:transparent}
+.padstep span{font-size:9.5px;letter-spacing:.2em;color:var(--t3)}
+.padstep.now span{color:var(--t1)}
+.padstep em{display:block;margin-top:5px;font-style:normal;font-size:9px;color:var(--t4)}
+.padstep.e i{margin:0 0 0 8px;float:right}
+
+.padbrief{position:absolute;width:230px}
+.padbrief .k{font-size:9.5px;letter-spacing:.2em;color:var(--t1)}
+.padbrief .v{margin-top:5px;font-size:7.5px;letter-spacing:.14em;color:var(--sol);opacity:.85}
+.padq{position:absolute;width:200px;transform:translateY(-50%);font-size:11px;line-height:1.35;
+  color:var(--t4)}
+.padq.done{color:var(--t2)}
+.padq.now{color:var(--t1)}
+.padout{position:absolute;width:236px;text-align:right}
 .padout .k{font-size:7.5px;letter-spacing:.24em;color:var(--t3)}
-.padout .v{margin-top:7px;font-size:12px;color:var(--t1)}
-.padout .n{margin-top:5px;font-size:8px;letter-spacing:.16em;color:var(--t4)}
-.padgo{position:absolute;pointer-events:auto;width:210px;text-align:left;
-  transform:translate(20px,10%);transition:opacity .18s var(--ease)}
-.padgo.l{transform:translate(-100%,10%);text-align:right;margin-left:-20px}
-.padgo span{display:block;font-size:8px;letter-spacing:.2em;color:var(--t3)}
-.padgo em{display:block;margin-top:8px;font-style:normal;font-size:12.5px;color:var(--t1)}
-.padgo:hover em{color:#fff;text-decoration:underline;text-underline-offset:4px}
+.padout .v{margin-top:6px;font-size:10.5px;color:var(--t2)}
 
-.lform{position:absolute;right:0;top:0;bottom:0;width:42%;max-width:500px;overflow:auto;
-  padding-right:6px}
-.lform::-webkit-scrollbar{width:5px}
-.lform::-webkit-scrollbar-thumb{background:rgba(242,240,237,.14);border-radius:3px}
-.lnarr{font-size:12.5px;line-height:1.7;color:var(--t2);margin-bottom:24px;max-width:440px}
-.lf .lk em{font-style:normal;margin-left:9px;color:var(--t4);letter-spacing:.14em}
-.lf .lh{display:block;margin-top:9px;font-size:10px;line-height:1.5;color:var(--t4)}
-.payload{margin-top:6px;padding-top:20px;border-top:1px solid var(--hair)}
-.payload .lk{display:block;font-size:8px;letter-spacing:.24em;color:var(--t3);
-  font-family:'JetBrains Mono',monospace}
-.payload .lk b{font-weight:400;color:var(--t1)}
-.prow{display:flex;align-items:baseline;gap:11px;padding:7px 0;
-  border-bottom:1px solid rgba(242,240,237,.05)}
-.prow i{width:6px;height:6px;border-radius:50%;flex-grow:0;
-  border:1px solid rgba(242,240,237,.28);position:relative;top:-1px}
-.prow.on i{background:rgba(242,240,237,.86);border-color:transparent}
-.prow span{font-size:11px;letter-spacing:.1em;color:var(--t3);width:132px;flex-grow:0}
-.prow.on span{color:var(--t1)}
-.prow em{font-style:normal;font-size:10px;color:var(--t4);flex:1 1 auto}
-.prow.on em{color:var(--t3)}
-.lform .lgo{margin-top:22px;margin-bottom:8px}
+.padwho{position:absolute;left:0;top:0;width:340px;padding-top:16px;
+  border-top:1px solid var(--hair)}
+.padwho .pk{font-size:7.5px;letter-spacing:.24em;color:var(--t3)}
+.padwho input{display:block;width:100%;margin-top:10px;padding:4px 0;background:none;border:0;
+  color:var(--t1);font:400 14px/1.4 inherit;outline:none}
+.padwho input::placeholder{color:var(--t4)}
+.padwho .ph{margin-top:7px;font-size:10px;line-height:1.5;color:var(--t4)}
+.padwho .cats{display:flex;flex-wrap:wrap;gap:6px;margin-top:16px}
+.padwho .cats button{padding:6px 11px;border:1px solid var(--hair);border-radius:30px;
+  font-size:9px;letter-spacing:.08em;color:var(--t3);transition:all .18s var(--ease)}
+.padwho .cats button:hover{color:var(--t1);border-color:rgba(242,240,237,.3)}
+.padwho .cats button.on{color:var(--ink);background:var(--t1);border-color:var(--t1)}
 
-/* название агента в борте брифования */
-.lrail #lName2{display:block;width:100%;margin-top:11px;padding:7px 0;background:none;border:0;
-  border-bottom:1px solid var(--hair);color:var(--t1);font:400 12px/1.4 inherit;outline:none}
-.lrail #lName2::placeholder{color:var(--t4)}
-.lrail #lName2:focus{border-bottom-color:rgba(242,240,237,.42)}
+.padcard{position:absolute;right:0;width:412px}
+.padcard.main{top:0;background:var(--l3);border:1px solid var(--hair);padding:26px 30px 24px}
+.padcard.main .ck{font-size:8px;letter-spacing:.22em;color:var(--t3)}
+.padcard.main .ct{margin-top:15px;font-size:24px;font-weight:400;line-height:1.28}
+.padcard.main .cd{margin-top:15px;font-size:11.5px;line-height:1.62;color:var(--t3)}
+.padcard.main input{display:block;width:100%;margin-top:20px;padding:8px 0;background:none;
+  border:0;border-bottom:1px solid rgba(242,240,237,.24);color:var(--t1);
+  font:400 13px/1.4 inherit;outline:none}
+.padcard.main input::placeholder{color:var(--t4)}
+.padcard.main input:focus{border-bottom-color:rgba(242,240,237,.5)}
+.cgo{margin-top:20px;padding:11px 24px;border:1px solid rgba(242,240,237,.24);border-radius:30px;
+  font-size:11px;transition:all .18s var(--ease)}
+.cgo:hover:not(:disabled){background:var(--t1);color:var(--ink);border-color:var(--t1)}
+.cgo:disabled{color:var(--t4);border-color:var(--hair);cursor:default}
+.cgo .mono{margin-left:9px}
+.padcard.way{bottom:96px;border:1px solid rgba(242,240,237,.08);padding:19px 30px 20px}
+.padcard.way .ck{font-size:7.5px;letter-spacing:.24em;color:var(--t3)}
+.padcard.way .cw{margin-top:11px;font-size:11px;line-height:1.6;color:var(--t3)}
+.padcard.way .cs{margin-top:12px;font-size:8px;letter-spacing:.2em;color:var(--sol);opacity:.8}
+
+.padstage{position:absolute;left:0;bottom:0;width:300px}
+.padstage .sk{font-size:8px;letter-spacing:.24em;color:var(--t3)}
+.padstage .sv{margin-top:7px;display:flex;align-items:baseline;gap:6px;font-size:14px;color:var(--t3)}
+.padstage .sv b{font-weight:200;font-size:38px;line-height:1;color:var(--t1)}
+.padstage .sv i{font-style:normal;color:var(--t4)}
+.padstage .sn{margin-top:7px;font-size:10.5px;color:var(--t3)}
+.padleg{position:absolute;left:0;bottom:118px;display:flex;flex-direction:column;gap:9px;
+  font-size:9.5px;color:var(--t4)}
+.padleg i{display:inline-block;width:6px;height:6px;border-radius:50%;margin-right:9px;
+  border:1px solid rgba(242,240,237,.34)}
+.padleg i.on{background:rgba(242,240,237,.86);border-color:transparent}
+.padleg i.now{background:var(--sol);border-color:transparent}
+.divering{pointer-events:none;transition:opacity .12s linear}
+.padhint{position:absolute;right:0;bottom:0;text-align:right;font-size:8.5px;
+  letter-spacing:.2em;color:var(--t4);line-height:2.1}
 
 @media (max-width:1100px){
-  .padwrap{position:relative;width:100%;height:330px}
-  .lform{position:relative;width:100%;max-width:none;margin-top:26px;overflow:visible;inset:auto}
-  .prow span{width:auto}
+  .padscene{position:relative;inset:auto;width:100%;height:340px}
+  .padwho,.padcard,.padstage,.padleg,.padhint{position:relative;inset:auto;right:auto;left:auto;
+    bottom:auto;top:auto;width:100%;margin-top:22px;text-align:left}
+  .padcard{width:100%}
+}
+
+/* ---------- анатомия · шапка, статус, легенда (v3.2) ---------- */
+.anhead{position:absolute;left:40px;top:34px;z-index:6}
+.anhead .at{font-size:15px;font-weight:300;letter-spacing:.26em}
+.anhead .as{margin-top:11px;font-size:11px;color:var(--t3)}
+.anstat{position:absolute;right:40px;top:36px;z-index:6;text-align:right}
+.anstat .k{font-size:8.5px;letter-spacing:.22em;color:var(--t1)}
+.anstat .k i{display:inline-block;width:5px;height:5px;border-radius:50%;background:var(--sol);
+  margin-right:9px;vertical-align:1px}
+.anstat .v{margin-top:7px;font-size:8px;letter-spacing:.14em;color:var(--t4)}
+.anleg{position:absolute;left:40px;bottom:30px;z-index:6;font-size:8.5px;
+  letter-spacing:.2em;color:var(--t4);line-height:2.1}
+@media (max-width:1100px){
+  .anhead,.anstat,.anleg{position:relative;inset:auto;left:auto;right:auto;top:auto;bottom:auto;
+    margin:14px 20px;text-align:left}
 }
 </style>
 </head>
@@ -719,6 +758,12 @@ footer{position:fixed;left:40px;bottom:28px;z-index:56;font-size:8.5px;line-heig
   </div>
 
   <div id="anat">
+    <div class="anhead">
+      <div class="at disp">АНАТОМИЯ АГЕНТА</div>
+      <div class="as" id="anSub">Гелиус Синерджи · уровень агента</div>
+    </div>
+    <div class="anstat" id="anStat"></div>
+    <div class="anleg mono">УЗЕЛ — РАЗБОР СЛОТА<br>ПУНКТИР — СЛОТ НЕ ЗАПОЛНЕН<br>КОЛЬЦО БЬЁТСЯ В ПЕРИОД ОРБИТЫ АГЕНТА</div>
     <div id="anatBox">
       <svg id="anatSvg" aria-hidden="true"></svg>
       <div id="beat"><div class="p"></div></div>
@@ -742,40 +787,52 @@ footer{position:fixed;left:40px;bottom:28px;z-index:56;font-size:8.5px;line-heig
     </div>
 
     <section class="lstep" data-step="pad">
-      <div class="padwrap">
+      <div class="padscene">
         <svg id="padSvg" aria-hidden="true"></svg>
-        <div class="padcore"></div>
+        <div class="padsun"><span class="halo"></span><span class="core"></span>
+          <span class="cap mono">СИНЕРГИЯ · ЯДРО</span></div>
         <div id="padLabs"></div>
       </div>
-      <div class="lform">
-        <div class="lnarr">Чтобы вывести своего агента в рабочий контур, заполните бриф.
-          Часть слотов уже известна — остальные соберём по ходу разговора.</div>
 
-        <label class="lf">
-          <span class="lk">ВАША РОЛЬ</span>
-          <input id="fRole" type="text" autocomplete="off" placeholder="Кто вы в процессе">
-          <span class="lh">подтянута из корпоративного профиля — поправьте, если иначе</span>
-        </label>
-
-        <div class="lf">
-          <span class="lk">ВАШ СЕКТОР НА КАРТЕ</span>
-          <div class="cats" id="fCats"></div>
-          <span class="lh" id="catHint">выбор сектора закрывает сразу три слота: линейку, системы и стадию</span>
-        </div>
-
-        <label class="lf">
-          <span class="lk">НАЗВАНИЕ АГЕНТА <em>необязательно</em></span>
-          <input id="fName" type="text" autocomplete="off" placeholder="Можно не придумывать сейчас">
-          <span class="lh">предложим на брифовании по вашим ответам</span>
-        </label>
-
-        <div class="payload">
-          <div class="lk">ПОЛЕЗНАЯ НАГРУЗКА · <b id="padN">0</b> ИЗ 6 СЛОТОВ</div>
-          <div id="padRows"></div>
-        </div>
-
-        <button class="lgo" id="toBrief" disabled>Заполнить бриф<span class="mono">→</span></button>
+      <div class="padwho">
+        <div class="pk mono">СТОЛ ПРИНАДЛЕЖИТ</div>
+        <input id="fRole" type="text" autocomplete="off" placeholder="Ваша роль">
+        <div class="ph">подтянута из корпоративного профиля</div>
+        <div class="cats" id="fCats"></div>
+        <div class="ph" id="catHint">выберите сектор — увидите свою точку выведения</div>
       </div>
+
+      <div class="padcard main">
+        <div class="ck mono">ГЕЛИУС · СОЗДАНИЕ АГЕНТА</div>
+        <div class="ct">Заведите агента<br>и внедрите его<br>в свои рабочие процессы</div>
+        <div class="cd">Заполнять анкету не нужно. Вы разговариваете с агентом-брифователем:
+          он задаёт вопросы, разбирает то, что уже сказано на встречах и в переписке,
+          и сам структурирует и обобщает требования.</div>
+        <input id="fName" type="text" autocomplete="off" placeholder="Название агента — необязательно">
+        <button class="cgo" id="toBrief" disabled>Начать разговор<span class="mono">→</span></button>
+      </div>
+
+      <div class="padcard way">
+        <div class="ck mono">ПУТЬ АГЕНТА</div>
+        <div class="cw">Бриф — первый из пяти этапов и единственный, где нужны вы.
+          Дальше сборка, согласования, развёртывание в контуре корпорации —
+          и агент возвращается к вам в работу.</div>
+        <div class="cs mono">ПЯТЬ ЭТАПОВ · ПЕРВЫЙ КЛЮЧЕВОЙ</div>
+      </div>
+
+      <div class="padstage">
+        <div class="sk mono">ЭТАП</div>
+        <div class="sv"><b class="disp">1</b><i>/</i>5</div>
+        <div class="sn">бриф · разговор о вашей рутине</div>
+      </div>
+
+      <div class="padleg">
+        <span><i class="on"></i>этап пройден</span>
+        <span><i class="now"></i>здесь мы сейчас</span>
+        <span><i></i>впереди</span>
+      </div>
+
+      <div class="padhint mono">КОЛЬЦО — ПУТЬ АГЕНТА ОТ БРИФА ДО РАБОТЫ<br>ВЕЕР — О ЧЁМ СПРОСИТ БРИФОВАТЕЛЬ<br>ПУНКТИР — ТОЧКА ВЫВЕДЕНИЯ НА ОРБИТЕ ИДЕЙ</div>
     </section>
 
     <section class="lstep" data-step="brief">
@@ -1209,6 +1266,7 @@ function buildStage(){
   lead.setAttribute('stroke','url(#ctxLead)'); lead.setAttribute('opacity','0');
   svg.appendChild(lead); svg._lead = lead;
   svg.dataset.ready = '1';
+  dive.ring = null;                          /* сцена пересобрана — дуга тоже */
   svg._w = gWedge; svg._r = gRing; svg._s = gSpoke; svg._c = gChord;
 
   /* клинья категорий */
@@ -1925,6 +1983,19 @@ function paintAnat(){
 
 function openAnat(id){
   st.focus = id; st.mode = 'anat'; st.hotSlot = null; st.hoverAgent = null;
+  (function(){
+    var a = agent(id); if (!a) return;
+    var s2 = stg(a.s), c2 = cat(a.c);
+    var filled = ['role','ef','c','s','ev','sys'].filter(function(k){
+      return k === 'c' || k === 's' || k === 'sys' ? 1 : !!a[k];
+    }).length;
+    document.getElementById('anSub').textContent =
+      c2.n.toLowerCase() + ' · ' + (a.draft ? 'заявка' : 'агент в работе');
+    document.getElementById('anStat').innerHTML =
+      '<div class="k mono"><i></i>' + s2.lv + (s2.lv !== '—' ? ' · ' : '') + s2.n + '</div>' +
+      '<div class="v mono">' + filled + ' из 6 слотов заполнено</div>' +
+      '<div class="v mono">' + (a.thin ? 'обод пунктирный — контекст неполон' : 'обод сплошной') + '</div>';
+  })();
   buildAnat(agent(id));
   closeSheet();
   setHover(null);
@@ -2233,35 +2304,26 @@ function lStep(s){
   if (s === 'done') { donePaint(); }
 }
 
-/* ---------- шаг 1 · стартовый стол ---------- */
+/* === ШАГ 1 · СТАРТОВЫЙ СТОЛ · ЛОГИКА === */
 
-/* Откуда берётся каждый из шести слотов. Это же объяснение стоит в
-   интерфейсе: три слота закрываются одним выбором сектора, и человек
-   должен видеть почему, а не гадать, отчего дуги зажглись сами. */
-var PAD_SRC = {
-  role: 'из корпоративного профиля',
-  ef:   'соберём брифом',
-  cat:  'из выбора сектора',
-  st:   'всегда ИДЕЯ — заявка начинает с дальней орбиты',
-  unit: 'соберём брифом',
-  sys:  'из выбора сектора'
-};
+/* Кольцо вокруг ядра несёт не слоты, а путь агента: пять этапов от брифа
+   до работы у сотрудника. Бриф стоит справа, в визуальном центре, и от него
+   расходится веер — о чём спросит брифователь. Он единственный этап, где
+   нужен человек, поэтому только он раскрыт. */
+var STEPS = [
+  { k:'brief',  t:'БРИФ',           d:'разговор · единственный этап с вами' },
+  { k:'build',  t:'СБОРКА',         d:'агента пишут' },
+  { k:'appr',   t:'СОГЛАСОВАНИЯ',   d:'доступы и разрешения' },
+  { k:'deploy', t:'РАЗВЁРТЫВАНИЕ',  d:'контур корпорации' },
+  { k:'work',   t:'РАБОТА',         d:'агент у вас в руках' }
+];
 
-function padMap(){
-  return {
-    role: !!L.role,
-    ef:   false,
-    cat:  !!L.cat,
-    st:   true,
-    unit: false,
-    sys:  !!L.cat
-  };
-}
-function padFilled(){
-  var m = padMap(), n = 0;
-  for (var k in m) if (m[k]) n += 1;
-  return n;
-}
+var BRIEF_FAN = [
+  'Что происходит сегодня',
+  'Что должно происходить вместо',
+  'Чего агент не делает никогда',
+  'Как поймём, что стало лучше'
+];
 
 function buildCats(){
   var box = document.getElementById('fCats');
@@ -2269,34 +2331,13 @@ function buildCats(){
   CATS.forEach(function(c){
     var b = el('button'); b.type = 'button'; b.textContent = c.n;
     b.classList.toggle('on', L.cat === c.k);
-    b.addEventListener('click', function(){
-      L.cat = c.k;
-      buildCats(); padSync();
-    });
+    b.addEventListener('click', function(){ L.cat = c.k; buildCats(); padSync(); });
     box.appendChild(b);
   });
 }
 
-function padRows(){
-  var box = document.getElementById('padRows');
-  var m = padMap();
-  box.textContent = '';
-  SLOTS.forEach(function(s){
-    var on = m[s.k];
-    var r = el('div', 'prow' + (on ? ' on' : ''));
-    var why = PAD_SRC[s.k];
-    if (s.k === 'sys' && L.cat) why = cat(L.cat).sys;
-    r.innerHTML = '<i></i><span>' + s.t + '</span><em>' + why + '</em>';
-    box.appendChild(r);
-  });
-  document.getElementById('padN').textContent = padFilled();
-}
-
-/* Сцена: ваш сектор на карте, траектория выведения и агент из точек
-   на орбите идей. Веер точек у агента — шесть слотов; это и есть бриф,
-   поэтому клик по нему открывает следующий шаг. */
 function padPaint(){
-  var wrap = document.querySelector('.padwrap');
+  var wrap = document.querySelector('.padscene');
   var svgP = document.getElementById('padSvg');
   var labs = document.getElementById('padLabs');
   var W = wrap.clientWidth, H = wrap.clientHeight;
@@ -2305,133 +2346,121 @@ function padPaint(){
   svgP.textContent = '';
   labs.textContent = '';
 
-  var cx = W / 2, cy = H / 2;
-  var OR = Math.min(W, H) / 2 - 46;
-  var core = document.querySelector('.padcore');
-  core.style.left = cx + 'px'; core.style.top = cy + 'px';
+  var cx = Math.round(W * 0.30), cy = Math.round(H * 0.52);
+  var R = Math.max(96, Math.min(178, H * 0.27));
+  var u = R / 190;                                  /* масштаб от артборда */
+  var sun = document.querySelector('.padsun');
+  sun.style.left = cx + 'px'; sun.style.top = cy + 'px';
 
   var c = L.cat ? cat(L.cat) : null;
 
-  /* Карта повёрнута к сектору создателя: сам сектор, его ширина и порядок
-     соседей те же, что на большой карте, — повёрнут только кадр, как глобус
-     поворачивают к себе. Иначе подписи уезжают за край. */
-  var rot = c ? (-28 - (c.a0 + c.aw / 2)) : 0;
+  /* орбиты — те же отношения радиусов, что на карте; кадром обрезаются */
+  [1.49, 2.47, 3.46, 4.45].forEach(function(f, i){
+    var o = ns('circle');
+    o.setAttribute('cx', cx); o.setAttribute('cy', cy);
+    o.setAttribute('r', (R * f).toFixed(1));
+    o.setAttribute('fill', 'none');
+    o.setAttribute('stroke', i === 3 ? 'rgba(242,240,237,.15)' : 'rgba(242,240,237,.05)');
+    if (i === 3) o.setAttribute('stroke-dasharray', '2 9');
+    svgP.appendChild(o);
+  });
 
+  /* траектория выведения и агент из точек на орбите идей */
   if (c) {
-    var w = ns('path');
-    var p0 = polD(cx, cy, OR, c.a0 + rot), p1 = polD(cx, cy, OR, c.a0 + c.aw + rot);
-    w.setAttribute('d', 'M' + cx + ' ' + cy + ' L' + p0[0].toFixed(1) + ' ' + p0[1].toFixed(1) +
-      ' A' + OR + ' ' + OR + ' 0 ' + (c.aw > 180 ? 1 : 0) + ' 1 ' +
-      p1[0].toFixed(1) + ' ' + p1[1].toFixed(1) + ' Z');
-    w.setAttribute('fill', 'rgba(242,240,237,.045)');
-    svgP.appendChild(w);
-    [c.a0 + rot, c.a0 + c.aw + rot].forEach(function(a){
-      var q = polD(cx, cy, OR, a), l = ns('line');
-      l.setAttribute('x1', cx); l.setAttribute('y1', cy);
-      l.setAttribute('x2', q[0].toFixed(1)); l.setAttribute('y2', q[1].toFixed(1));
-      l.setAttribute('stroke', 'rgba(242,240,237,.1)');
-      svgP.appendChild(l);
+    var GA = 18, GR = R * 4.45;
+    var g = polD(cx, cy, GR, GA);
+    var tr = ns('path');
+    tr.setAttribute('d', 'M' + (cx + 26 * u) + ' ' + (cy + 38 * u) +
+      ' C' + (cx + 320 * u) + ' ' + (cy + 226 * u) +
+      ' ' + (cx + 630 * u) + ' ' + (cy + 268 * u) +
+      ' ' + g[0].toFixed(1) + ' ' + g[1].toFixed(1));
+    tr.setAttribute('fill', 'none');
+    tr.setAttribute('stroke', '#FF3B20');
+    tr.setAttribute('stroke-width', '1');
+    tr.setAttribute('stroke-dasharray', '3 6');
+    tr.setAttribute('opacity', '.5');
+    svgP.appendChild(tr);
+
+    [16, 9].forEach(function(r){
+      var q = ns('circle');
+      q.setAttribute('cx', g[0].toFixed(1)); q.setAttribute('cy', g[1].toFixed(1));
+      q.setAttribute('r', r); q.setAttribute('fill', 'none');
+      q.setAttribute('stroke', 'rgba(242,240,237,.26)');
+      q.setAttribute('stroke-dasharray', '2 5');
+      svgP.appendChild(q);
     });
+    var gl = el('div', 'padout');
+    gl.style.left = (g[0] - 250) + 'px'; gl.style.top = (g[1] - 12) + 'px';
+    gl.innerHTML = '<div class="k mono">ТОЧКА ВЫВЕДЕНИЯ</div>' +
+      '<div class="v">' + c.n + ' · орбита ИДЕЯ · период ' + stg('idea').T + '&#8201;с</div>';
+    labs.appendChild(gl);
   }
 
-  /* орбиты — те же радиусы и пунктиры, что на карте */
-  STAGES.forEach(function(s){
-    var r = ns('circle');
-    r.setAttribute('cx', cx); r.setAttribute('cy', cy);
-    r.setAttribute('r', (OR * s.rf).toFixed(1));
-    r.setAttribute('fill', 'none');
-    r.setAttribute('stroke', s.k === 'idea' ? 'rgba(242,240,237,.28)' : 'rgba(242,240,237,.08)');
-    if (s.dash !== 'none') r.setAttribute('stroke-dasharray', s.dash);
-    svgP.appendChild(r);
+  /* кольцо этапов */
+  STEPS.forEach(function(s, i){
+    var mid = i * 72;                              /* бриф справа: от него идёт веер */
+    var p = ns('path');
+    p.setAttribute('d', arcD(cx, cy, R, mid - 25, mid + 25));
+    p.setAttribute('fill', 'none');
+    p.setAttribute('stroke-linecap', 'round');
+    var now = i === 0;
+    p.setAttribute('stroke', now ? 'rgba(242,240,237,.92)' : 'rgba(242,240,237,.5)');
+    p.setAttribute('stroke-width', now ? '2.6' : '1.6');
+    if (!now) p.setAttribute('stroke-dasharray', '2 6');
+    svgP.appendChild(p);
+
+    var lp = polD(cx, cy, R + 34, mid);
+    var dx = Math.cos(mid * Math.PI / 180);
+    var al = dx < -0.34 ? 'e' : (dx > 0.34 ? 's' : 'm');
+    var d = el('div', 'padstep ' + al + (now ? ' now up' : ''));
+    d.style.left = lp[0] + 'px'; d.style.top = lp[1] + 'px';
+    d.innerHTML = '<i></i><span>' + s.t + '</span><em>' + s.d + '</em>';
+    labs.appendChild(d);
   });
 
-  if (!c) {
-    var d0 = el('div', 'padask');
-    d0.style.left = cx + 'px'; d0.style.top = (cy + OR * 0.5) + 'px';
-    d0.textContent = 'Выберите сектор — покажем вашу точку выведения';
-    labs.appendChild(d0);
-    return;
-  }
+  /* веер брифа — вправо, от кольца */
+  var tx = polD(cx, cy, R + 8, 0), nx = polD(cx, cy, R + 92 * u, 0);
+  var tl = ns('line');
+  tl.setAttribute('x1', tx[0].toFixed(1)); tl.setAttribute('y1', tx[1].toFixed(1));
+  tl.setAttribute('x2', nx[0].toFixed(1)); tl.setAttribute('y2', nx[1].toFixed(1));
+  tl.setAttribute('stroke', 'rgba(242,240,237,.34)');
+  svgP.appendChild(tl);
 
-  var A = c.a0 + c.aw / 2 + rot;
-  var g = polD(cx, cy, OR, A);
+  var spread = [-19.5, -6.5, 6.5, 19.5];
+  BRIEF_FAN.forEach(function(txt, i){
+    var lp = polD(cx, cy, R + 156 * u, spread[i]);
+    var ld = ns('path');
+    ld.setAttribute('d', bz(nx[0], nx[1], lp[0], lp[1]));
+    ld.setAttribute('fill', 'none');
+    ld.setAttribute('stroke', i === 1 ? '#FF3B20' : 'rgba(242,240,237,.2)');
+    ld.setAttribute('stroke-width', i === 1 ? '1.4' : '1');
+    if (i > 1) ld.setAttribute('stroke-dasharray', '2 6');
+    svgP.appendChild(ld);
 
-  /* траектория выведения */
-  var t = ns('path');
-  var m1 = polD(cx, cy, OR * 0.42, A - 16), m2 = polD(cx, cy, OR * 0.78, A - 6);
-  t.setAttribute('d', 'M' + cx + ' ' + cy + ' C' + m1[0].toFixed(1) + ' ' + m1[1].toFixed(1) +
-    ' ' + m2[0].toFixed(1) + ' ' + m2[1].toFixed(1) + ' ' + g[0].toFixed(1) + ' ' + g[1].toFixed(1));
-  t.setAttribute('fill', 'none');
-  t.setAttribute('stroke', '#FF3B20');
-  t.setAttribute('stroke-width', '1');
-  t.setAttribute('stroke-dasharray', '3 6');
-  t.setAttribute('opacity', '.55');
-  svgP.appendChild(t);
-
-  /* агент: пунктирный обод и мон своей линейки */
-  var gr = ns('circle');
-  gr.setAttribute('cx', g[0].toFixed(1)); gr.setAttribute('cy', g[1].toFixed(1));
-  gr.setAttribute('r', '13'); gr.setAttribute('fill', 'none');
-  gr.setAttribute('stroke', '#F2F0ED'); gr.setAttribute('stroke-width', '1.6');
-  gr.setAttribute('stroke-dasharray', '2.6 2.6');
-  svgP.appendChild(gr);
-  var gm = ns('g');
-  gm.setAttribute('transform', 'translate(' + (g[0] - 13).toFixed(1) + ',' +
-    (g[1] - 13).toFixed(1) + ') scale(' + (26 / 24).toFixed(3) + ')');
-  c.mon.forEach(function(dd){
-    var pp = ns('path'); pp.setAttribute('d', dd); pp.setAttribute('fill', 'none');
-    pp.setAttribute('stroke', 'rgba(242,240,237,.72)'); pp.setAttribute('stroke-width', '1.6');
-    pp.setAttribute('stroke-linecap', 'round');
-    gm.appendChild(pp);
-  });
-  svgP.appendChild(gm);
-
-  /* веер шести слотов: агент собран из точек, и это и есть бриф */
-  var m = padMap();
-  var fan = ns('g'); fan.setAttribute('class', 'padfan');
-  SLOTS.forEach(function(s, i){
-    var da = A + (i - (SLOTS.length - 1) / 2) * 7.4;
-    var p0 = polD(cx, cy, OR + 15, da), p1 = polD(cx, cy, OR + 40, da);
-    var ln = ns('line');
-    ln.setAttribute('x1', p0[0].toFixed(1)); ln.setAttribute('y1', p0[1].toFixed(1));
-    ln.setAttribute('x2', p1[0].toFixed(1)); ln.setAttribute('y2', p1[1].toFixed(1));
-    ln.setAttribute('stroke', m[s.k] ? 'rgba(242,240,237,.4)' : 'rgba(242,240,237,.16)');
-    fan.appendChild(ln);
-    var dot = ns('circle');
-    dot.setAttribute('cx', p1[0].toFixed(1)); dot.setAttribute('cy', p1[1].toFixed(1));
-    dot.setAttribute('r', '3.4');
-    if (m[s.k]) dot.setAttribute('fill', 'rgba(242,240,237,.86)');
+    var lc = ns('circle');
+    lc.setAttribute('cx', lp[0].toFixed(1)); lc.setAttribute('cy', lp[1].toFixed(1));
+    lc.setAttribute('r', i === 1 ? '6.5' : '4.6');
+    if (i === 0) lc.setAttribute('fill', 'rgba(242,240,237,.86)');
+    else if (i === 1) lc.setAttribute('fill', '#FF3B20');
     else {
-      dot.setAttribute('fill', 'none');
-      dot.setAttribute('stroke', 'rgba(242,240,237,.34)');
+      lc.setAttribute('fill', 'none');
+      lc.setAttribute('stroke', 'rgba(242,240,237,.32)');
     }
-    fan.appendChild(dot);
-  });
-  svgP.appendChild(fan);
+    svgP.appendChild(lc);
 
-  /* точка выведения — подпись со стороны, противоположной вееру */
-  var lp = polD(cx, cy, OR + 30, A);
-  var side = Math.cos(A * Math.PI / 180) < 0 ? 'l' : 'r';
-  var d = el('div', 'padout ' + side);
-  d.style.left = lp[0] + 'px'; d.style.top = lp[1] + 'px';
-  d.innerHTML = '<div class="k mono">ТОЧКА ВЫВЕДЕНИЯ</div>' +
-    '<div class="v">' + c.n + ' · орбита ИДЕЯ</div>' +
-    '<div class="n mono">ПЕРИОД ОБРАЩЕНИЯ ' + stg('idea').T + '&#8201;С</div>';
-  labs.appendChild(d);
-
-  /* сам веер — вход в брифование */
-  var bp = polD(cx, cy, OR + 62, A);
-  var b = el('button', 'padgo' + (side === 'l' ? ' l' : ''));
-  b.type = 'button';
-  b.style.left = bp[0] + 'px'; b.style.top = bp[1] + 'px';
-  b.innerHTML = '<span class="mono">ШЕСТЬ СЛОТОВ · ' + padFilled() + ' ИЗ 6 ИЗВЕСТНЫ</span>' +
-    '<em>заполнить бриф →</em>';
-  b.addEventListener('click', function(){
-    if (!document.getElementById('toBrief').disabled) lStep('brief');
+    var q = el('div', 'padq' + (i === 1 ? ' now' : (i === 0 ? ' done' : '')));
+    q.style.left = (lp[0] + 16) + 'px'; q.style.top = lp[1] + 'px';
+    q.textContent = txt;
+    labs.appendChild(q);
   });
-  labs.appendChild(b);
+
+  var nc = ns('circle');
+  nc.setAttribute('cx', nx[0].toFixed(1)); nc.setAttribute('cy', nx[1].toFixed(1));
+  nc.setAttribute('r', '7'); nc.setAttribute('fill', '#07080A');
+  nc.setAttribute('stroke', 'rgba(242,240,237,.72)'); nc.setAttribute('stroke-width', '1.2');
+  svgP.appendChild(nc);
+
 }
-
 
 function arcD(cx, cy, r, a0, a1){
   var p0 = polD(cx, cy, r, a0), p1 = polD(cx, cy, r, a1);
@@ -2449,8 +2478,7 @@ function padSync(){
   var hint = document.getElementById('catHint');
   hint.textContent = L.cat
     ? 'сектор ' + cat(L.cat).n.toLowerCase() + ' · системы: ' + cat(L.cat).sys
-    : 'выбор сектора закрывает сразу три слота: линейку, системы и стадию';
-  padRows();
+    : 'выберите сектор — увидите свою точку выведения';
   padPaint();
 }
 
@@ -2882,7 +2910,7 @@ function donePaint(){
 
   var nm = document.getElementById('fName');
   var rl = document.getElementById('fRole');
-  nm.addEventListener('input', function(){ L.name = nm.value.trim(); padSync(); });
+  nm.addEventListener('input', function(){ L.name = nm.value.trim(); });
   rl.addEventListener('input', function(){ L.role = rl.value.trim(); padSync(); });
   document.getElementById('toBrief').addEventListener('click', function(){ lStep('brief'); });
 
@@ -2923,6 +2951,98 @@ function donePaint(){
     if (L.step === 'done') donePaint();
   });
 })();
+
+
+/* =====================================================================
+   ПОГРУЖЕНИЕ КОЛЕСОМ
+   Один оборот колеса вниз проваливает внутрь того, на что смотрит курсор:
+   в агента — его анатомия, в ядро — система создания агентов. Оборот вверх
+   изнутри возвращает наружу. Порог набирается постепенно, и вокруг цели
+   растёт дуга — видно, сколько осталось докрутить.
+   ===================================================================== */
+var DIVE_NEED = 240;                       /* примерно один оборот колеса */
+var dive = { v:0, target:null, t:0, ring:null };
+
+function diveRing(){
+  if (!svg.dataset.ready) return null;
+  if (!dive.ring) {
+    var c = ns('circle');
+    c.setAttribute('class', 'divering');
+    c.setAttribute('fill', 'none');
+    c.setAttribute('stroke', '#F2F0ED');
+    c.setAttribute('stroke-width', '1.6');
+    c.setAttribute('stroke-linecap', 'round');
+    c.setAttribute('opacity', '0');
+    svg.appendChild(c);
+    dive.ring = c;
+  }
+  return dive.ring;
+}
+
+function divePaint(){
+  var c = diveRing();
+  if (!c) return;
+  if (!dive.target || dive.v <= 0) { c.setAttribute('opacity', '0'); return; }
+  var r = dive.target.kind === 'sun' ? 34 : 22;
+  var p = dive.target.kind === 'sun'
+    ? { x: st.cx, y: st.cy }
+    : (function(){ var a = agent(dive.target.id); return a ? pos(a) : null; })();
+  if (!p) { c.setAttribute('opacity', '0'); return; }
+  var len = 2 * Math.PI * r;
+  var k = Math.min(1, dive.v / DIVE_NEED);
+  c.setAttribute('cx', p.x.toFixed(1));
+  c.setAttribute('cy', p.y.toFixed(1));
+  c.setAttribute('r', r);
+  c.setAttribute('stroke-dasharray', (len * k).toFixed(1) + ' ' + len.toFixed(1));
+  c.setAttribute('transform', 'rotate(-90 ' + p.x.toFixed(1) + ' ' + p.y.toFixed(1) + ')');
+  c.setAttribute('opacity', (0.25 + 0.75 * k).toFixed(2));
+}
+
+function diveTargetAt(x, y){
+  var dx = x - st.cx, dy = y - st.cy;
+  if (Math.sqrt(dx * dx + dy * dy) <= 46) return { kind:'sun' };
+  var h = hitTest(x, y);
+  if (h && h.kind === 'agent') return { kind:'agent', id:h.id };
+  return null;
+}
+
+function diveReset(){ dive.v = 0; dive.target = null; divePaint(); }
+
+stageEl.addEventListener('wheel', function(e){
+  if (st.mode !== 'eco' || st.narrow) return;
+  var xy = stageXY(e);                        /* возвращает пару [x, y] */
+  var t = diveTargetAt(xy[0], xy[1]);
+  if (!t) { diveReset(); return; }
+  e.preventDefault();
+  var now = performance.now();
+  if (now - dive.t > 500 || !dive.target || dive.target.kind !== t.kind ||
+      dive.target.id !== t.id) { dive.v = 0; }
+  dive.t = now;
+  dive.target = t;
+  dive.v += Math.max(0, e.deltaY);          /* внутрь — только вниз */
+  if (e.deltaY < 0) dive.v = Math.max(0, dive.v + e.deltaY);
+  divePaint();
+  if (dive.v >= DIVE_NEED) {
+    var kind = t.kind, id = t.id;
+    diveReset();
+    if (kind === 'sun') openLaunch(); else openAnat(id);
+  }
+}, { passive:false });
+
+/* Изнутри оборот вверх возвращает наружу. */
+function diveOut(el2, back){
+  var acc = { v:0, t:0 };
+  el2.addEventListener('wheel', function(e){
+    if (e.deltaY >= 0) { acc.v = 0; return; }
+    var now = performance.now();
+    if (now - acc.t > 500) acc.v = 0;
+    acc.t = now;
+    acc.v += -e.deltaY;
+    if (acc.v >= DIVE_NEED) { acc.v = 0; back(); }
+  }, { passive:true });
+}
+diveOut(document.getElementById('anat'), function(){ if (st.focus) closeAnat(); });
+diveOut(launchEl, function(){ if (st.mode === 'launch' && L.step === 'pad') closeLaunch(); });
 
 /* ============================= ЗАПУСК ============================= */
 
