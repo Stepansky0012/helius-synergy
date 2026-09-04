@@ -110,27 +110,38 @@ body.nw .ag .ho{left:7px;top:7px}
 .ag:hover .ho{border-color:rgba(242,240,237,.3)}
 @keyframes rise{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
 
-/* ---------- карточка контекста: всегда у курсора ---------- */
-#ctx{position:fixed;z-index:78;pointer-events:none;width:300px;
-  padding:16px 18px 17px;opacity:0;visibility:hidden;
-  background:rgba(11,13,17,.90);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);
-  border:1px solid rgba(242,240,237,.14);border-radius:calc(var(--R)*2);
-  box-shadow:0 18px 46px rgba(0,0,0,.62);
-  transition:opacity .14s var(--ease)}
+/* ---------- контекст у курсора ----------
+   Ни рамки, ни плашки: поле размытия, у которого нет края — маска гасит
+   и размытие, и подложку. Иерархия держится светом и интервалом; вертикальная
+   граница возникает выравниванием колонок, а не линией. */
+#ctx{position:fixed;z-index:78;pointer-events:none;width:356px;
+  opacity:0;visibility:hidden;transition:opacity .16s var(--ease)}
 #ctx.on{opacity:1;visibility:visible}
-#ctx .k{font-size:7.5px;letter-spacing:.24em;color:var(--t4)}
-#ctx .t{margin-top:8px;font-size:14px;font-weight:500;line-height:1.32}
-#ctx .t .lv{margin-left:9px;font-size:9px;letter-spacing:.16em;color:var(--t3);font-weight:400}
-#ctx .d{margin-top:11px;font-size:11px;line-height:1.6;color:var(--t2);text-wrap:pretty}
-#ctx .rows{margin-top:14px;display:flex;flex-direction:column;gap:8px}
-#ctx .r2{display:flex;gap:12px;align-items:baseline}
-#ctx .r2 .l{flex:0 0 74px;font-size:7.5px;letter-spacing:.16em;color:var(--t4);line-height:1.5}
-#ctx .r2 .v{flex:1 1 auto;font-size:10.5px;line-height:1.5;color:var(--t2)}
-#ctx .f{margin-top:14px;padding-top:11px;border-top:1px solid rgba(242,240,237,.10);
-  display:flex;justify-content:space-between;gap:10px;
-  font-size:7.5px;letter-spacing:.16em;color:var(--t4)}
-#ctx.attn{border-color:color-mix(in oklab,var(--sol) 46%,transparent)}
-#ctx.attn .k{color:var(--sol)}
+#ctx::before{content:'';position:absolute;inset:-54px -82px -60px -82px;z-index:-1;
+  backdrop-filter:blur(24px) saturate(.82);-webkit-backdrop-filter:blur(24px) saturate(.82);
+  background:rgba(7,8,10,.80);
+  -webkit-mask-image:linear-gradient(to right, transparent 0, #000 15%, #000 85%, transparent 100%),
+    linear-gradient(to bottom, transparent 0, #000 16%, #000 84%, transparent 100%);
+  -webkit-mask-composite:source-in;
+  mask-image:linear-gradient(to right, transparent 0, #000 15%, #000 85%, transparent 100%),
+    linear-gradient(to bottom, transparent 0, #000 16%, #000 84%, transparent 100%);
+  mask-composite:intersect}
+
+#ctx .eye{display:flex;align-items:center;gap:10px}
+#ctx .eye .g{flex:0 0 auto;display:block;color:rgba(242,240,237,.55)}
+#ctx .eye .n{font-size:7.5px;letter-spacing:.26em;color:var(--t4)}
+#ctx .ttl{margin-top:13px;font-size:14.5px;font-weight:500;line-height:1.34}
+#ctx .ttl .lv{margin-left:11px;font-size:9px;letter-spacing:.2em;color:var(--t3);font-weight:400}
+#ctx .say{margin-top:13px;font-size:11px;line-height:1.7;color:var(--t2);text-wrap:pretty}
+#ctx .tbl{margin:22px 0 0;display:grid;grid-template-columns:76px 1fr;
+  column-gap:22px;row-gap:11px;align-items:baseline}
+#ctx .tbl dt{font-size:7.5px;letter-spacing:.18em;color:var(--t4);text-align:right;line-height:1.8}
+#ctx .tbl dd{margin:0;font-size:11px;line-height:1.6;color:var(--t2);
+  font-variant-numeric:tabular-nums}
+#ctx .foot{margin-top:24px;display:grid;grid-template-columns:76px 1fr;column-gap:22px}
+#ctx .foot .l{font-size:7.5px;letter-spacing:.18em;color:var(--t3);text-align:right}
+#ctx .foot .r{font-size:7.5px;letter-spacing:.18em;color:var(--t4)}
+#ctx.attn .eye .n,#ctx.attn .eye .g{color:var(--sol)}
 
 /* ---------- анатомия ---------- */
 #anat{position:fixed;inset:0;z-index:40;opacity:0;pointer-events:none;
@@ -164,12 +175,19 @@ body.nw #acore .chip{font-size:6.5px;letter-spacing:.18em;padding:2px 8px}
 .nlab{position:absolute;z-index:47;pointer-events:none}
 .nlab .t{font-size:8px;letter-spacing:.24em;color:var(--t3)}
 .nlab .v{margin-top:5px;font-size:11.5px;font-weight:500;line-height:1.4}
-.acard{position:absolute;z-index:52;width:272px;padding:17px 19px 18px;
-  background:rgba(12,14,18,.86);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
-  border:1px solid rgba(242,240,237,.12);border-radius:calc(var(--R)*2);
-  box-shadow:0 18px 44px rgba(0,0,0,.55);pointer-events:none;animation:rise .18s var(--ease)}
-.acard .h{font-size:8px;letter-spacing:.24em;color:var(--t2)}
-.acard .b{margin-top:12px;font-size:11px;line-height:1.55;color:var(--t2)}
+.acard{position:absolute;z-index:52;width:276px;
+  pointer-events:none;animation:rise .18s var(--ease)}
+.acard::before{content:'';position:absolute;inset:-48px -70px -54px -70px;z-index:-1;
+  backdrop-filter:blur(24px) saturate(.82);-webkit-backdrop-filter:blur(24px) saturate(.82);
+  background:rgba(7,8,10,.80);
+  -webkit-mask-image:linear-gradient(to right, transparent 0, #000 15%, #000 85%, transparent 100%),
+    linear-gradient(to bottom, transparent 0, #000 16%, #000 84%, transparent 100%);
+  -webkit-mask-composite:source-in;
+  mask-image:linear-gradient(to right, transparent 0, #000 15%, #000 85%, transparent 100%),
+    linear-gradient(to bottom, transparent 0, #000 16%, #000 84%, transparent 100%);
+  mask-composite:intersect}
+.acard .h{font-size:7.5px;letter-spacing:.24em;color:var(--t3)}
+.acard .b{margin-top:14px;font-size:11px;line-height:1.65;color:var(--t2)}
 .flank{position:fixed;top:50%;transform:translateY(-50%);width:270px;z-index:50}
 .flank h2{margin:0;font-size:12px;font-weight:300;letter-spacing:.28em}
 .flank p{margin:16px 0 0;font-size:12px;line-height:1.9;color:rgba(242,240,237,.55);
@@ -218,19 +236,22 @@ body.nw #acore .chip{font-size:6.5px;letter-spacing:.18em;padding:2px 8px}
 #anatBox{position:fixed;inset:0}
 #slotList{display:none}
 #sheet{position:fixed;left:0;right:0;bottom:0;z-index:80;transform:translateY(104%);
-  transition:transform .42s var(--ease);
-  background:rgba(12,14,18,.95);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);
-  border-top:1px solid rgba(242,240,237,.14);
-  border-radius:calc(var(--R)*3) calc(var(--R)*3) 0 0;padding:24px 20px 26px}
+  transition:transform .42s var(--ease);padding:34px 20px 26px}
+#sheet::before{content:'';position:absolute;inset:0;z-index:-1;
+  backdrop-filter:blur(24px) saturate(.84);-webkit-backdrop-filter:blur(24px) saturate(.84);
+  background:linear-gradient(to bottom, rgba(7,8,10,0) 0%, rgba(7,8,10,.72) 30%,
+    rgba(7,8,10,.94) 100%);
+  -webkit-mask-image:linear-gradient(to bottom, transparent 0%, #000 26%);
+  mask-image:linear-gradient(to bottom, transparent 0%, #000 26%)}
 #sheet.on{transform:none}
 #sheet .c{font-size:8px;letter-spacing:.22em;color:var(--t3)}
 #sheet .n{margin-top:8px;font-size:16px;font-weight:500;line-height:1.35;padding-right:46px}
 #sheet .e{margin-top:12px;font-size:12.5px;line-height:1.6;color:var(--t2)}
-#sheet .s{margin-top:13px;padding-top:12px;border-top:1px solid rgba(242,240,237,.09);
-  font-size:8.5px;letter-spacing:.14em;color:var(--t4);line-height:1.7}
-#sheet .go{margin-top:20px;display:flex;align-items:center;justify-content:space-between;
-  width:100%;min-height:50px;padding:0 22px;border:1px solid rgba(242,240,237,.42);
-  border-radius:calc(var(--R)*5);font-size:12.5px;letter-spacing:.05em}
+#sheet .s{margin-top:22px;font-size:8.5px;letter-spacing:.14em;color:var(--t4);line-height:1.7}
+#sheet .go{margin-top:24px;display:flex;align-items:center;justify-content:space-between;
+  width:100%;min-height:50px;padding:0 2px;border:0;
+  border-top:1px solid rgba(242,240,237,.14);
+  font-size:12.5px;letter-spacing:.05em}
 #sheet .cl{position:absolute;right:14px;top:16px;width:44px;height:44px;display:flex;
   align-items:center;justify-content:center;color:var(--t3);font-size:14px}
 .yr{display:none}
@@ -860,15 +881,59 @@ function setHover(h){
 }
 
 function ctxPlace(x, y){
-  var pad = 16, w = 300;
-  var h = ctxEl.offsetHeight || 190;
-  var left = x + 20, top = y - 24;
+  var pad = 40, w = 356;
+  var h = ctxEl.offsetHeight || 210;
+  var left = x + 40, top = y - 30;
   if (left + w + pad > st.W) left = x - 20 - w;
   if (left < pad) left = pad;
   if (top + h + pad > st.H) top = st.H - h - pad;
   if (top < pad) top = pad;
   ctxEl.style.left = Math.round(left) + 'px';
   ctxEl.style.top = Math.round(top) + 'px';
+}
+
+/* Глифы контекста берутся из словаря самой карты: мон линейки, набор колец
+   стадий, ядро. Иконок со стороны здесь нет. */
+function svgBox(size){
+  var g = ns('svg'); g.setAttribute('class','g');
+  g.setAttribute('width', size); g.setAttribute('height', size);
+  g.setAttribute('viewBox','0 0 24 24'); g.setAttribute('aria-hidden','true');
+  return g;
+}
+function monGlyph(catKey){
+  var g = svgBox(15), c = cat(catKey);
+  var r = ns('circle'); r.setAttribute('cx','12'); r.setAttribute('cy','12'); r.setAttribute('r','9');
+  r.setAttribute('fill','none'); r.setAttribute('stroke','currentColor'); r.setAttribute('stroke-width','2.1');
+  g.appendChild(r);
+  c.mon.forEach(function(d){
+    var q = ns('path'); q.setAttribute('d', d); q.setAttribute('fill','none');
+    q.setAttribute('stroke','currentColor'); q.setAttribute('stroke-width','2.1');
+    q.setAttribute('stroke-linecap','round'); q.setAttribute('stroke-linejoin','round');
+    g.appendChild(q);
+  });
+  return g;
+}
+function ringGlyph(stageKey){
+  var g = svgBox(15);
+  STAGES.forEach(function(s){
+    var on = s.k === stageKey;
+    var c = ns('circle');
+    c.setAttribute('cx','12'); c.setAttribute('cy','12');
+    c.setAttribute('r', (s.rf * 10.4).toFixed(1));
+    c.setAttribute('fill','none'); c.setAttribute('stroke','currentColor');
+    c.setAttribute('stroke-width', on ? '2.2' : '1');
+    c.setAttribute('stroke-opacity', on ? '1' : '0.3');
+    g.appendChild(c);
+  });
+  return g;
+}
+function sunGlyph(){
+  var g = svgBox(15);
+  var c = ns('circle');
+  c.setAttribute('cx','12'); c.setAttribute('cy','12'); c.setAttribute('r','5');
+  c.setAttribute('fill','var(--sol)');
+  g.appendChild(c);
+  return g;
 }
 
 function ctxRender(){
@@ -880,33 +945,38 @@ function ctxRender(){
   ctxEl.textContent = '';
   ctxEl.className = '';
 
-  var K = function(t){ var e = el('div','k mono'); e.textContent = t; ctxEl.appendChild(e); };
+  var K = function(t, glyph){
+    var e = el('div','eye');
+    if (glyph) e.appendChild(glyph);
+    var n = el('span','n mono'); n.textContent = t; e.appendChild(n);
+    ctxEl.appendChild(e);
+  };
   var T = function(t, lv){
-    var e = el('div','t'); e.textContent = t;
+    var e = el('div','ttl'); e.textContent = t;
     if (lv){ var s2 = el('span','lv mono'); s2.textContent = lv; e.appendChild(s2); }
     ctxEl.appendChild(e);
   };
-  var D = function(t){ var e = el('div','d'); e.textContent = t; ctxEl.appendChild(e); };
-  var rowsBox = null;
+  var D = function(t){ var e = el('div','say'); e.textContent = t; ctxEl.appendChild(e); };
+  var tbl = null;
   var R2 = function(l, v){
     if (!v) return;
-    if (!rowsBox){ rowsBox = el('div','rows'); ctxEl.appendChild(rowsBox); }
-    var w = el('div','r2');
-    var a1 = el('span','l mono'); a1.textContent = l;
-    var a2 = el('span','v'); a2.textContent = v;
-    w.appendChild(a1); w.appendChild(a2); rowsBox.appendChild(w);
+    if (!tbl){ tbl = el('dl','tbl'); ctxEl.appendChild(tbl); }
+    var dt = el('dt','mono'); dt.textContent = l;
+    var dd = el('dd'); dd.textContent = v;
+    tbl.appendChild(dt); tbl.appendChild(dd);
   };
   var F = function(left, right){
-    var e = el('div','f mono');
-    var a1 = el('span'); a1.textContent = left; e.appendChild(a1);
-    if (right){ var a2 = el('span'); a2.textContent = right; e.appendChild(a2); }
-    ctxEl.appendChild(e);
+    if (!left && !right) return;
+    var e = el('div','foot');
+    var a1 = el('span','l mono'); a1.textContent = left || '';
+    var a2 = el('span','r mono'); a2.textContent = right || '';
+    e.appendChild(a1); e.appendChild(a2); ctxEl.appendChild(e);
   };
 
   if (h.kind === 'agent'){
     var a = agent(h.id), c = cat(a.c), s = stg(a.s);
     if (a.attn) ctxEl.classList.add('attn');
-    K(a.attn ? 'ТРЕБУЕТ ВНИМАНИЯ' : c.n);
+    K(a.attn ? 'ТРЕБУЕТ ВНИМАНИЯ' : c.n, monGlyph(a.c));
     T(a.n);
     if (a.attn) D(a.attn);
     R2('РОЛЬ', a.role);
@@ -916,30 +986,31 @@ function ctxRender(){
     F(s.n + (s.lv !== '—' ? ' · ' + s.lv : ''), 'КЛИК — АНАТОМИЯ');
   } else if (h.kind === 'stage'){
     var s2 = stg(h.id), n = byStage[h.id];
-    K('СТАДИЯ ЗРЕЛОСТИ · КОЛЬЦО');
+    K('СТАДИЯ ЗРЕЛОСТИ', ringGlyph(h.id));
     T(s2.n.charAt(0) + s2.n.slice(1).toLowerCase(), s2.lv !== '—' ? s2.lv : '');
     D(s2.note);
     R2('АГЕНТОВ', n ? String(n) : 'ни одного');
     R2('ОТВЕЧАЕТ', RESP[h.id]);
-    F('РАДИУС ' + Math.round(st.R * s2.rf) + ' PX',
-      n ? '' : 'КОЛЬЦО ПУСТО');
+    R2('РАДИУС', Math.round(st.R * s2.rf) + ' px');
+    F('', n ? '' : 'КОЛЬЦО ПУСТО');
   } else if (h.kind === 'cat'){
     var c2 = cat(h.id), n2 = byCat[h.id].length;
-    K('ПРОДУКТОВАЯ ЛИНЕЙКА · СЕКТОР');
+    K('ПРОДУКТОВАЯ ЛИНЕЙКА', monGlyph(h.id));
     T(c2.n.charAt(0) + c2.n.slice(1).toLowerCase());
     D(c2.d);
     R2('АГЕНТОВ', String(n2));
     R2('ТИРАЖ', c2.tir);
     R2('СИСТЕМЫ', c2.sys);
-    F('СЕКТОР ' + Math.round(c2.aw) + '°', 'ШИРИНА = ЧИСЛО АГЕНТОВ');
+    R2('СЕКТОР', Math.round(c2.aw) + '°');
+    F('', 'ШИРИНА СЕКТОРА = ЧИСЛО АГЕНТОВ');
   } else {
-    K('ЯДРО');
+    K('ЯДРО', sunGlyph());
     T('Синергия');
-    D('Штаб ИИ и отдел ИИ-агентов. Чем ближе агент к центру, тем он самостоятельнее: от заявки в реестре до автономной работы без участия сотрудника.');
+    D('Чем ближе агент к центру, тем он самостоятельнее: от заявки в реестре до автономной работы без участия сотрудника.');
     R2('АГЕНТОВ', String(A.length));
     R2('ЛИНЕЕК', String(CATS.length));
     R2('В РАБОТЕ', String(A.length - (byStage.reg || 0)));
-    F('ОБОРОТ КАРТЫ ' + SPIN_T + ' С');
+    F('', 'ОБОРОТ КАРТЫ ' + SPIN_T + ' С');
   }
   ctxEl.classList.add('on');
 }
