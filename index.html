@@ -186,6 +186,8 @@ body.nw .ag .ho{left:7px;top:7px}
   #ctx.on .eye,#ctx.on .ttl,#ctx.on .say,#ctx.on .tbl .r,#ctx.on .foot,
   #railL.live .stn,#railL.live .tale,.acard,.nd,#ctx{animation:none!important}
   .ring.on{animation:none}
+  .doneMap.fire .c{animation:none}
+  .doneCard{transition:none}
   #sun .halo{animation:none}
   #beat{animation:none}
   .ag .glyph{transition:none}
@@ -553,7 +555,32 @@ footer{position:fixed;left:40px;bottom:28px;z-index:56;font-size:8.5px;line-heig
 .lleg i.n{background:var(--sol);border-color:transparent}
 
 /* ---------- шаг 3 · заявка принята ---------- */
-.doneWrap{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;gap:64px}
+/* ---------- циклограмма пуска ----------
+   Из артборда «вариант C»: сборка, готовность, зажигание, выведение,
+   орбита. Светится пройденное, впереди — тёмный след того же красного. */
+.cyclo{position:absolute;left:0;right:0;bottom:0;z-index:4;
+  opacity:0;transition:opacity .32s var(--ease)}
+.cyclo.on{opacity:1}
+.cyclo .cline{position:relative;height:1px;background:rgba(122,18,6,.5)}
+.cyclo .cline i{position:absolute;left:0;top:-0.5px;height:2px;width:0;
+  background:var(--sol);box-shadow:0 0 7px color-mix(in oklab,var(--sol) 34%,transparent)}
+.cyclo .cmarks{display:flex;justify-content:space-between;margin-top:12px}
+.cyclo .cm{font-size:8px;letter-spacing:.22em;color:var(--t4);
+  font-family:'JetBrains Mono',ui-monospace,monospace;transition:color .3s var(--ease)}
+.cyclo .cm.done{color:var(--t3)}
+.cyclo .cm.now{color:var(--t1)}
+
+/* Зажигание: ядро отдаёт вспышку, от которой отделяется точка. */
+@keyframes fire{
+  0%{transform:scale(1)}
+  24%{transform:scale(1.55)}
+  100%{transform:scale(1)}
+}
+.doneMap.fire .c{animation:fire .5s var(--ease)}
+.doneCard{transition:opacity .4s var(--ease)}
+.doneCard.wait{opacity:0}
+
+.doneWrap{position:absolute;inset:0 0 64px;display:flex;align-items:center;justify-content:center;gap:64px}
 .doneMap{position:relative;width:440px;height:440px;flex-grow:0}
 .doneMap svg{position:absolute;inset:0;width:100%;height:100%}
 .doneMap .c{position:absolute;left:50%;top:50%;width:26px;height:26px;margin:-13px 0 0 -13px;
@@ -875,6 +902,10 @@ footer{position:fixed;left:40px;bottom:28px;z-index:56;font-size:8.5px;line-heig
     </section>
 
     <section class="lstep" data-step="done">
+      <div class="cyclo" id="cyclo" aria-hidden="true">
+        <div class="cline"><i id="cfill"></i></div>
+        <div class="cmarks" id="cmarks"></div>
+      </div>
       <div class="doneWrap">
         <div class="doneMap">
           <svg id="doneSvg" aria-hidden="true"></svg>
@@ -2872,7 +2903,175 @@ function lSubmit(){
   A.push(a);
   recount(); buildRails(); buildStage(); paint();
   L.newId = id;
+  L.fresh = 1;                            /* полёт играется один раз */
   lStep('done');
+}
+
+/* ============================================================
+   ЦИКЛОГРАММА ПУСКА
+   Единственный поставленный момент в приложении. Заявка не появляется
+   на орбите — она туда выводится: зажигание, подъём по дуге, остывание
+   в пунктир. Красная точка — это буквально «здесь мы сейчас»: на орбите
+   она гаснет, и красного на экране снова остаётся два места.
+   ============================================================ */
+
+var CYCLO = ['СБОРКА', 'ГОТОВНОСТЬ', 'ЗАЖИГАНИЕ', 'ВЫВЕДЕНИЕ', 'ОРБИТА IDEA'];
+
+function calm(){
+  return !!(window.matchMedia &&
+    window.matchMedia('(prefers-reduced-motion: reduce)').matches);
+}
+
+function cycloShow(active){
+  var m = document.getElementById('cmarks');
+  m.textContent = '';
+  CYCLO.forEach(function(t){
+    var d = el('div', 'cm'); d.textContent = t; m.appendChild(d);
+  });
+  document.getElementById('cyclo').classList.add('on');
+  cycloSet(active);
+}
+
+function cycloSet(f){
+  var k = Math.max(0, Math.min(1, f / (CYCLO.length - 1)));
+  document.getElementById('cfill').style.width = (k * 100).toFixed(1) + '%';
+  var cur = Math.floor(f + 1e-6);
+  document.querySelectorAll('#cmarks .cm').forEach(function(d, i){
+    d.classList.toggle('done', i < cur);
+    d.classList.toggle('now', i === cur);
+  });
+}
+
+function orbitInk(s){
+  return s.k === 'idea' ? 'rgba(242,240,237,.3)' : 'rgba(242,240,237,.09)';
+}
+
+/* Орбита, которую пересекла точка, коротко отзывается: видно, что подъём
+   идёт сквозь зрелость, а не мимо неё. */
+function orbitFlash(o, s){
+  if (!o) return;
+  o.setAttribute('stroke', 'rgba(242,240,237,.5)');
+  setTimeout(function(){ o.setAttribute('stroke', orbitInk(s)); }, 160);
+}
+
+/* Дуга подъёма. Управляющая точка отведена вбок: это подъём, а не выстрел
+   по прямой. Одна и та же кривая ведёт летящую точку и остаётся следом. */
+function ctlFor(cx, cy, p){
+  return [(cx + p[0]) / 2 - (p[1] - cy) * 0.30,
+          (cy + p[1]) / 2 + (p[0] - cx) * 0.30];
+}
+
+/* След выведения. В артборде он есть и в покое: место заявки на орбите
+   объяснено тем, откуда она туда пришла. */
+function doneTrail(svgD, cx, cy, p){
+  var ctl = ctlFor(cx, cy, p);
+  var t = ns('path');
+  t.setAttribute('fill', 'none');
+  t.setAttribute('stroke', 'rgba(242,240,237,.2)');
+  t.setAttribute('stroke-dasharray', '2 6');
+  t.setAttribute('d', 'M' + cx.toFixed(1) + ' ' + cy.toFixed(1) +
+    ' Q' + ctl[0].toFixed(1) + ' ' + ctl[1].toFixed(1) +
+    ' ' + p[0].toFixed(1) + ' ' + p[1].toFixed(1));
+  svgD.appendChild(t);
+  return t;
+}
+
+/* Заявка на месте: пунктирный обод и пунктирный ореол вокруг него. */
+function doneMark(svgD, p, a){
+  var g = ns('circle');
+  g.setAttribute('cx', p[0].toFixed(1)); g.setAttribute('cy', p[1].toFixed(1));
+  g.setAttribute('r', '11'); g.setAttribute('fill', 'none');
+  g.setAttribute('stroke', '#F2F0ED'); g.setAttribute('stroke-width', '1.6');
+  if (a.thin) g.setAttribute('stroke-dasharray', '2.6 2.6');
+  svgD.appendChild(g);
+  var h = ns('circle');
+  h.setAttribute('cx', p[0].toFixed(1)); h.setAttribute('cy', p[1].toFixed(1));
+  h.setAttribute('r', '21'); h.setAttribute('fill', 'none');
+  h.setAttribute('stroke', 'rgba(242,240,237,.26)');
+  h.setAttribute('stroke-dasharray', '2 5');
+  svgD.appendChild(h);
+  return g;
+}
+
+function launchRun(svgD, cx, cy, R, p, orbits, a){
+  var card = document.getElementById('doneCard');
+  var map = document.querySelector('.doneMap');
+  card.classList.add('wait');
+  cycloShow(2);
+
+  var ctl = ctlFor(cx, cy, p);
+
+  var trail = ns('path');
+  trail.setAttribute('fill', 'none');
+  trail.setAttribute('stroke', 'rgba(242,240,237,.2)');
+  trail.setAttribute('stroke-dasharray', '2 6');
+  svgD.appendChild(trail);
+
+  var dot = ns('circle');
+  dot.setAttribute('r', '0'); dot.setAttribute('fill', '#FF3B20');
+  dot.setAttribute('cx', cx); dot.setAttribute('cy', cy);
+  svgD.appendChild(dot);
+
+  var IGN = 340, FLY = 1060, COOL = 400, TOTAL = IGN + FLY + COOL;
+  var crossed = {}, path = ['M' + cx.toFixed(1) + ' ' + cy.toFixed(1)], ring = null;
+  var t0 = performance.now(), over = 0;
+  map.classList.add('fire');
+
+  /* В фоновой вкладке requestAnimationFrame останавливается. Полёт — не
+     единственный способ добраться до итога: он гарантирован таймером,
+     поэтому переключение вкладки не оставляет экран без карточки. */
+  function finish(){
+    if (over) return;
+    over = 1;
+    if (dot.parentNode) dot.parentNode.removeChild(dot);
+    if (trail.parentNode) trail.parentNode.removeChild(trail);
+    doneTrail(svgD, cx, cy, p);
+    if (!ring) doneMark(svgD, p, a);
+    cycloSet(4);
+    map.classList.remove('fire');
+    card.classList.remove('wait');
+  }
+  setTimeout(finish, TOTAL + 500);
+
+  function at(t){
+    var u = 1 - t;
+    return [u * u * cx + 2 * u * t * ctl[0] + t * t * p[0],
+            u * u * cy + 2 * u * t * ctl[1] + t * t * p[1]];
+  }
+
+  function frame(now){
+    var e = now - t0;
+    if (e < IGN) {                                   /* ЗАЖИГАНИЕ */
+      dot.setAttribute('r', (5 * (e / IGN)).toFixed(1));
+    } else if (e < IGN + FLY) {                      /* ВЫВЕДЕНИЕ */
+      var t = (e - IGN) / FLY;
+      var k = 1 - Math.pow(1 - t, 3);                /* замедление к орбите */
+      var q = at(k);
+      dot.setAttribute('cx', q[0].toFixed(1)); dot.setAttribute('cy', q[1].toFixed(1));
+      dot.setAttribute('r', '5');
+      path.push('L' + q[0].toFixed(1) + ' ' + q[1].toFixed(1));
+      trail.setAttribute('d', path.join(' '));
+      var rad = Math.sqrt((q[0] - cx) * (q[0] - cx) + (q[1] - cy) * (q[1] - cy));
+      STAGES.forEach(function(st){
+        if (!crossed[st.k] && rad > R * st.rf) {
+          crossed[st.k] = 1; orbitFlash(orbits[st.k], st);
+        }
+      });
+      cycloSet(2 + k);
+    } else if (e < TOTAL) {                          /* ОСТЫВАНИЕ */
+      var c2 = (e - IGN - FLY) / COOL;
+      if (!ring) ring = doneMark(svgD, p, a);
+      dot.setAttribute('cx', p[0].toFixed(1)); dot.setAttribute('cy', p[1].toFixed(1));
+      dot.setAttribute('r', (5 + 3 * c2).toFixed(1));
+      dot.setAttribute('fill-opacity', (1 - c2).toFixed(2));
+      cycloSet(3 + c2);
+    } else {
+      finish();
+      return;
+    }
+    if (!over) requestAnimationFrame(frame);
+  }
+  requestAnimationFrame(frame);
 }
 
 function donePaint(){
@@ -2882,31 +3081,24 @@ function donePaint(){
   svgD.setAttribute('viewBox', '0 0 ' + W + ' ' + H);
   svgD.textContent = '';
   var cx = W / 2, cy = H / 2, R = Math.min(W, H) / 2 - 16;
+  var orbitEls = {};
   STAGES.forEach(function(s){
-    var c = ns('circle');
-    c.setAttribute('cx', cx); c.setAttribute('cy', cy);
-    c.setAttribute('r', (R * s.rf).toFixed(1));
-    c.setAttribute('fill', 'none');
-    c.setAttribute('stroke', s.k === 'idea' ? 'rgba(242,240,237,.3)' : 'rgba(242,240,237,.09)');
-    if (s.dash !== 'none') c.setAttribute('stroke-dasharray', s.dash);
-    svgD.appendChild(c);
+    var o = ns('circle');
+    o.setAttribute('cx', cx); o.setAttribute('cy', cy);
+    o.setAttribute('r', (R * s.rf).toFixed(1));
+    o.setAttribute('fill', 'none');
+    o.setAttribute('stroke', orbitInk(s));
+    if (s.dash !== 'none') o.setAttribute('stroke-dasharray', s.dash);
+    svgD.appendChild(o);
+    orbitEls[s.k] = o;
   });
   var a = agent(L.newId);
   if (a) {
     var p = polD(cx, cy, R * stg('idea').rf, a.a0);
-    var g = ns('circle');
-    g.setAttribute('cx', p[0].toFixed(1)); g.setAttribute('cy', p[1].toFixed(1));
-    g.setAttribute('r', '11'); g.setAttribute('fill', 'none');
-    g.setAttribute('stroke', '#F2F0ED'); g.setAttribute('stroke-width', '1.6');
-    if (a.thin) g.setAttribute('stroke-dasharray', '2.6 2.6');
-    svgD.appendChild(g);
-    var h = ns('circle');
-    h.setAttribute('cx', p[0].toFixed(1)); h.setAttribute('cy', p[1].toFixed(1));
-    h.setAttribute('r', '21'); h.setAttribute('fill', 'none');
-    h.setAttribute('stroke', 'rgba(242,240,237,.26)');
-    h.setAttribute('stroke-dasharray', '2 5');
-    svgD.appendChild(h);
+    if (L.fresh && !calm()) launchRun(svgD, cx, cy, R, p, orbitEls, a);
+    else { doneTrail(svgD, cx, cy, p); doneMark(svgD, p, a); cycloShow(4); }
   }
+  L.fresh = 0;
 
   /* Те же пять этапов, что на кольце и на стартовом столе: путь агента
      называется одинаково везде, где о нём говорят. Бриф закрыт заявкой,
