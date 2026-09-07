@@ -391,6 +391,10 @@ footer{position:fixed;left:40px;bottom:28px;z-index:56;font-size:8.5px;line-heig
   .rail .note{margin-top:15px;font-size:10.5px;line-height:1.75}
 
   #stage{position:relative;inset:auto;margin-top:20px}
+  /* На касании наведения нет, и дуге зова между короной и первым кольцом
+     не хватает места. Мишень у ядра видна всегда — иначе ничто не говорит,
+     что Солнце можно нажать. */
+  #sunHit .ring{opacity:1;transform:none}
   #stage.back{opacity:1;transform:none}
   .catlab,#ctx{display:none}
   footer{position:relative;left:auto;bottom:auto;margin:26px 18px 0;font-size:8.5px}
@@ -440,15 +444,18 @@ footer{position:fixed;left:40px;bottom:28px;z-index:56;font-size:8.5px;line-heig
   border-radius:50%;border:1px dashed rgba(242,240,237,.34);
   opacity:0;transform:scale(.86);transition:opacity .18s var(--ease),transform .18s var(--ease)}
 #sunHit:hover .ring,#sunHit:focus-visible .ring{opacity:1;transform:none}
-#sun .sunCall{position:absolute;left:-170px;top:50px;width:340px;
-  display:flex;align-items:center;justify-content:center;gap:10px;
-  opacity:0;transform:translateY(-5px);transition:opacity .18s var(--ease),transform .18s var(--ease);
-  pointer-events:none}
-#sun .sunCall .pl{font-size:15px;line-height:1;color:var(--sol)}
-#sun .sunCall b{font-size:12px;font-weight:400;letter-spacing:.2em;color:var(--t1);
-  text-shadow:0 0 18px rgba(7,8,10,.9)}
+/* Зов набран по дуге. Прямая строка в 340 px была вдвое шире первого
+   кольца орбит и резала его поперёк. Дуга радиусом 68 ложится в промежуток
+   между короной (31) и первым кольцом (89) — там же, где стояла подпись
+   «СИНЕРГИЯ», которую она на время подменяет. */
+#sun .sunArc{position:absolute;left:-104px;top:-104px;width:208px;height:208px;
+  pointer-events:none;opacity:0;transform:scale(.955);transform-origin:50% 50%;
+  transition:opacity .18s var(--ease),transform .22s var(--ease)}
+#sun.call .sunArc{opacity:1;transform:none}
+#sun.noarc .sunArc{display:none}
+#sun .sunArc text{font-family:'JetBrains Mono',ui-monospace,'Cascadia Mono',monospace;
+  font-size:8px;letter-spacing:.3em;fill:var(--t1)}
 #sun.call .cap{opacity:0}
-#sun.call .sunCall{opacity:1;transform:none}
 #sun .cap{transition:opacity .18s var(--ease)}
 
 /* ---------- слой сценария ---------- */
@@ -618,7 +625,10 @@ footer{position:fixed;left:40px;bottom:28px;z-index:56;font-size:8.5px;line-heig
   font-size:9px;letter-spacing:.22em;color:rgba(242,240,237,.26);line-height:2.1}
 
 @media (max-width:1100px){
-  .stsys,.colk,.sthint{display:none}
+  .stsys,.sthint{display:none}
+  /* Пучок на телефоне не читается, и его место занимают заголовки колонок:
+     они остаются, но встают над своими списками. */
+  .colk{position:relative;left:auto!important;top:auto;margin-top:30px;display:block}
   /* Ширину панели вопросов задаёт скрипт построчно — здесь её нужно перебить. */
   .inp,.slt,.quest,.ready{position:relative;left:auto!important;top:auto!important;
     right:auto;bottom:auto;width:100%!important;margin-top:20px}
@@ -690,7 +700,9 @@ footer{position:fixed;left:40px;bottom:28px;z-index:56;font-size:8.5px;line-heig
   .ltree{height:420px;margin:26px 0}
   .lpanel{margin-bottom:22px}
   .lleg{margin-top:20px}
-  .doneWrap{position:relative;flex-direction:column;gap:32px}
+  /* inset:0 0 64px оставался и в потоке, поднимая блок на 64 px. */
+  .doneWrap{position:relative;inset:auto;flex-direction:column;gap:32px}
+  .cyclo{position:relative;left:auto;right:auto;bottom:auto;margin-top:30px}
   .doneMap{width:100%;max-width:360px;height:360px}
   .doneCard{width:100%}
   #launch .lsteps{position:relative;right:auto;top:auto;margin:0 40px 18px;flex-wrap:wrap;gap:14px}
@@ -787,10 +799,16 @@ footer{position:fixed;left:40px;bottom:28px;z-index:56;font-size:8.5px;line-heig
   letter-spacing:.2em;color:var(--t4);line-height:2.1}
 
 @media (max-width:1100px){
-  .padscene{position:relative;inset:auto;width:100%;height:340px}
+  /* Подписи кольца и веера рассчитаны на широкий кадр: на телефоне они
+     уезжали за край и тянули за собой боковую прокрутку. Графика остаётся
+     (её SVG обрезается кадром сам), а слова несёт карточка «путь агента». */
+  .padscene{position:relative;inset:auto;width:100%;height:320px;overflow:hidden}
+  #padLabs{display:none}
   .padwho,.padcard,.padstage,.padleg,.padhint{position:relative;inset:auto;right:auto;left:auto;
     bottom:auto;top:auto;width:100%;margin-top:22px;text-align:left}
-  .padcard{width:100%}
+  /* .padcard.way несёт два класса и перебивала правило выше: её bottom:96px
+     оставался и в потоке, поднимая карточку на чужое место. */
+  .padcard.main,.padcard.way{position:relative;inset:auto;top:auto;bottom:auto;width:100%}
 }
 
 /* ---------- анатомия · шапка, статус, легенда (v3.2) ---------- */
@@ -855,7 +873,11 @@ footer{position:fixed;left:40px;bottom:28px;z-index:56;font-size:8.5px;line-heig
       <button id="sunHit" type="button" aria-label="Завести своего агента">
         <span class="ring"></span>
       </button>
-      <div class="sunCall"><span class="pl">+</span><b>ЗАВЕСТИ СВОЕГО АГЕНТА</b></div>
+      <svg class="sunArc" viewBox="-104 -104 208 208" aria-hidden="true">
+        <defs><path id="sunArcPath" d="M-68 0 A68 68 0 0 0 68 0"></path></defs>
+        <text><textPath href="#sunArcPath" startOffset="50%" text-anchor="middle"
+          >ЗАВЕСТИ СВОЕГО АГЕНТА</textPath></text>
+      </svg>
     </div>
   </div>
 
@@ -976,8 +998,8 @@ footer{position:fixed;left:40px;bottom:28px;z-index:56;font-size:8.5px;line-heig
     <section class="lstep" data-step="story">
       <svg class="stsys" id="storySvg" aria-hidden="true"></svg>
       <div class="colk a mono">СЕГОДНЯ</div>
-      <div class="colk b mono">С АГЕНТОМ</div>
       <div id="storyIn"></div>
+      <div class="colk b mono">С АГЕНТОМ</div>
       <div id="storyOut"></div>
       <div class="quest" id="storyQuest"></div>
       <div class="ready" id="storyReady"></div>
@@ -986,16 +1008,18 @@ footer{position:fixed;left:40px;bottom:28px;z-index:56;font-size:8.5px;line-heig
     </section>
 
     <section class="lstep" data-step="done">
-      <div class="cyclo" id="cyclo" aria-hidden="true">
-        <div class="cline"><i id="cfill"></i></div>
-        <div class="cmarks" id="cmarks"></div>
-      </div>
       <div class="doneWrap">
         <div class="doneMap">
           <svg id="doneSvg" aria-hidden="true"></svg>
           <div class="c"></div>
         </div>
         <div class="doneCard" id="doneCard"></div>
+      </div>
+      <!-- На широком экране полоса стоит абсолютом внизу кадра; в потоке
+           телефона она должна идти после кадра, а не перед ним. -->
+      <div class="cyclo" id="cyclo" aria-hidden="true">
+        <div class="cline"><i id="cfill"></i></div>
+        <div class="cmarks" id="cmarks"></div>
       </div>
     </section>
   </div>
@@ -1466,6 +1490,23 @@ function paint(){
   hl.style.width = (hr*2)+'px'; hl.style.height = (hr*2)+'px';
   hl.style.left = (-hr)+'px'; hl.style.top = (-hr)+'px';
   sun.querySelector('.cap').style.top = (st.R*0.155)+'px';
+
+  /* Дуга зова должна лежать в промежутке между короной и первым кольцом
+     орбит — иначе она снова начнёт резать линии, как это делала прямая
+     строка. Радиус берётся от самого кольца, а не от постоянной. Если
+     промежутка не хватает на длину надписи (узкая карта), зов не
+     показывается вовсе: половина дуги короче 144 px нечитаема. */
+  var arcPath = document.getElementById('sunArcPath');
+  if (arcPath) {
+    var ra = Math.min(72, st.R * STAGES[0].rf - 20);
+    var fit = ra >= 46;
+    sun.classList.toggle('noarc', !fit);
+    if (fit) {
+      ra = Math.round(ra);
+      arcPath.setAttribute('d', 'M' + (-ra) + ' 0 A' + ra + ' ' + ra +
+        ' 0 0 0 ' + ra + ' 0');
+    }
+  }
 
   var hA = st.hoverAgent ? agent(st.hoverAgent) : null;
   var hC = hA ? hA.c : st.hoverCat;
@@ -2494,8 +2535,11 @@ function padPaint(){
   svgP.textContent = '';
   labs.textContent = '';
 
-  var cx = Math.round(W * 0.30), cy = Math.round(H * 0.52);
-  var R = Math.max(96, Math.min(178, H * 0.27));
+  /* На широком экране Солнце стоит слева, чтобы справа поместились веер
+     и карточки. На телефоне подписи скрыты, и оно встаёт по центру. */
+  var узко = W < 1100;
+  var cx = Math.round(W * (узко ? 0.5 : 0.30)), cy = Math.round(H * 0.52);
+  var R = Math.max(узко ? 78 : 96, Math.min(178, H * 0.27));
   var u = R / 190;                                  /* масштаб от артборда */
   var sun = document.querySelector('.padsun');
   sun.style.left = cx + 'px'; sun.style.top = cy + 'px';
@@ -2820,7 +2864,9 @@ function treePaint(){
       svgT.appendChild(lc);
 
       var t = el('div', 'qlab ' + state + (q.gen ? ' gen' : ''));
-      t.style.left = (xLeaf + 18) + 'px';
+      /* Подпись шириной 210 упиралась в край узкого кадра и тянула боковую
+         прокрутку: прижимаем её к правой границе дерева. */
+      t.style.left = Math.max(0, Math.min(xLeaf + 18, W - 210)) + 'px';
       t.style.top = ly + 'px';
       t.innerHTML = '<i></i>' + q.q;
       t.addEventListener('click', function(){ L.cur = q; treePaint(); panelPaint(); });
@@ -3235,33 +3281,42 @@ function storyPaint(){
   var boxIn = document.getElementById('storyIn');
   var boxOut = document.getElementById('storyOut');
   var W = wrap.clientWidth, H = wrap.clientHeight;
-  if (!W || !H) return;
-  svg.setAttribute('viewBox', '0 0 ' + W + ' ' + H);
+  if (!W) return;
+  /* На телефоне раскладку держит поток, а высота секции берётся из её же
+     содержимого: мерить её здесь нельзя — вышел бы замкнутый круг, и экран
+     оставался пустым. Координаты и пучок считаются только на широком. */
+  var узко = W < 1100;
   svg.textContent = ''; boxIn.textContent = ''; boxOut.textContent = '';
-
-  /* Колонки стоят там же, где в эскизе: доли от его ширины 1352. */
-  var innX = 278;
-  var sltX = Math.round(W * 0.525), slnX = sltX - 28;
-  var ctlX = (innX + slnX) / 2;
-  document.querySelector('.colk.b').style.left = sltX + 'px';
   var qs = document.getElementById('storyQuest');
-  qs.style.left = Math.max(sltX + 232, W - 378) + 'px';
-  qs.style.width = Math.min(378, W - sltX - 232) + 'px';
 
-  var pIn = Math.min(94, Math.max(64, (H - 170) / STORY_IN.length));
-  var pOut = Math.min(96, Math.max(64, (H - 40) / STORY_OUT.length));
+  var innX = 278, sltX = 0, slnX = 0, ctlX = 0, pIn = 0, pOut = 0;
+  if (узко) {
+    document.querySelector('.colk.b').style.left = '';
+    qs.style.left = ''; qs.style.width = '';
+  } else {
+    svg.setAttribute('viewBox', '0 0 ' + W + ' ' + H);
+    /* Колонки стоят там же, где в эскизе: доли от его ширины 1352. */
+    sltX = Math.round(W * 0.525); slnX = sltX - 28;
+    ctlX = (innX + slnX) / 2;
+    document.querySelector('.colk.b').style.left = sltX + 'px';
+    qs.style.left = Math.max(sltX + 232, W - 378) + 'px';
+    qs.style.width = Math.min(378, W - sltX - 232) + 'px';
+    pIn = Math.min(94, Math.max(64, (H - 170) / STORY_IN.length));
+    pOut = Math.min(96, Math.max(64, (H - 40) / STORY_OUT.length));
+  }
   var yIn = {}, yOut = {};
 
   STORY_IN.forEach(function(it, i){
     var top = 36 + i * pIn;
     var v = L.ans[it.k];
     var d = el('div', 'inp' + (v ? (it.flag ? ' flag' : '') : ' void'));
-    d.style.top = top + 'px';
+    if (!узко) d.style.top = top + 'px';
     d.innerHTML = '<div class="ik mono">' + it.ik + '</div>' +
       '<div class="it">' + (v ? cutTo(v, 62) : 'не рассказано') + '</div>' +
       '<div class="im">' + (v ? (SRC_WORD[L.src[it.k]] || 'сказали в разговоре') : '—') +
       '</div>';
     boxIn.appendChild(d);
+    if (узко) return;
     yIn[it.k] = top + 30;
     var c = ns('circle');
     c.setAttribute('cx', innX); c.setAttribute('cy', yIn[it.k]);
@@ -3276,13 +3331,14 @@ function storyPaint(){
     var v = L.ans[it.src];
     var feeds = STORY_FLOW.filter(function(f){ return f[1] === it.k && L.ans[f[0]]; }).length;
     var d = el('div', 'slt' + (v ? ' done' : ' void'));
-    d.style.left = sltX + 'px'; d.style.top = top + 'px';
+    if (!узко) { d.style.left = sltX + 'px'; d.style.top = top + 'px'; }
     d.innerHTML = '<div class="sn">' + it.n + '</div>' +
       '<div class="sv">' + (v ? cutTo(v, 92) : 'об этом не рассказали') + '</div>' +
       '<div class="sm mono">' + (v
         ? 'собрано из ' + feeds + ' ' + plural(feeds, 'рассказа', 'рассказов', 'рассказов')
         : 'нужен ответ') + '</div>';
     boxOut.appendChild(d);
+    if (узко) return;
     yOut[it.k] = top + 26;
     var c = ns('circle');
     c.setAttribute('cx', slnX); c.setAttribute('cy', yOut[it.k]);
@@ -3291,7 +3347,7 @@ function storyPaint(){
     svg.appendChild(c);
   });
 
-  STORY_FLOW.forEach(function(f){
+  if (!узко) STORY_FLOW.forEach(function(f){
     var y0 = yIn[f[0]], y1 = yOut[f[1]];
     if (y0 === undefined || y1 === undefined) return;
     var src = L.ans[f[0]];
