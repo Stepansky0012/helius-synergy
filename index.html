@@ -26,7 +26,10 @@ body{
 .mono{font-family:'JetBrains Mono',ui-monospace,'Cascadia Mono',monospace;font-variant-numeric:tabular-nums}
 .disp{font-family:'Unbounded','Trebuchet MS',sans-serif}
 button{font-family:inherit;color:inherit;background:none;border:0;padding:0;cursor:pointer}
-button:focus-visible{outline:none}
+/* Фокус виден всегда. Обводка идёт бумагой в отступе от края, чтобы
+   не спорить с собственными ободами монов и узлов — те рисуют себя сами. */
+button:focus-visible{outline:1px solid rgba(242,240,237,.72);outline-offset:3px}
+.ag:focus-visible,.nd:focus-visible,#sunHit:focus-visible{outline:none}
 a{color:var(--t1);text-decoration:none}
 
 #app{position:fixed;inset:0;background:radial-gradient(120% 90% at 50% 50%,#101218 0%,var(--l0) 46%,var(--ink) 100%)}
@@ -280,7 +283,7 @@ body.nw #acore .chip{font-size:6.5px;letter-spacing:.18em;padding:2px 8px}
 .flank{position:fixed;top:50%;transform:translateY(-50%);width:270px;z-index:50}
 .flank h2{margin:0;font-size:12px;font-weight:300;letter-spacing:.28em}
 .flank p{margin:16px 0 0;font-size:12px;line-height:1.9;color:rgba(242,240,237,.55);
-  text-align:justify;hyphens:auto}
+  text-wrap:pretty}
 .flank.l{left:40px;text-align:right}
 .flank.l h2{border-right:1px solid rgba(242,240,237,.5);padding-right:13px}
 .flank.r{right:40px;text-align:left}
@@ -474,7 +477,7 @@ footer{position:fixed;left:40px;bottom:28px;z-index:56;font-size:8.5px;line-heig
   font-family:'JetBrains Mono',monospace}
 .mnone{margin-top:13px;font-size:10.5px;line-height:1.6;color:var(--t4)}
 .ldrop{margin-top:20px;padding:14px;border:1px dashed rgba(242,240,237,.22)}
-.ldrop.hot{border-color:rgba(242,240,237,.5);background:rgba(242,240,237,.03)}
+.ldrop.hot,.ldrop:focus-within{border-color:rgba(242,240,237,.5);background:rgba(242,240,237,.03)}
 .ldrop textarea{display:block;width:100%;height:78px;resize:none;background:none;border:0;
   color:var(--t1);font:400 11px/1.6 inherit;outline:none}
 .ldrop textarea::placeholder{color:var(--t4)}
@@ -784,9 +787,9 @@ footer{position:fixed;left:40px;bottom:28px;z-index:56;font-size:8.5px;line-heig
       <div class="ls" id="lSub">Новый агент · стартовый стол</div>
     </div>
     <div class="lsteps mono" id="lSteps">
-      <span data-s="pad">01 СТАРТОВЫЙ СТОЛ</span>
-      <span data-s="brief">02 БРИФОВАНИЕ</span>
-      <span data-s="done">03 ЗАЯВКА</span>
+      <span data-s="pad">СТАРТОВЫЙ СТОЛ</span>
+      <span data-s="brief">БРИФОВАНИЕ</span>
+      <span data-s="done">ЗАЯВКА</span>
     </div>
 
     <section class="lstep" data-step="pad">
@@ -812,7 +815,7 @@ footer{position:fixed;left:40px;bottom:28px;z-index:56;font-size:8.5px;line-heig
           он задаёт вопросы, разбирает то, что уже сказано на встречах и в переписке,
           и сам структурирует и обобщает требования.</div>
         <input id="fName" type="text" autocomplete="off" placeholder="Название агента — необязательно">
-        <button class="cgo" id="toBrief" disabled>Начать разговор<span class="mono">→</span></button>
+        <button class="cgo" id="toBrief" disabled>Начать разговор</button>
       </div>
 
       <div class="padcard way">
@@ -857,7 +860,7 @@ footer{position:fixed;left:40px;bottom:28px;z-index:56;font-size:8.5px;line-heig
           <div class="pn" id="lLeft"></div>
         </div>
         <button class="lsend" id="lSend" disabled>ПОДАТЬ ЗАЯВКУ</button>
-        <div class="lsn" id="lSendNote">откроется, когда закроются блокирующие</div>
+        <div class="lsn" id="lSendNote">заявка уйдёт на орбиту ИДЕЯ</div>
       </div>
 
       <div class="ltree">
@@ -888,7 +891,7 @@ footer{position:fixed;left:40px;bottom:28px;z-index:56;font-size:8.5px;line-heig
   <div id="sheet" aria-live="polite">
     <button class="cl" type="button" id="sheetClose" aria-label="Закрыть">&#10005;</button>
     <div id="sheetBody"></div>
-    <button class="go" type="button" id="sheetGo">Анатомия агента<span class="mono">&#8594;</span></button>
+    <button class="go" type="button" id="sheetGo">Анатомия агента</button>
   </div>
 
   <div id="mx"><div class="mxin" id="mxin"></div></div>
@@ -2533,9 +2536,8 @@ function railPaint(){
   left.textContent = c.left ? 'осталось блокирующих: ' + c.left : 'блокирующих не осталось';
   left.classList.toggle('ok', !c.left);
   document.getElementById('lSend').disabled = c.left > 0;
-  document.getElementById('lSendNote').textContent = c.left
-    ? 'откроется, когда закроются блокирующие'
-    : 'заявка уйдёт на орбиту ИДЕЯ';
+  /* Счёт оставшегося ведёт строка выше; подпись под кнопкой говорит одно —
+     что произойдёт по нажатию. */
 }
 
 function treePaint(){
@@ -2884,13 +2886,14 @@ function donePaint(){
     svgD.appendChild(h);
   }
 
-  var steps = [
-    ['Требования собраны', 'done', 'сейчас'],
-    ['Заявка на орбите ИДЕЯ', 'now', 'идёт'],
-    ['Дайджест и рабочая сессия', 'todo', '—'],
-    ['Формирование реестра', 'todo', '—'],
-    ['Пилот L1 на реальных данных', 'todo', '—']
-  ];
+  /* Те же пять этапов, что на кольце и на стартовом столе: путь агента
+     называется одинаково везде, где о нём говорят. Бриф закрыт заявкой,
+     сборка идёт — остальное впереди. */
+  var steps = STEPS.map(function(s, i){
+    return [s.t,
+            i === 0 ? 'done' : i === 1 ? 'now' : 'todo',
+            i === 0 ? 'закрыт' : i === 1 ? 'идёт' : '—'];
+  });
   var c = lCount();
   document.getElementById('doneCard').innerHTML =
     '<div class="dk">' + cat(L.cat).n + ' · ЗАЯВКА ПРИНЯТА</div>' +
@@ -2904,7 +2907,7 @@ function donePaint(){
       ? 'Обод пунктирный: проблема, действие или эффект ещё не описаны. Это то же правило, по которому пунктирны агенты из стратегии — обещание, за которым пока ничего нет.'
       : 'Проблема, действие и эффект описаны — обод сплошной. Дальше агент пойдёт внутрь, к ядру.') +
     ' Закрыто вопросов: ' + c.done + ' из ' + c.total + '.</div>' +
-    '<button class="dgo" type="button" id="doneGo">Показать на карте <span class="mono">→</span></button>';
+    '<button class="dgo" type="button" id="doneGo">Показать на карте</button>';
   document.getElementById('doneGo').addEventListener('click', function(){
     closeLaunch();
     var ag = agent(L.newId);
