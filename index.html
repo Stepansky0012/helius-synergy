@@ -554,7 +554,78 @@ footer{position:fixed;left:40px;bottom:28px;z-index:56;font-size:8.5px;line-heig
 .lleg i.m{border-width:1.4px}
 .lleg i.n{background:var(--sol);border-color:transparent}
 
-/* ---------- шаг 3 · заявка принята ---------- */
+/* ---------- шаг 3 · сценарий работы ----------
+   Грамматика и значения перенесены из эскиза «Брифователь»: два столбца,
+   пучок кривых между ними, встречные вопросы справа, готовность внизу.
+   Здесь пучок читается иначе — слева то, что человек рассказал про сегодня,
+   справа то, как это будет работать у него с агентом. */
+.stsys{position:absolute;left:0;top:0;width:100%;height:100%;pointer-events:none;z-index:10}
+.flow{fill:none;stroke-width:1}
+.flow.done{stroke:rgba(242,240,237,.2)}
+.flow.now{stroke:rgba(242,240,237,.34)}
+.flow.void{stroke:rgba(242,240,237,.12);stroke-dasharray:2 6}
+.flow.flag{stroke:var(--sol);opacity:.6}
+.inn{fill:rgba(242,240,237,.72)}
+.inn.flag{fill:var(--sol)}
+.sln.done{fill:rgba(242,240,237,.86)}
+.sln.now{fill:none;stroke:#F2F0ED;stroke-width:1.4}
+.sln.void{fill:none;stroke:var(--sol);stroke-width:1;stroke-dasharray:2 4}
+
+.colk{position:absolute;top:10px;z-index:20;font-size:8px;
+  letter-spacing:.26em;color:rgba(242,240,237,.28)}
+.colk.a{left:0}
+
+.inp{position:absolute;left:0;width:252px;z-index:20}
+.inp .ik{font-size:8px;letter-spacing:.24em;color:rgba(242,240,237,.34)}
+.inp .it{margin-top:8px;font-size:12.5px;line-height:1.45;color:rgba(242,240,237,.86)}
+.inp .im{margin-top:5px;font-size:10px;color:rgba(242,240,237,.34)}
+.inp.void .it{color:rgba(242,240,237,.34)}
+.inp.flag .ik{color:var(--sol)}
+.inp.flag .im{color:var(--sol);opacity:.8}
+
+.slt{position:absolute;width:210px;z-index:20}
+.slt .sn{font-size:12.5px;letter-spacing:.12em;color:rgba(242,240,237,.86)}
+.slt .sv{margin-top:7px;font-size:11px;line-height:1.5;color:rgba(242,240,237,.6)}
+.slt .sm{margin-top:7px;font-size:9px;letter-spacing:.1em;color:rgba(242,240,237,.3)}
+.slt.void .sn{color:rgba(242,240,237,.4)}
+.slt.void .sm{color:var(--sol);opacity:.85}
+
+.quest{position:absolute;top:0;width:378px;z-index:30}
+.quest .qh{font-size:8px;letter-spacing:.26em;color:rgba(242,240,237,.3)}
+.q{margin-top:22px;padding-left:15px;border-left:1px solid rgba(242,240,237,.14)}
+.q.block{border-left-color:var(--sol)}
+.q .qk{font-size:8px;letter-spacing:.22em;color:rgba(242,240,237,.34)}
+.q.block .qk{color:var(--sol)}
+.q .qt{margin-top:9px;font-size:13px;line-height:1.45;color:#F2F0ED}
+.q .qs{margin-top:7px;font-size:8.5px;letter-spacing:.1em;color:rgba(242,240,237,.28)}
+.quest .qn{margin-top:30px;padding-top:16px;font-size:10.5px;line-height:1.65;
+  color:rgba(242,240,237,.36);border-top:1px solid rgba(242,240,237,.08)}
+
+.ready{position:absolute;left:0;bottom:0;z-index:30;width:300px}
+.ready .rk{font-size:8.5px;letter-spacing:.24em;color:rgba(242,240,237,.38)}
+.ready .rv{margin-top:8px;display:flex;align-items:baseline;gap:6px;
+  font-size:15px;color:rgba(242,240,237,.42)}
+.ready .rv .big{font-size:40px;font-weight:200;color:#F2F0ED;line-height:1}
+.ready .rv i{font-style:normal;color:rgba(242,240,237,.26)}
+.ready .rn{margin-top:8px;font-size:10.5px;color:var(--sol);opacity:.85}
+.ready .rn.ok{color:rgba(242,240,237,.42);opacity:1}
+.ready .rgo{margin-top:18px;padding:11px 24px;border:1px solid rgba(242,240,237,.24);
+  border-radius:30px;font-size:11px;transition:all .18s var(--ease)}
+.ready .rgo:hover:not(:disabled){background:var(--t1);color:var(--ink);border-color:var(--t1)}
+.ready .rgo:disabled{color:var(--t4);border-color:var(--hair);cursor:default}
+
+.sthint{position:absolute;right:0;bottom:0;z-index:30;text-align:right;
+  font-size:9px;letter-spacing:.22em;color:rgba(242,240,237,.26);line-height:2.1}
+
+@media (max-width:1100px){
+  .stsys,.colk,.sthint{display:none}
+  /* Ширину панели вопросов задаёт скрипт построчно — здесь её нужно перебить. */
+  .inp,.slt,.quest,.ready{position:relative;left:auto!important;top:auto!important;
+    right:auto;bottom:auto;width:100%!important;margin-top:20px}
+  .slt{padding-left:15px;border-left:1px solid rgba(242,240,237,.14)}
+}
+
+/* ---------- шаг 4 · заявка принята ---------- */
 /* ---------- циклограмма пуска ----------
    Из артборда «вариант C»: сборка, готовность, зажигание, выведение,
    орбита. Светится пройденное, впереди — тёмный след того же красного. */
@@ -814,6 +885,7 @@ footer{position:fixed;left:40px;bottom:28px;z-index:56;font-size:8.5px;line-heig
     <div class="lsteps mono" id="lSteps">
       <span data-s="pad">ПЕРЕД РАЗГОВОРОМ</span>
       <span data-s="brief">БРИФОВАНИЕ</span>
+      <span data-s="story">СЦЕНАРИЙ</span>
       <span data-s="done">ЗАЯВКА</span>
     </div>
 
@@ -883,8 +955,8 @@ footer{position:fixed;left:40px;bottom:28px;z-index:56;font-size:8.5px;line-heig
           <div class="pv"><b id="lDone">0</b><span>/ <i id="lTotal">0</i></span></div>
           <div class="pn" id="lLeft"></div>
         </div>
-        <button class="lsend" id="lSend" disabled>ПОДАТЬ ЗАЯВКУ</button>
-        <div class="lsn" id="lSendNote">заявка уйдёт на орбиту ИДЕЯ</div>
+        <button class="lsend" id="lSend" disabled>СМОТРЕТЬ СЦЕНАРИЙ</button>
+        <div class="lsn" id="lSendNote">резюме перед подачей: что и как будет работать</div>
       </div>
 
       <div class="ltree">
@@ -899,6 +971,18 @@ footer{position:fixed;left:40px;bottom:28px;z-index:56;font-size:8.5px;line-heig
         <span><i class="m"></i>предложен материалом, подтвердите</span>
         <span><i class="n"></i>здесь мы сейчас</span>
       </div>
+    </section>
+
+    <section class="lstep" data-step="story">
+      <svg class="stsys" id="storySvg" aria-hidden="true"></svg>
+      <div class="colk a mono">СЕГОДНЯ</div>
+      <div class="colk b mono">С АГЕНТОМ</div>
+      <div id="storyIn"></div>
+      <div id="storyOut"></div>
+      <div class="quest" id="storyQuest"></div>
+      <div class="ready" id="storyReady"></div>
+      <div class="sthint mono">ПУЧОК — ОДИН РАССКАЗ ЗАДАЁТ НЕСКОЛЬКО ПОВЕДЕНИЙ<br>
+        КРАСНОЕ — ТРЕБУЕТ РЕШЕНИЯ ЧЕЛОВЕКА<br>ПУНКТИР — ЕЩЁ НЕ РАССКАЗАНО</div>
     </section>
 
     <section class="lstep" data-step="done">
@@ -2362,7 +2446,7 @@ function lStep(s){
   document.querySelectorAll('.lstep').forEach(function(e){
     e.classList.toggle('on', e.dataset.step === s);
   });
-  var order = ['pad','brief','done'], i = order.indexOf(s);
+  var order = ['pad','brief','story','done'], i = order.indexOf(s);
   document.querySelectorAll('#lSteps span').forEach(function(e){
     var j = order.indexOf(e.dataset.s);
     e.classList.toggle('on', j === i);
@@ -2370,10 +2454,12 @@ function lStep(s){
   });
   var T = { pad:['ПУСК','Новый агент · перед разговором'],
             brief:['БРИФОВАНИЕ','Дерево требований · система подсказывает, порядок за вами'],
+            story:['СЦЕНАРИЙ РАБОТЫ','Что вы рассказали → как это будет работать у вас'],
             done:['ЗАЯВКА ПРИНЯТА','Ваш агент занял место на карте'] };
   document.getElementById('lTitle').textContent = T[s][0];
   document.getElementById('lSub').textContent = T[s][1];
   if (s === 'brief') { briefPaint(); }
+  if (s === 'story') { storyPaint(); }
   if (s === 'done') { donePaint(); }
 }
 
@@ -3074,6 +3160,177 @@ function launchRun(svgD, cx, cy, R, p, orbits, a){
   requestAnimationFrame(frame);
 }
 
+/* ============================================================
+   ШАГ 3 · СЦЕНАРИЙ РАБОТЫ
+   Резюме перед подачей: заказчик видит не свои ответы списком, а то,
+   как это будет у него работать. Слева — что он рассказал про сегодня,
+   справа — поведение агента, между ними пучок: один рассказ обычно
+   задаёт несколько поведений, и это видно линиями, а не текстом.
+   Грамматика и значения взяты из эскиза «Брифователь».
+   ============================================================ */
+
+var STORY_IN = [
+  { k:'role',  ik:'КТО ДЕЛАЕТ РУКАМИ' },
+  { k:'peers', ik:'СКОЛЬКО ТАКИХ ЛЮДЕЙ' },
+  { k:'pr',    ik:'ЧТО ПРОИСХОДИТ СЕГОДНЯ' },
+  { k:'unit',  ik:'ГДЕ ЭТО ЖИВЁТ' },
+  { k:'sys',   ik:'С ЧЕМ РАБОТАЮТ' },
+  { k:'acc',   ik:'ДОСТУПОВ НЕ ХВАТАЕТ', flag:1 }
+];
+
+var STORY_OUT = [
+  { k:'act',   n:'ЧТО СДЕЛАЕТ АГЕНТ',   src:'ac'   },
+  { k:'who',   n:'КОМУ ДОСТАНЕТСЯ',     src:'role' },
+  { k:'where', n:'ГДЕ ЗАРАБОТАЕТ',      src:'unit' },
+  { k:'link',  n:'С ЧЕМ СВЯЖЕТСЯ',      src:'sys'  },
+  { k:'appr',  n:'ЧТО СОГЛАСУЮТ',       src:'appr' },
+  { k:'meas',  n:'КАК ПОЙМЁМ, ЧТО ВЫШЛО', src:'ef' }
+];
+
+/* Пересечения не украшение: рассказ про людей задаёт и адресата, и предмет
+   автоматизации; рассказ про место — и площадку, и того, кто согласует. */
+var STORY_FLOW = [
+  ['role','who'], ['peers','who'], ['role','act'],
+  ['pr','act'],   ['sys','act'],   ['pr','meas'],
+  ['unit','where'], ['unit','appr'],
+  ['sys','link'], ['acc','appr']
+];
+
+function slotName(k){
+  for (var i = 0; i < SLOTS.length; i++) if (SLOTS[i].k === k) return SLOTS[i].t;
+  return k;
+}
+
+/* Слот закрыт, когда закрыты все его обязательные вопросы. Подставленные
+   системой считаются закрытыми — их никто не спрашивал. */
+function storySlots(){
+  var open = [], done = 0;
+  SLOTS.forEach(function(sl){
+    var core = lQuestions().filter(function(q){ return q.slot === sl.k && q.core; });
+    var ok = core.every(function(q){ return q.auto || L.ans[q.k]; });
+    if (ok) done++; else open.push(sl.t.toLowerCase());
+  });
+  return { done: done, total: SLOTS.length, open: open };
+}
+
+/* Откуда взялся ответ — словами заказчика, а не кодом источника. */
+var SRC_WORD = { man:'сказали в разговоре', mat:'взято из материала',
+                 tpl:'заготовка роли' };
+
+function plural(k, one, few, many){
+  var a = Math.abs(k) % 100, b = a % 10;
+  if (a > 10 && a < 20) return many;
+  if (b > 1 && b < 5) return few;
+  return b === 1 ? one : many;
+}
+
+function cutTo(t, len){
+  t = String(t || '');
+  return t.length > len ? t.slice(0, len - 1).replace(/[\s,;:—-]+$/, '') + '…' : t;
+}
+
+function storyPaint(){
+  var wrap = document.querySelector('.lstep[data-step="story"]');
+  var svg = document.getElementById('storySvg');
+  var boxIn = document.getElementById('storyIn');
+  var boxOut = document.getElementById('storyOut');
+  var W = wrap.clientWidth, H = wrap.clientHeight;
+  if (!W || !H) return;
+  svg.setAttribute('viewBox', '0 0 ' + W + ' ' + H);
+  svg.textContent = ''; boxIn.textContent = ''; boxOut.textContent = '';
+
+  /* Колонки стоят там же, где в эскизе: доли от его ширины 1352. */
+  var innX = 278;
+  var sltX = Math.round(W * 0.525), slnX = sltX - 28;
+  var ctlX = (innX + slnX) / 2;
+  document.querySelector('.colk.b').style.left = sltX + 'px';
+  var qs = document.getElementById('storyQuest');
+  qs.style.left = Math.max(sltX + 232, W - 378) + 'px';
+  qs.style.width = Math.min(378, W - sltX - 232) + 'px';
+
+  var pIn = Math.min(94, Math.max(64, (H - 170) / STORY_IN.length));
+  var pOut = Math.min(96, Math.max(64, (H - 40) / STORY_OUT.length));
+  var yIn = {}, yOut = {};
+
+  STORY_IN.forEach(function(it, i){
+    var top = 36 + i * pIn;
+    var v = L.ans[it.k];
+    var d = el('div', 'inp' + (v ? (it.flag ? ' flag' : '') : ' void'));
+    d.style.top = top + 'px';
+    d.innerHTML = '<div class="ik mono">' + it.ik + '</div>' +
+      '<div class="it">' + (v ? cutTo(v, 62) : 'не рассказано') + '</div>' +
+      '<div class="im">' + (v ? (SRC_WORD[L.src[it.k]] || 'сказали в разговоре') : '—') +
+      '</div>';
+    boxIn.appendChild(d);
+    yIn[it.k] = top + 30;
+    var c = ns('circle');
+    c.setAttribute('cx', innX); c.setAttribute('cy', yIn[it.k]);
+    c.setAttribute('r', '5');
+    c.setAttribute('class', 'inn' + (v && it.flag ? ' flag' : ''));
+    if (!v) { c.setAttribute('fill', 'none'); c.setAttribute('stroke', 'rgba(242,240,237,.24)'); }
+    svg.appendChild(c);
+  });
+
+  STORY_OUT.forEach(function(it, i){
+    var top = 24 + i * pOut;
+    var v = L.ans[it.src];
+    var feeds = STORY_FLOW.filter(function(f){ return f[1] === it.k && L.ans[f[0]]; }).length;
+    var d = el('div', 'slt' + (v ? ' done' : ' void'));
+    d.style.left = sltX + 'px'; d.style.top = top + 'px';
+    d.innerHTML = '<div class="sn">' + it.n + '</div>' +
+      '<div class="sv">' + (v ? cutTo(v, 92) : 'об этом не рассказали') + '</div>' +
+      '<div class="sm mono">' + (v
+        ? 'собрано из ' + feeds + ' ' + plural(feeds, 'рассказа', 'рассказов', 'рассказов')
+        : 'нужен ответ') + '</div>';
+    boxOut.appendChild(d);
+    yOut[it.k] = top + 26;
+    var c = ns('circle');
+    c.setAttribute('cx', slnX); c.setAttribute('cy', yOut[it.k]);
+    c.setAttribute('r', '5');
+    c.setAttribute('class', 'sln ' + (v ? 'done' : 'void'));
+    svg.appendChild(c);
+  });
+
+  STORY_FLOW.forEach(function(f){
+    var y0 = yIn[f[0]], y1 = yOut[f[1]];
+    if (y0 === undefined || y1 === undefined) return;
+    var src = L.ans[f[0]];
+    var cls = !src ? 'void' : (f[0] === 'acc' ? 'flag' : (L.ans[STORY_OUT.filter(function(o){
+      return o.k === f[1]; })[0].src] ? 'done' : 'now'));
+    var p = ns('path');
+    p.setAttribute('class', 'flow ' + cls);
+    p.setAttribute('d', 'M' + innX + ' ' + y0 + ' C' + ctlX + ' ' + y0 +
+      ' ' + ctlX + ' ' + y1 + ' ' + slnX + ' ' + y1);
+    svg.insertBefore(p, svg.firstChild);
+  });
+
+  /* встречные вопросы */
+  var open = lQuestions().filter(function(q){ return !q.auto && !L.ans[q.k]; });
+  open.sort(function(a, b){ return (b.core ? 1 : 0) - (a.core ? 1 : 0); });
+  qs.innerHTML = '<div class="qh mono">ЧТО ОСТАЛОСЬ СПРОСИТЬ</div>' +
+    (open.length ? open.slice(0, 3).map(function(q){
+      return '<div class="q' + (q.core ? ' block' : '') + '">' +
+        '<div class="qk mono">' + (q.core ? 'БЛОКИРУЕТ' : 'УТОЧНЯЕТ') +
+        ' · ' + slotName(q.slot) + '</div>' +
+        '<div class="qt">' + q.q + '</div></div>';
+    }).join('')
+      : '<div class="q"><div class="qt">Ничего. Сценарий описан целиком.</div></div>') +
+    '<div class="qn">Вопрос из незакрытого слота держит подачу. Остальные — нет: ' +
+    'их можно закрыть уже во время сборки.</div>';
+
+  /* готовность и подача */
+  var r = storySlots(), c = lCount();
+  var rd = document.getElementById('storyReady');
+  rd.innerHTML = '<div class="rk mono">ГОТОВНОСТЬ</div>' +
+    '<div class="rv"><span class="big disp">' + r.done + '</span><i>/</i>' +
+    '<span>' + r.total + '</span></div>' +
+    '<div class="rn' + (r.open.length ? '' : ' ok') + '">' +
+    (r.open.length ? 'не закрыты: ' + r.open.join(', ') : 'все слоты закрыты') + '</div>' +
+    '<button class="rgo" type="button" id="storyGo"' + (c.left ? ' disabled' : '') +
+    '>Подать заявку</button>';
+  document.getElementById('storyGo').addEventListener('click', lSubmit);
+}
+
 function donePaint(){
   var svgD = document.getElementById('doneSvg');
   var box = document.querySelector('.doneMap');
@@ -3172,11 +3429,12 @@ function donePaint(){
 
   var nm2 = document.getElementById('lName2');
   nm2.addEventListener('input', function(){ L.name = nm2.value.trim(); });
-  document.getElementById('lSend').addEventListener('click', lSubmit);
+  document.getElementById('lSend').addEventListener('click', function(){ lStep('story'); });
   window.addEventListener('resize', function(){
     if (st.mode !== 'launch') return;
     if (L.step === 'pad') padPaint();
     if (L.step === 'brief') treePaint();
+    if (L.step === 'story') storyPaint();
     if (L.step === 'done') donePaint();
   });
 })();
@@ -3283,7 +3541,8 @@ function diveOut(el2, back){
 diveOut(document.getElementById('anat'), function(){ if (st.focus) closeAnat(); });
 diveOut(launchEl, function(){
   if (st.mode !== 'launch') return;
-  if (L.step === 'done') lStep('brief');
+  if (L.step === 'done') lStep('story');
+  else if (L.step === 'story') lStep('brief');
   else if (L.step === 'brief') lStep('pad');
   else closeLaunch();
 });
