@@ -640,6 +640,7 @@ footer{position:fixed;left:40px;bottom:28px;z-index:56;font-size:8.5px;line-heig
 .padout{position:absolute;width:236px;text-align:right}
 .padout .k{font-size:7.5px;letter-spacing:.24em;color:var(--t3)}
 .padout .v{margin-top:6px;font-size:10.5px;color:var(--t2)}
+.padout .v2{margin-top:5px;font-size:9.5px;line-height:1.5;color:var(--t4)}
 
 .padwho{position:absolute;left:0;top:0;width:340px;padding-top:16px;
   border-top:1px solid var(--hair)}
@@ -648,11 +649,6 @@ footer{position:fixed;left:40px;bottom:28px;z-index:56;font-size:8.5px;line-heig
   color:var(--t1);font:400 14px/1.4 inherit;outline:none}
 .padwho input::placeholder{color:var(--t4)}
 .padwho .ph{margin-top:7px;font-size:10px;line-height:1.5;color:var(--t4)}
-.padwho .cats{display:flex;flex-wrap:wrap;gap:6px;margin-top:16px}
-.padwho .cats button{padding:6px 11px;border:1px solid var(--hair);border-radius:30px;
-  font-size:9px;letter-spacing:.08em;color:var(--t3);transition:all .18s var(--ease)}
-.padwho .cats button:hover{color:var(--t1);border-color:rgba(242,240,237,.3)}
-.padwho .cats button.on{color:var(--ink);background:var(--t1);border-color:var(--t1)}
 
 .padcard{position:absolute;right:0;width:412px}
 .padcard.main{top:0;background:var(--l3);border:1px solid var(--hair);padding:26px 30px 24px}
@@ -668,6 +664,8 @@ footer{position:fixed;left:40px;bottom:28px;z-index:56;font-size:8.5px;line-heig
   font-size:11px;transition:all .18s var(--ease)}
 .cgo:hover:not(:disabled){background:var(--t1);color:var(--ink);border-color:var(--t1)}
 .cgo:disabled{color:var(--t4);border-color:var(--hair);cursor:default}
+/* Кнопка никогда не молчит о том, почему она закрыта. */
+.cgon{margin-top:11px;font-size:10px;line-height:1.5;color:var(--sol);opacity:.85;min-height:1px}
 .cgo .mono{margin-left:9px}
 .padcard.way{bottom:96px;border:1px solid rgba(242,240,237,.08);padding:19px 30px 20px}
 .padcard.way .ck{font-size:7.5px;letter-spacing:.24em;color:var(--t3)}
@@ -784,10 +782,10 @@ footer{position:fixed;left:40px;bottom:28px;z-index:56;font-size:8.5px;line-heig
   <div id="launch" aria-live="polite">
     <div class="lhead">
       <div class="lt disp" id="lTitle">ПУСК</div>
-      <div class="ls" id="lSub">Новый агент · стартовый стол</div>
+      <div class="ls" id="lSub">Новый агент · перед разговором</div>
     </div>
     <div class="lsteps mono" id="lSteps">
-      <span data-s="pad">СТАРТОВЫЙ СТОЛ</span>
+      <span data-s="pad">ПЕРЕД РАЗГОВОРОМ</span>
       <span data-s="brief">БРИФОВАНИЕ</span>
       <span data-s="done">ЗАЯВКА</span>
     </div>
@@ -801,11 +799,9 @@ footer{position:fixed;left:40px;bottom:28px;z-index:56;font-size:8.5px;line-heig
       </div>
 
       <div class="padwho">
-        <div class="pk mono">СТОЛ ПРИНАДЛЕЖИТ</div>
+        <div class="pk mono">ВАШ АГЕНТ</div>
         <input id="fRole" type="text" autocomplete="off" placeholder="Ваша роль">
-        <div class="ph">подтянута из корпоративного профиля</div>
-        <div class="cats" id="fCats"></div>
-        <div class="ph" id="catHint">выберите сектор — увидите свою точку выведения</div>
+        <div class="ph" id="roleHint">подтянуто из корпоративного профиля</div>
       </div>
 
       <div class="padcard main">
@@ -813,9 +809,10 @@ footer{position:fixed;left:40px;bottom:28px;z-index:56;font-size:8.5px;line-heig
         <div class="ct">Заведите агента<br>и внедрите его<br>в свои рабочие процессы</div>
         <div class="cd">Заполнять анкету не нужно. Вы разговариваете с агентом-брифователем:
           он задаёт вопросы, разбирает то, что уже сказано на встречах и в переписке,
-          и сам структурирует и обобщает требования.</div>
-        <input id="fName" type="text" autocomplete="off" placeholder="Название агента — необязательно">
-        <button class="cgo" id="toBrief" disabled>Начать разговор</button>
+          и сам структурирует и обобщает требования. Название агента и участок работы
+          он определит сам — по вашим ответам.</div>
+        <button class="cgo" id="toBrief">Начать разговор</button>
+        <div class="cgon" id="toBriefNote"></div>
       </div>
 
       <div class="padcard way">
@@ -827,9 +824,9 @@ footer{position:fixed;left:40px;bottom:28px;z-index:56;font-size:8.5px;line-heig
       </div>
 
       <div class="padstage">
-        <div class="sk mono">ЭТАП</div>
-        <div class="sv"><b class="disp">1</b><i>/</i>5</div>
-        <div class="sn">бриф · разговор о вашей рутине</div>
+        <div class="sk mono">ЧТО СОБЕРЁТ РАЗГОВОР</div>
+        <div class="sv"><b class="disp" id="padSlots">6</b><i>слотов агента</i></div>
+        <div class="sn" id="padSlotNames"></div>
       </div>
 
       <div class="padleg">
@@ -2266,11 +2263,42 @@ var sunEl = document.getElementById('sun');
 
 /* В корпоративном портале роль придёт из профиля. Пока её неоткуда взять,
    поэтому подставляем и честно подписываем, что это подстановка. */
-var PROFILE = { role: 'Специалист учебного отдела' };
+/* Корпоративный профиль. Участок здесь предварительный: он нужен только
+   чтобы нарисовать точку выведения на схеме, пользователю не показывается
+   как решение и переопределяется по ответам при подаче заявки. */
+var PROFILE = { role: 'Специалист учебного отдела', unit: 'МАП', cat: 'edu' };
+
+/* Участок работы не спрашивают на входе: до разговора человек хуже всего
+   понимает, к какой линейке отнести свою рутину. Он выводится из сказанного,
+   а роль из профиля служит подсказкой, когда ответы молчат. */
+var CAT_HINTS = {
+  per:  ['лично', 'персональн', 'ассистент', 'мо[ея] работ'],
+  sal:  ['продаж', 'лид', 'клиент', 'сделк', 'crm', 'воронк', 'абитуриент', 'заявк'],
+  mkt:  ['маркетинг', 'контент', 'seo', 'реклам', 'публикац', 'соцсет', 'трафик', 'канал'],
+  corp: ['документооборот', 'регламент', 'кадр', 'бухгалт', 'юрид', 'закупк', 'совещан'],
+  edu:  ['студент', 'учебн', 'преподават', 'курс', 'дисциплин', 'академразниц',
+         'деканат', 'расписан', 'экзамен', 'абитуриент', 'вуз'],
+  ana:  ['отч[её]т', 'аналит', 'дашборд', 'метрик', 'выгрузк', 'sql', 'excel'],
+  dev:  ['код', 'разработ', 'тестир', 'релиз', 'баг', 'деплой', 'репозитор']
+};
+
+function lDeriveCat(){
+  var text = (L.role + ' ' + Object.keys(L.ans).map(function(k){
+    return L.ans[k];
+  }).join(' ')).toLowerCase();
+  var best = null, top = 0;
+  Object.keys(CAT_HINTS).forEach(function(k){
+    var hits = 0;
+    CAT_HINTS[k].forEach(function(w){ if (new RegExp(w).test(text)) hits++; });
+    if (hits > top) { top = hits; best = k; }
+  });
+  return best || PROFILE.cat;
+}
 
 function openLaunch(){
   lReset();
   L.role = PROFILE.role;
+  L.cat = PROFILE.cat;                    /* предварительно — только для схемы */
   st.mode = 'launch';
   closeSheet();
   setHover(null);
@@ -2282,9 +2310,7 @@ function openLaunch(){
   document.querySelector('header').classList.add('hide');
   document.getElementById('modes').classList.add('hide');
   document.getElementById('fRole').value = L.role;
-  document.getElementById('fName').value = '';
   lStep('pad');
-  buildCats();
   padSync();
 }
 
@@ -2311,7 +2337,7 @@ function lStep(s){
     e.classList.toggle('on', j === i);
     e.classList.toggle('done', j < i);
   });
-  var T = { pad:['ПУСК','Новый агент · стартовый стол'],
+  var T = { pad:['ПУСК','Новый агент · перед разговором'],
             brief:['БРИФОВАНИЕ','Дерево требований · система подсказывает, порядок за вами'],
             done:['ЗАЯВКА ПРИНЯТА','Ваш агент занял место на карте'] };
   document.getElementById('lTitle').textContent = T[s][0];
@@ -2340,17 +2366,6 @@ var BRIEF_FAN = [
   'Чего агент не делает никогда',
   'Как поймём, что стало лучше'
 ];
-
-function buildCats(){
-  var box = document.getElementById('fCats');
-  box.textContent = '';
-  CATS.forEach(function(c){
-    var b = el('button'); b.type = 'button'; b.textContent = c.n;
-    b.classList.toggle('on', L.cat === c.k);
-    b.addEventListener('click', function(){ L.cat = c.k; buildCats(); padSync(); });
-    box.appendChild(b);
-  });
-}
 
 function padPaint(){
   var wrap = document.querySelector('.padscene');
@@ -2408,7 +2423,8 @@ function padPaint(){
     var gl = el('div', 'padout');
     gl.style.left = (g[0] - 250) + 'px'; gl.style.top = (g[1] - 12) + 'px';
     gl.innerHTML = '<div class="k mono">ТОЧКА ВЫВЕДЕНИЯ</div>' +
-      '<div class="v">' + c.n + ' · орбита ИДЕЯ · период ' + stg('idea').T + '&#8201;с</div>';
+      '<div class="v">орбита ИДЕЯ · период ' + stg('idea').T + '&#8201;с</div>' +
+      '<div class="v2">участок работы определится в разговоре</div>';
     labs.appendChild(gl);
   }
 
@@ -2490,11 +2506,16 @@ function polD(cx, cy, r, deg){
 }
 
 function padSync(){
-  document.getElementById('toBrief').disabled = !(L.role && L.cat);
-  var hint = document.getElementById('catHint');
-  hint.textContent = L.cat
-    ? 'сектор ' + cat(L.cat).n.toLowerCase() + ' · системы: ' + cat(L.cat).sys
-    : 'выберите сектор — увидите свою точку выведения';
+  /* Единственное, без чего разговор не начать, — знать, чья это рутина.
+     Роль подставлена из профиля, поэтому кнопка живая сразу; если её стереть,
+     причина стоит под кнопкой, а не молчит. */
+  document.getElementById('toBrief').disabled = !L.role;
+  document.getElementById('toBriefNote').textContent = L.role
+    ? '' : 'назовите свою роль — с неё начинается разговор';
+  document.getElementById('padSlots').textContent = SLOTS.length;
+  document.getElementById('padSlotNames').textContent =
+    SLOTS.map(function(x){ return x.t.toLowerCase(); }).join(' · ') +
+    ' · разговор займёт 5–10 минут';
   padPaint();
 }
 
@@ -2838,6 +2859,7 @@ function lSuggestName(){
 
 function lSubmit(){
   if (!L.name) L.name = lSuggestName();
+  L.cat = lDeriveCat();                   /* участок — из сказанного в разговоре */
   var id = 'draft-' + Date.now().toString(36);
   var a = {
     id:id, c:L.cat, s:'idea', n:L.name,
@@ -2899,7 +2921,8 @@ function donePaint(){
     '<div class="dk">' + cat(L.cat).n + ' · ЗАЯВКА ПРИНЯТА</div>' +
     '<div class="dn">' + L.name + '</div>' +
     '<div class="dd">' + (L.ans.role || L.role) +
-      (L.ans.unit ? ' · ' + L.ans.unit : '') + '</div>' +
+      (L.ans.unit ? ' · ' + L.ans.unit : '') +
+      '<br>участок работы определён по вашим ответам</div>' +
     '<div class="dsteps">' + steps.map(function(s){
       return '<div class="dst ' + s[1] + '"><i></i><span>' + s[0] + '</span><em>' + s[2] + '</em></div>';
     }).join('') + '</div>' +
@@ -2924,9 +2947,7 @@ function donePaint(){
   hit.addEventListener('blur', function(){ sunEl.classList.remove('call'); });
   hit.addEventListener('click', openLaunch);
 
-  var nm = document.getElementById('fName');
   var rl = document.getElementById('fRole');
-  nm.addEventListener('input', function(){ L.name = nm.value.trim(); });
   rl.addEventListener('input', function(){ L.role = rl.value.trim(); padSync(); });
   document.getElementById('toBrief').addEventListener('click', function(){ lStep('brief'); });
 
