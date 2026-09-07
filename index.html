@@ -375,6 +375,11 @@ footer{position:fixed;left:40px;bottom:28px;z-index:56;font-size:8.5px;line-heig
   #back{position:relative;left:auto;top:auto;margin:22px 18px 0;min-height:44px;
     opacity:1;pointer-events:auto}
   #back:not(.on){display:none}
+  /* Слой пуска лежит поверх страницы фиксировано, а возврат жил в её потоке:
+     заголовок «ПУСК» и «К экосистеме» садились друг на друга. Пока слой
+     открыт, возврат тоже фиксирован — и заголовок отступает под него. */
+  body.launching #back{position:fixed;left:18px;top:12px;margin:0;z-index:64;
+    min-height:34px}
 
   .rail,#railL,#railR{position:relative;top:auto;left:auto;right:auto;width:auto;
     padding:0 18px;margin-top:22px;text-align:left}
@@ -403,6 +408,9 @@ footer{position:fixed;left:40px;bottom:28px;z-index:56;font-size:8.5px;line-heig
   #anat:not(.on){display:none}
   #anatBox{position:relative;inset:auto;margin-top:8px}
   .nlab,.acard{display:none}
+  /* Выноски узлов на телефоне скрыты: легенда не должна обещать разбор,
+     которого по нажатию не будет. Слоты читаются списком ниже. */
+  .anleg span.wide{display:none}
   .flank{position:relative;top:auto;transform:none;width:auto;
     padding:0 18px;margin-top:28px}
   .flank.l,.flank.r{left:auto!important;right:auto!important;text-align:left}
@@ -454,7 +462,7 @@ footer{position:fixed;left:40px;bottom:28px;z-index:56;font-size:8.5px;line-heig
 #sun.call .sunArc{opacity:1;transform:none}
 #sun.noarc .sunArc{display:none}
 #sun .sunArc text{font-family:'JetBrains Mono',ui-monospace,'Cascadia Mono',monospace;
-  font-size:8px;letter-spacing:.3em;fill:var(--t1)}
+  font-size:11px;letter-spacing:.18em;fill:var(--t1)}
 #sun.call .cap{opacity:0}
 #sun .cap{transition:opacity .18s var(--ease)}
 
@@ -496,6 +504,13 @@ footer{position:fixed;left:40px;bottom:28px;z-index:56;font-size:8.5px;line-heig
 .ldrop .db button:hover{color:var(--t1);border-color:rgba(242,240,237,.3)}
 .ldrop .dn{font-size:9px;line-height:1.5;color:var(--t4);margin-left:auto;text-align:right}
 .lprog{margin-top:24px}
+/* Поле названия оставалось без правила и рисовалось системным белым
+   прямоугольником — единственное светлое пятно во всей тёмной системе. */
+.lprog input{display:block;width:100%;margin-top:9px;padding:6px 0;background:none;
+  border:0;border-bottom:1px solid rgba(242,240,237,.24);color:var(--t1);
+  font:400 13px/1.4 inherit;outline:none}
+.lprog input::placeholder{color:var(--t4)}
+.lprog input:focus{border-bottom-color:rgba(242,240,237,.5)}
 .lprog .pv{margin-top:9px;display:flex;align-items:baseline;gap:7px;font-size:13px;color:var(--t3)}
 .lprog .pv b{font-family:'Unbounded',sans-serif;font-weight:200;font-size:32px;
   line-height:1;color:var(--t1)}
@@ -698,6 +713,10 @@ footer{position:fixed;left:40px;bottom:28px;z-index:56;font-size:8.5px;line-heig
   .lrail,.ltree,.lpanel,.lleg{position:relative;left:auto;right:auto;top:auto;bottom:auto;
     width:100%;inset:auto}
   .ltree{height:420px;margin:26px 0}
+  /* Подпись вопроса шириной 210 не помещается рядом с подписью слота и
+     наезжает на неё. Вопросы на телефоне читаются по одному в панели
+     ниже — в дереве остаётся ход по слотам. */
+  .qlab{display:none}
   .lpanel{margin-bottom:22px}
   .lleg{margin-top:20px}
   /* inset:0 0 64px оставался и в потоке, поднимая блок на 64 px. */
@@ -705,8 +724,12 @@ footer{position:fixed;left:40px;bottom:28px;z-index:56;font-size:8.5px;line-heig
   .cyclo{position:relative;left:auto;right:auto;bottom:auto;margin-top:30px}
   .doneMap{width:100%;max-width:360px;height:360px}
   .doneCard{width:100%}
-  #launch .lsteps{position:relative;right:auto;top:auto;margin:0 40px 18px;flex-wrap:wrap;gap:14px}
-  #launch .lhead{position:relative;left:auto;top:auto;margin:28px 40px 14px}
+  #launch .lsteps{position:relative;right:auto;top:auto;margin:0 18px 20px;
+    flex-wrap:wrap;gap:10px 16px}
+  #launch .lhead{position:relative;left:auto;top:auto;margin:58px 18px 16px}
+  /* На широком экране поля даёт сам .lstep (inset ... 40px). В потоке
+     телефона он их терял, и колонки прижимались к самому краю. */
+  .lstep{padding:0 18px}
 }
 
 
@@ -715,6 +738,12 @@ footer{position:fixed;left:40px;bottom:28px;z-index:56;font-size:8.5px;line-heig
 .padscene{position:absolute;inset:0 460px 0 0}
 .padscene svg{position:absolute;inset:0;width:100%;height:100%}
 #padLabs{position:absolute;inset:0;pointer-events:none}
+/* Кадру не хватает ширины на подписи — остаётся одна графика. */
+.padscene.bare{overflow:hidden}
+.padscene.bare #padLabs{display:none}
+/* Средний кадр: подписи те же, но уже — иначе не помещаются по бокам. */
+.padscene.tight .padstep{width:140px}
+.padscene.tight .padq{width:150px}
 .padsun{position:absolute;pointer-events:none}
 .padsun .halo{position:absolute;left:-150px;top:-150px;width:300px;height:300px;border-radius:50%;
   background:radial-gradient(circle,color-mix(in oklab,var(--sol) 14%,transparent) 0%,transparent 62%);
@@ -797,13 +826,23 @@ footer{position:fixed;left:40px;bottom:28px;z-index:56;font-size:8.5px;line-heig
 .divering{pointer-events:none;transition:opacity .12s linear}
 .padhint{position:absolute;right:0;bottom:0;text-align:right;font-size:8.5px;
   letter-spacing:.2em;color:var(--t4);line-height:2.1}
+.padhint span{display:block}
 
 @media (max-width:1100px){
   /* Подписи кольца и веера рассчитаны на широкий кадр: на телефоне они
      уезжали за край и тянули за собой боковую прокрутку. Графика остаётся
      (её SVG обрезается кадром сам), а слова несёт карточка «путь агента». */
-  .padscene{position:relative;inset:auto;width:100%;height:320px;overflow:hidden}
+  .padscene{position:relative;inset:auto;width:100%;height:300px;overflow:hidden}
   #padLabs{display:none}
+  /* Веера и точки выведения на телефоне нет — легенда не должна их обещать. */
+  .padhint span.wide{display:none}
+  /* Переносы в заголовке расставлены под широкую карточку; на узкой они
+     рвут строку посреди фразы. */
+  .padcard.main .ct br{display:none}
+  /* Возврат висит поверх прокручиваемого слоя: под ним нужна своя земля,
+     иначе текст проходит сквозь него. */
+  body.launching #back{background:var(--ink);padding:0 14px;
+    border-radius:calc(var(--R)*3)}
   .padwho,.padcard,.padstage,.padleg,.padhint{position:relative;inset:auto;right:auto;left:auto;
     bottom:auto;top:auto;width:100%;margin-top:22px;text-align:left}
   /* .padcard.way несёт два класса и перебивала правило выше: её bottom:96px
@@ -822,6 +861,7 @@ footer{position:fixed;left:40px;bottom:28px;z-index:56;font-size:8.5px;line-heig
 .anstat .v{margin-top:7px;font-size:8px;letter-spacing:.14em;color:var(--t4)}
 .anleg{position:absolute;left:40px;bottom:30px;z-index:6;font-size:8.5px;
   letter-spacing:.2em;color:var(--t4);line-height:2.1}
+.anleg span{display:block}
 @media (max-width:1100px){
   .anhead,.anstat,.anleg{position:relative;inset:auto;left:auto;right:auto;top:auto;bottom:auto;
     margin:14px 20px;text-align:left}
@@ -870,13 +910,13 @@ footer{position:fixed;left:40px;bottom:28px;z-index:56;font-size:8.5px;line-heig
     <div id="sun">
       <div class="halo"></div><div class="corona"></div><div class="core"></div>
       <div class="cap mono">СИНЕРГИЯ</div>
-      <button id="sunHit" type="button" aria-label="Завести своего агента">
+      <button id="sunHit" type="button" aria-label="Создать агента">
         <span class="ring"></span>
       </button>
       <svg class="sunArc" viewBox="-104 -104 208 208" aria-hidden="true">
         <defs><path id="sunArcPath" d="M-68 0 A68 68 0 0 0 68 0"></path></defs>
         <text><textPath href="#sunArcPath" startOffset="50%" text-anchor="middle"
-          >ЗАВЕСТИ СВОЕГО АГЕНТА</textPath></text>
+          >СОЗДАТЬ АГЕНТА</textPath></text>
       </svg>
     </div>
   </div>
@@ -887,7 +927,9 @@ footer{position:fixed;left:40px;bottom:28px;z-index:56;font-size:8.5px;line-heig
       <div class="as" id="anSub">Гелиус Синерджи · уровень агента</div>
     </div>
     <div class="anstat" id="anStat"></div>
-    <div class="anleg mono">УЗЕЛ — РАЗБОР СЛОТА<br>ПУНКТИР — СЛОТ НЕ ЗАПОЛНЕН<br>КОЛЬЦО БЬЁТСЯ В ПЕРИОД ОРБИТЫ АГЕНТА</div>
+    <div class="anleg mono"><span class="wide">УЗЕЛ — РАЗБОР СЛОТА</span>
+      <span>ПУНКТИР — СЛОТ НЕ ЗАПОЛНЕН</span>
+      <span>КОЛЬЦО БЬЁТСЯ В ПЕРИОД ОРБИТЫ АГЕНТА</span></div>
     <div id="anatBox">
       <svg id="anatSvg" aria-hidden="true"></svg>
       <div id="beat"><div class="p"></div></div>
@@ -927,7 +969,9 @@ footer{position:fixed;left:40px;bottom:28px;z-index:56;font-size:8.5px;line-heig
 
       <div class="padcard main">
         <div class="ck mono">ГЕЛИУС · СОЗДАНИЕ АГЕНТА</div>
-        <div class="ct">Заведите агента<br>и внедрите его<br>в свои рабочие процессы</div>
+        <!-- Пробелы перед переносами обязательны: на телефоне переносы гасятся,
+             и без них слова склеиваются в «агентаи внедрите егов свои». -->
+        <div class="ct">Заведите агента <br>и внедрите его <br>в свои рабочие процессы</div>
         <div class="cd">Заполнять анкету не нужно. Вы разговариваете с агентом-брифователем:
           он задаёт вопросы, разбирает то, что уже сказано на встречах и в переписке,
           и сам структурирует и обобщает требования. Название агента и участок работы
@@ -956,7 +1000,9 @@ footer{position:fixed;left:40px;bottom:28px;z-index:56;font-size:8.5px;line-heig
         <span><i></i>впереди</span>
       </div>
 
-      <div class="padhint mono">КОЛЬЦО — ПУТЬ АГЕНТА ОТ БРИФА ДО РАБОТЫ<br>ВЕЕР — О ЧЁМ СПРОСИТ БРИФОВАТЕЛЬ<br>ПУНКТИР — ТОЧКА ВЫВЕДЕНИЯ НА ОРБИТЕ ИДЕЙ</div>
+      <div class="padhint mono"><span>КОЛЬЦО — ПУТЬ АГЕНТА ОТ БРИФА ДО РАБОТЫ</span>
+        <span class="wide">ВЕЕР — О ЧЁМ СПРОСИТ БРИФОВАТЕЛЬ</span>
+        <span class="wide">ПУНКТИР — ТОЧКА ВЫВЕДЕНИЯ НА ОРБИТЕ ИДЕЙ</span></div>
     </section>
 
     <section class="lstep" data-step="brief">
@@ -1489,7 +1535,9 @@ function paint(){
   var hl = sun.querySelector('.halo');
   hl.style.width = (hr*2)+'px'; hl.style.height = (hr*2)+'px';
   hl.style.left = (-hr)+'px'; hl.style.top = (-hr)+'px';
-  sun.querySelector('.cap').style.top = (st.R*0.155)+'px';
+  /* Отступ подписи считается от радиуса карты; на узкой карте он
+     схлопывался, и «СИНЕРГИЯ» ложилась прямо на ядро. */
+  sun.querySelector('.cap').style.top = Math.max(32, st.R * 0.155) + 'px';
 
   /* Дуга зова должна лежать в промежутке между короной и первым кольцом
      орбит — иначе она снова начнёт резать линии, как это делала прямая
@@ -1498,8 +1546,8 @@ function paint(){
      показывается вовсе: половина дуги короче 144 px нечитаема. */
   var arcPath = document.getElementById('sunArcPath');
   if (arcPath) {
-    var ra = Math.min(72, st.R * STAGES[0].rf - 20);
-    var fit = ra >= 46;
+    var ra = Math.min(74, st.R * STAGES[0].rf - 14);
+    var fit = ra >= 42;
     sun.classList.toggle('noarc', !fit);
     if (fit) {
       ra = Math.round(ra);
@@ -2456,6 +2504,7 @@ function openLaunch(){
   L.role = PROFILE.role;
   L.cat = PROFILE.cat;                    /* предварительно — только для схемы */
   st.mode = 'launch';
+  document.body.classList.add('launching');
   closeSheet();
   setHover(null);
   launchEl.classList.add('on');
@@ -2472,6 +2521,7 @@ function openLaunch(){
 
 function closeLaunch(){
   st.mode = 'eco';
+  document.body.classList.remove('launching');
   launchEl.classList.remove('on');
   backBtn.classList.remove('on');
   stageEl.classList.remove('back');
@@ -2537,9 +2587,26 @@ function padPaint(){
 
   /* На широком экране Солнце стоит слева, чтобы справа поместились веер
      и карточки. На телефоне подписи скрыты, и оно встаёт по центру. */
-  var узко = W < 1100;
-  var cx = Math.round(W * (узко ? 0.5 : 0.30)), cy = Math.round(H * 0.52);
-  var R = Math.max(узко ? 78 : 96, Math.min(178, H * 0.27));
+  var узко = phone();
+  /* Кольцу с подписями отведена полоса между верхним блоком «ваш агент»
+     и легендой внизу. И радиус, и центр выводятся из неё, а не из долей
+     высоты: иначе на низком кадре подписи садились то на легенду, то на
+     верхний блок. 55 — половина высоты подписи этапа с её отбивкой. */
+  var верх = узко ? 0 : 96, низ = узко ? 0 : 178;
+  var полоса = H - верх - низ;
+  var cy = Math.round(узко ? H * 0.52 : верх + полоса / 2);
+  var R = Math.max(узко ? 78 : 96,
+    Math.min(178, H * 0.27, узко ? 1e4 : полоса / 2 - 55));
+  /* Подписи этапов шириной 186 идут влево от кольца, веер с подписями по
+     200 — вправо. Вместе с самим кольцом это требует около 900 px ширины
+     сцены; в окне уже 1500 её столько нет. Там, как и на телефоне,
+     остаётся только графика: слова несут карточки справа. */
+  var тесно = узко || W < 800;
+  var жмёт = !тесно && W < 1200;        /* подписи те же, но уже */
+  wrap.classList.toggle('bare', тесно);
+  wrap.classList.toggle('tight', жмёт);
+  var подпись = жмёт ? 140 : 186;
+  var cx = Math.round(тесно ? W * 0.5 : Math.max(W * 0.30, R + 48 + подпись));
   var u = R / 190;                                  /* масштаб от артборда */
   var sun = document.querySelector('.padsun');
   sun.style.left = cx + 'px'; sun.style.top = cy + 'px';
@@ -2557,8 +2624,10 @@ function padPaint(){
     svgP.appendChild(o);
   });
 
-  /* траектория выведения и агент из точек на орбите идей */
-  if (c) {
+  /* траектория выведения и агент из точек на орбите идей.
+     На телефоне подписи скрыты, и линии без них — просто обрывки,
+     уходящие за край кадра. */
+  if (c && !тесно) {
     var GA = 18, GR = R * 4.45;
     var g = polD(cx, cy, GR, GA);
     var tr = ns('path');
@@ -2582,7 +2651,9 @@ function padPaint(){
       svgP.appendChild(q);
     });
     var gl = el('div', 'padout');
-    gl.style.left = (g[0] - 250) + 'px'; gl.style.top = (g[1] - 12) + 'px';
+    /* Подпись точки выведения шириной 236 уходила за правый край кадра. */
+    gl.style.left = Math.max(0, Math.min(g[0] - 250, W - 240)) + 'px';
+    gl.style.top = (g[1] - 12) + 'px';
     gl.innerHTML = '<div class="k mono">ТОЧКА ВЫВЕДЕНИЯ</div>' +
       '<div class="v">орбита ИДЕЯ · период ' + stg('idea').T + '&#8201;с</div>' +
       '<div class="v2">участок работы определится в разговоре</div>';
@@ -2611,7 +2682,9 @@ function padPaint(){
     labs.appendChild(d);
   });
 
-  /* веер брифа — вправо, от кольца */
+  /* веер брифа — вправо, от кольца. Без подписей он не читается, поэтому
+     на телефоне остаётся только кольцо этапов вокруг ядра. */
+  if (тесно) return;
   var tx = polD(cx, cy, R + 8, 0), nx = polD(cx, cy, R + 92 * u, 0);
   var tl = ns('line');
   tl.setAttribute('x1', tx[0].toFixed(1)); tl.setAttribute('y1', tx[1].toFixed(1));
@@ -3049,6 +3122,13 @@ function lSubmit(){
 
 var CYCLO = ['СБОРКА', 'ГОТОВНОСТЬ', 'ЗАЖИГАНИЕ', 'ВЫВЕДЕНИЕ', 'ОРБИТА IDEA'];
 
+/* Признак телефонной раскладки берётся из того же медиазапроса, что и
+   стили. Мерить ширину блока нельзя: у сцены на столе она и на широком
+   экране меньше 1100, и порог срабатывал ложно. */
+function phone(){
+  return !!(window.matchMedia && window.matchMedia('(max-width:1100px)').matches);
+}
+
 function calm(){
   return !!(window.matchMedia &&
     window.matchMedia('(prefers-reduced-motion: reduce)').matches);
@@ -3285,7 +3365,7 @@ function storyPaint(){
   /* На телефоне раскладку держит поток, а высота секции берётся из её же
      содержимого: мерить её здесь нельзя — вышел бы замкнутый круг, и экран
      оставался пустым. Координаты и пучок считаются только на широком. */
-  var узко = W < 1100;
+  var узко = phone();
   svg.textContent = ''; boxIn.textContent = ''; boxOut.textContent = '';
   var qs = document.getElementById('storyQuest');
 
@@ -3312,7 +3392,7 @@ function storyPaint(){
     var d = el('div', 'inp' + (v ? (it.flag ? ' flag' : '') : ' void'));
     if (!узко) d.style.top = top + 'px';
     d.innerHTML = '<div class="ik mono">' + it.ik + '</div>' +
-      '<div class="it">' + (v ? cutTo(v, 62) : 'не рассказано') + '</div>' +
+      '<div class="it">' + (v ? cutTo(v, узко ? 120 : 62) : 'не рассказано') + '</div>' +
       '<div class="im">' + (v ? (SRC_WORD[L.src[it.k]] || 'сказали в разговоре') : '—') +
       '</div>';
     boxIn.appendChild(d);
@@ -3333,7 +3413,8 @@ function storyPaint(){
     var d = el('div', 'slt' + (v ? ' done' : ' void'));
     if (!узко) { d.style.left = sltX + 'px'; d.style.top = top + 'px'; }
     d.innerHTML = '<div class="sn">' + it.n + '</div>' +
-      '<div class="sv">' + (v ? cutTo(v, 92) : 'об этом не рассказали') + '</div>' +
+      '<div class="sv">' + (v ? cutTo(v, узко ? 150 : 92) : 'об этом не рассказали') +
+      '</div>' +
       '<div class="sm mono">' + (v
         ? 'собрано из ' + feeds + ' ' + plural(feeds, 'рассказа', 'рассказов', 'рассказов')
         : 'нужен ответ') + '</div>';
